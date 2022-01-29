@@ -1,0 +1,73 @@
+/* app global css */
+/* for text class */
+	.cb-text-white-1{ color:#F7F7F7 }
+	.cb-text-white-2{ color:#FAFCFF }
+
+	.cb-text-grey-2{ color:#D9D9D9 }
+	.cb-text-grey-3{ color:#C9C9C9 }
+	.cb-text-grey-4{ color:#8491A0 }
+	.cb-text-grey-5{ color:#4d4d4d }
+	.cb-text-grey-8{ color:#262626 }
+
+	.cb-text-green-1{ color:#F2FFF8; }
+	.cb-text-green-2{ color:#7ACCA6; }
+	.cb-text-green-8{ color:#09AE61; }
+
+	.cb-text-red-1{ color:#FFF2F2; }
+	.cb-text-red-5{ color:#FF6767; }
+
+	.cb-text-orange-1{ color:#FFF8F2 }
+	.cb-text-orange-1{ color:#FDDABE }
+	.cb-text-orange-3{ color:#F7B277 }
+	.cb-text-orange-4{ color:#FFA65C }
+	.cb-text-orange-8{ color:#F58321 }
+	.cb-text-orange-12{ color:#C9865F }
+	.cb-text-orange-14{ color:#984803 }
+
+	.cb-text-blue-1{ color:#F2F6FC }
+	.cb-text-blue-3{ color:#58B6FE }
+	.cb-text-blue-6{ color:#1561AF }
+	.cb-text-blue-8{ color:#002D5C }
+
+/* for background class */
+	.cb-bg-white-1{ background:#F7F7F7; }
+	.cb-bg-white-2{ background:#FAFCFF; }
+
+	.cb-bg-grey-2{ background:#D9D9D9; }
+	.cb-bg-grey-3{ background:#C9C9C9; }
+	.cb-bg-grey-4{ background:#8491A0; }
+	.cb-bg-grey-5{ color:#4d4d4d }
+	.cb-bg-grey-8{ color:#262626 }
+
+	.cb-bg-green-1{ background:#F2FFF8; }
+	.cb-bg-green-2{ background:#7ACCA6; }
+	.cb-bg-green-8{ background:#09AE61; }
+
+	.cb-bg-red-1{ background:#FFF2F2; }
+	.cb-bg-red-5{ background:#FF6767; }
+
+	.cb-bg-orange-1{ background:#FFF8F2; }
+	.cb-bg-orange-2{ background:#FDDABE; }
+	.cb-bg-orange-3{ background:#F7B277; }
+	.cb-bg-orange-4{ background:#FFA65C; }
+	.cb-bg-orange-8{ background:#F58321; }
+	.cb-bg-orange-12{ background:#C9865F; }
+	.cb-bg-orange-14{ background:#984803; }
+
+	.cb-bg-blue-1{ background:#F2F6FC; }
+	.cb-bg-blue-3{ background:#58B6FE; }
+	.cb-bg-blue-6{ background:#1561AF; }
+	.cb-bg-blue-8{ background:#002D5C; }
+
+/* for gradient background class */
+	.cb-bg-gradient-orange-4{ background-image:linear-gradient( #FFA65C 10%, #FDDABE) ; }
+	.cb-bg-gradient-blue-4{ background-image:linear-gradient( #002D5C, #cce5ff) ; }
+
+.cb-round-borders{  border-radius: 10px; }
+.cb-round-borders-20{  border-radius: 20px; }
+.q-carousel__navigation .q-btn { margin: -0px 0px; }
+.q-carousel__navigation .q-btn .q-icon{ font-size: 10px; }
+.call_request{ border:1px solid #F58321;max-height: 50px; }
+
+
+.cb-font{ font-size:16px }

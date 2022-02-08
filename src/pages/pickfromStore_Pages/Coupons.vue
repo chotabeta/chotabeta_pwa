@@ -4,14 +4,14 @@
 			<q-toolbar class="cb-bg-white-2 cb-text-blue-8 text-center">
 				<q-btn flat dense round icon="arrow_back" @click="$router.push('PickFromStore_Checkout')"/>
 				<q-space></q-space>
-				<div class="cb-text-grey-8 text-italic">Available Coupons</div>
+				<div class="cb-text-grey-6 text-bold ">Available Coupons</div>
 				<q-space></q-space>
 			</q-toolbar>
 		</q-header>
 		<q-page-container>
 			<q-page class="q-px-sm">
 				<div class="row">
-					<div class="col-12 flex shadow-2 q-my-xs q-pa-sm cb-round-borders" v-for="i in 5">
+					<div class="col-12 flex cb-shadow-1 q-my-sm q-pa-sm cb-round-borders-10" v-for="i in 5">
 						<q-avatar class="shadow-2" size="60px">
 							<img src="https://chotabeta.com/icons/Group%202.png">
 						</q-avatar>
@@ -20,7 +20,7 @@
 							<span style="font-size: 12px;">Test Coupens</span>
 						</div>
 						<q-space></q-space>
-						<q-btn style="border: 3px dotted orange;width:100px;height:15px" flat outlined rounded @click="$router.push('PickFromStore_Checkout')">test{{i}}</q-btn>
+						<q-btn style="border: 3px dotted orange;width:100px;height:10px" flat outlined rounded @click="$router.push('PickFromStore_Checkout')">test{{i}}</q-btn>
 					</div>
 				</div>
 			</q-page>

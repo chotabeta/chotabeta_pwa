@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="row justify-center cb-bg-white-2">
-      <span class="cb-text-orange-8 cb-font text-weight-bolder">Refer and Earn</span>
+      <span class="cb-text-orange-8 cb-font-16 text-weight-bolder q-pb-xs">Refer and Earn</span>
     </div>
     <div class="row">
       <div class="col-12 column items-center justify-center" style="height:200px">
@@ -16,7 +16,7 @@
 
     <div class="row q-mb-lg" style="margin-top:-30px">
       <div class="col q-px-md">
-        <q-card  class="shadow-4 cb-round-borders">
+        <q-card  class="cb-shadow-1 cb-round-borders-10">
           <q-card-section class="q-pa-sm text-bold">
             <span class="cb-text-orange-8">{{total_refrels_text}}<br>
             <q-img src="https://chotabeta.app/dev/testenv/public/imgs/shopping_points.png"  width="25%"/>
@@ -26,7 +26,7 @@
         </q-card>
       </div>
       <div class="col q-px-md" >
-        <q-card class="shadow-4 cb-round-borders" style="height:100%">
+        <q-card class="cb-shadow-1 cb-round-borders-10" style="height:100%">
           <q-card-section  class="q-pa-sm text-bold">
             <span class="cb-text-orange-8">{{total_points_in_rs_text}}<br><br>
             <q-img src="https://chotabeta.app/dev/testenv/public/imgs/redeemed_points1.png"  width="25%"/>
@@ -36,7 +36,7 @@
         </q-card>
       </div>
       <div class="col q-px-md">
-        <q-card class="shadow-4 cb-round-borders">
+        <q-card class="cb-shadow-1 cb-round-borders-10">
           <q-card-section  class="q-pa-sm text-bold">
             <span class="cb-text-orange-8">{{total_redeem_text}}<br>
             <q-img src="https://chotabeta.app/dev/testenv/public/imgs/points_in_rs1.png"  width="25%"/>
@@ -63,13 +63,13 @@
     </div>
 
     <div class="q-px-md q-py-sm">
-      <q-card class="shadow-4 cb-round-borders">
-        <q-card-section class="cb-bg-white-2 text-black q-pa-sm">
+      <q-card class="cb-shadow-1 cb-round-borders-10">
+        <q-card-section class="cb-bg-grey-2 cb-text-grey-5 q-pa-sm">
           <div class="row items-center">
             <div class="col-2 q-pa-sm">
               <q-img src="https://chotabeta.app/dev/testenv/public/imgs/Group2x.png" width="90%"/>
             </div>
-            <div class="col-10 cb-text-grey-5">
+            <div class="col-10">
               <span>{{how_to_use_refer_points}}</span>
             </div>
           </div>
@@ -77,8 +77,8 @@
         <q-card-section>
           <div class="row justify-center">
             <div class="text-center">
-              <span class="cb-text-blue-8 text-bold text-italic">{{sub_text}}</span><br>
-              <q-btn outline :label="ref_code" class="cb-text-orange-8 text-weight-bolder q-mt-md"></q-btn>
+              <span class="cb-text-blue-8 text-bold">{{sub_text}}</span><br><br>
+              <q-btn outline :label="ref_code" class="cb-text-orange-8 cb-round-borders-10 text-weight-bolder q-mt-md"></q-btn>
             </div>
           </div>
         </q-card-section>

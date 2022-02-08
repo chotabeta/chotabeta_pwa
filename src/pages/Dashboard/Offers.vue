@@ -1,12 +1,12 @@
 <template>
 <q-page >
   <div class="flex cb-bg-white-2 flex-center">
-    <span class="cb-text-orange-8 text-subtitle2">Offers</span>
+    <span class="cb-text-orange-8 cb-font-16 text-weight-bolder">Offers</span>
   </div>
   <div v-if="offers.length != 0" class="q-px-md">
     <q-card  class="q-my-md shadow-1" v-for="offer in offers" :key="offer" style="border-radius: 15px;overflow: hidden;">
       <q-card-section class="q-pa-none" >
-        <q-img :src="offer.image" height="164px" ></q-img>
+        <q-img :src="offer.image" height="154px" ></q-img>
       </q-card-section>
     </q-card>
   </div>

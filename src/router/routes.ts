@@ -21,20 +21,26 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/Home/RatingAndReview',
+    component: () => import('pages/Dashboard/RatingAndReview.vue')
+  },
+  {
     path: '/Home/FoodOrders',
     component: () => import('pages/Dashboard/FoodOrders.vue')
+  },
+  {
+    path: '/Home/OrderDetails',
+    component: () => import('pages/Dashboard/OrderDetails.vue'),
   },
 
   //pick From Store Pages
   {
     path: '/PickFromStore_layouts_s1',
-    component: () => import('layouts/PickFromStore_layouts/PickFromStore_s1.vue'),
-    children: [ { path: '', component: () => import('pages/pickfromStore_Pages/PickFromStore_s1.vue') } ],
+    component: () => import('pages/pickfromStore_Pages/PickFromStore_s1.vue'),
   },
   {
     path: '/PickFromStore_layouts_s2',
     component: () => import('pages/pickfromStore_Pages/PickFromStore_s2.vue'),
-    // children: [ { path: '', component: () => import('') } ],
   },
   {
     path: '/PickFromStore_layouts_s3',
@@ -60,8 +66,7 @@ const routes: RouteRecordRaw[] = [
   // Pick And Drop
   {
     path: '/PickAndDrop_s1',
-    component: () => import('layouts/PickAndDrop_Layouts/PickAndDrop_s1.vue'),
-    children: [ { path: '', component: () => import('pages/PickAndDrop_Pages/PickAndDrop_s1.vue') } ],
+    component: () => import('pages/PickAndDrop_Pages/PickAndDrop_s1.vue'),
   },
   {
     path: '/PickAndDrop_Checkout',
@@ -73,7 +78,6 @@ const routes: RouteRecordRaw[] = [
     path: '/Search_location',
     component: () => import('pages/PickAndDrop_Pages/search.vue'),
   },
-
   {
     path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),

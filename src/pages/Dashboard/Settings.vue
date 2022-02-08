@@ -1,6 +1,6 @@
 <template>
   <q-page >
-    <div class="row justify-center cb-font text-weight-bolder cb-bg-white-2">
+    <div class="row justify-center cb-font-16 text-weight-bolder cb-bg-white-2 q-pb-xs">
       <span class="cb-text-orange-8">Settings</span>
     </div>
     <div class="row q-px-md">

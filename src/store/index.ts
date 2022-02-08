@@ -50,11 +50,13 @@ export default store(function (/* { ssrContext } */) {
     // enable strict mode (adds overhead!)
     // for dev mode only
     // strict: process.env.DEBUGGING
+
+
     state: {
       token: localStorage.getItem('token') || null,
       xid: localStorage.getItem('xid') || null,
-      pincode:'500081',
-      latlongs: '17.44435763948254,78.3881424341903'
+      pincode:localStorage.getItem('pincode') || null ,
+      latlongs:localStorage.getItem('latlongs') || null,
     },
     mutations: {
       setToken(state, token) {
@@ -63,15 +65,19 @@ export default store(function (/* { ssrContext } */) {
       setxid(state, xid) {
         state.xid = xid;
       },
+      setlatlongs(state,latlong){
+        state.latlongs = latlong;
+      },
+      setpincode(state,pincode){
+        state.pincode = pincode;
+      },
+      
       clearToken(state) {
         state.token = null;
       },
       clearXid(state) {
         state.xid = null;
       },
-      latlongs(state,latlong){
-        state.latlongs = latlong;
-      }
     },
     actions: {
       login(context,data){
@@ -118,8 +124,15 @@ export default store(function (/* { ssrContext } */) {
       latlongs_data(context,data){
         return new Promise((resolve, reject) => {
             // console.log(data.position,'sandeep perikala');
+            // localStorage.setItem('latlongs',(data.position.latitude+','+data.position.longitude));
             // context.commit('latlongs',(data.position.latitude+','+data.position.longitude));
-            context.commit('latlongs','17.44435763948254,78.3881424341903');
+
+            localStorage.setItem('latlongs','17.4922902,78.3999551');
+            context.commit('setlatlongs','17.4922902,78.3999551');
+
+            localStorage.setItem('pincode','500072');
+            context.commit('setpincode','500072');
+
         });
       }
 

@@ -2,8 +2,8 @@
 <q-layout view="lHh lpr lFf">
   <q-header>
 	  <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-      <q-btn flat dense round icon="arrow_back" @click="$router.push('')"/>
-			<q-btn icon="place" class="q-pa-none" flat :label="$store.state.latlongs"></q-btn>
+      <q-btn flat dense round icon="arrow_back" @click="$router.push('/PickFromStore_layouts_s2')"></q-btn>
+ 			<q-btn icon="place" class="q-pa-none" size="sm" flat label="HUDA Techno Enclave, HITEC City"></q-btn>
 			<q-space></q-space>
 			<q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> 
 	      <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -16,10 +16,12 @@
 	</q-toolbar>
   </q-header>
   <q-page-container>
-  	<q-page class="q-pt-sm">
-		  <q-img src="https://chotabeta.app/dev/testenv/public/uploads/new_items/1/66/100061.png"></q-img>
+  	<q-page class="q-pb-xl q-mb-sm">
+  		<div class="text-center">
+		  	<q-img src="https://chotabeta.app/dev/testenv/public/uploads/new_items/1/66/100061.png" width="220px"></q-img>
+			</div>
   		<q-card style="border-radius: 30px 30px 0px 0px;" class="shadow-up-1">
-  			<q-card-section class="q-px-lg">
+  			<q-card-section class="q-px-lg cb-text-grey-5">
   				<div class="flex flex-center">
   					<span>FRUITS</span>
   					<q-space></q-space>
@@ -51,18 +53,23 @@
   		<div class="row q-px-sm">
   			<div class="col-12 q-py-sm text-grey-8 text-bold cb-font">Similar Items</div>
   			<div class="col-6  q-pa-xs" v-for="i in 10">
-					<q-card class="q-px-sm">
-						<q-img src="https://chotabeta.app/dev/testenv/public/uploads/new_items/1/66/100061.png"></q-img>
-						<q-card-section class="cb-text-grey-8 row items-center q-pa-none">
-							<span>Fruits</span><q-space></q-space><q-btn icon="error_outline" flat size="sm"></q-btn>
+					<q-card class="q-px-sm cb-text-grey-5 cb-font-14">
+						<q-img src="https://chotabeta.app/dev/testenv/public/uploads/new_items/1/66/100061.png" @click="$router.push('PickFromStore_Item')"></q-img>
+						<q-card-section class="row items-center q-pa-none">
+							<span>Fruits</span><q-space></q-space>
+							<q-btn icon="error_outline" flat size="sm" @click="$router.push('PickFromStore_Item')"></q-btn>
 						</q-card-section>
-						<q-card-section class="cb-text-grey-8 q-pt-sm q-pa-none">
-							Pomegranate
+						<q-card-section class="q-pt-sm q-pa-none text-weight-bolder">
+								Pomegranate
 						</q-card-section>
-						<q-card-section class="cb-text-grey-8 q-pa-none row items-center">
+						<q-card-section class="q-pa-none row items-center">
 							<q-icon name="currency_rupee" ></q-icon>80
 							<q-space></q-space>
-							<q-select borderless dense style="width:80px;height:35px" v-model="select_item_size" class="shadow-1 q-px-sm"></q-select>
+							<select  v-model="select_item_size" class="cb-shadow-1 q-px-sm bg-transparent q-pa-xs cb-text-grey-5" style="border:none">
+									<option value="500">250gm</option>
+									<option value="500">500gm</option>
+									<option value="500">750gm</option>
+								</select>
 						</q-card-section>
 						<q-card-section class="q-pa-none flex flex-center q-pt-sm">
 							<q-btn dense flat class="cb-text-orange-8" label="Add To Cart"></q-btn>
@@ -89,7 +96,7 @@ export default ({
     return {
     	access_token:ref(null),    
     	tabs:ref('fruits'),
-    	select_item_size:ref('500gm')	
+    	select_item_size:ref('500')	
     }
   },
   mounted () {

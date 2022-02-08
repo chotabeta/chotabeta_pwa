@@ -3,7 +3,7 @@
   <q-header  >
 		<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
 			<q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/>
-			<q-btn icon="place" class="q-pa-none" flat :label="$store.state.latlongs"></q-btn>
+      <q-btn icon="place" class="q-pa-none" size="sm" flat label="HUDA Techno Enclave, HITEC City"></q-btn>
 			<q-space></q-space>
 			<q-btn round dense icon="notifications" flat @click="$router.push('Notification')">
 	   			<q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -15,26 +15,26 @@
 	</q-header>
   <q-page-container>
     <q-page class="q-px-md q-py-xs">
-      <div class=" shadow-1  column justify-center cb-text-blue-8 text-bold" >
-        <q-input outlined dense placeholder="Address Search e.g. Prashant Towers">
+      <div class="cb-shadow-1 q-px-sm cb-round-borders-10" >
+        <q-input borderless placeholder="Address Search e.g. Prashant Towers">
           <template v-slot:prepend> <q-icon name="search" class="cb-text-orange-8" /> </template>
         </q-input>
       </div>
 
-      <div class="row justify-center q-py-sm text-bold text-italic"><span class="cb-text-grey-4">OR</span></div>
+      <div class="row justify-center q-py-sm text-bold"><span class="cb-text-grey-4">OR</span></div>
 
       <div class="row cb-text-blue-8 text-bold">
-        <q-img src="https://chotabeta.app/dev/testenv/public/imgs/google-maps-48.png" width="25px"/>
-        <span class="cb-text-blue-4 cb-font q-px-sm">Choose Location from Map</span>
+        <q-img src="https://chotabeta.app/dev/testenv/public/imgs/google-maps-48.png" width="30px"/>
+        <span class="cb-text-blue-4 cb-font-16 q-px-sm">Choose Location from Map</span>
       </div>  
 
-      <div class="row justify-center q-py-sm text-bold text-italic"><span class="cb-text-grey-4">OR</span></div>
+      <div class="row justify-center q-py-sm text-bold"><span class="cb-text-grey-4">OR</span></div>
       
       <div class="row cb-text-blue-8 text-bold">
-        <q-img src="https://chotabeta.app/dev/testenv/public/imgs/house-48.png" width="25px" />
-        <span class="cb-text-blue-4 cb-font q-px-sm">ChotaBeta Communities</span>
+        <q-img src="https://chotabeta.app/dev/testenv/public/imgs/house-48.png" width="30px" />
+        <span class="cb-text-blue-4 cb-font-16 q-px-sm">ChotaBeta Communities</span>
       </div>
-      <div class="text-center cb-text-grey-4 shadow-1 q-mx-lg q-my-md q-py-xs text-bold">
+      <div class="text-center cb-text-grey-4 cb-round-borders-10 cb-shadow-1 q-my-md q-py-xs text-bold">
         <span>Choose Your Community</span>
       </div>
       <div class="row">
@@ -49,6 +49,7 @@
              <q-separator />
           </div>
         </div>
+        <div class="col-12 text-right cb-text-grey-4 q-py-sm">View More</div>
       </div>
       <div class="row">
         <div class="col-12"><span class="cb-text-blue-8 cb-font text-bold">Saved Locations</span></div>
@@ -64,6 +65,7 @@
             </div>
           </div>
         </div>
+        <div class="col-12 text-right cb-text-grey-4 q-py-sm">View More</div>
       </div>
     </q-page>
   </q-page-container>

@@ -8,6 +8,7 @@
   "scripts": {
     "test": "echo \"No test specified\" && exit 0"
   },
+  "proxy": "https://chotabeta.app/dev/testenv",
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.21.1",

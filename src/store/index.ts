@@ -53,38 +53,40 @@ export default store(function (/* { ssrContext } */) {
 
 
     state: {
-      token: localStorage.getItem('token') || null,
-      xid: localStorage.getItem('xid') || null,
-      pincode:localStorage.getItem('pincode') || null ,
-      latlongs:localStorage.getItem('latlongs') || null,
+      token:      localStorage.getItem('token')       || null,
+      xid:        localStorage.getItem('xid')         || null,
+      pincode:    localStorage.getItem('pincode')     || null ,
+      latlongs:   localStorage.getItem('latlongs')    || null,
+      address:    localStorage.getItem('address')     || null,
+      showaddress:localStorage.getItem('showaddress') || null,
+      userdetails:localStorage.getItem('userdetails') || null,
+      baselatlongs:localStorage.getItem('baselatlongs') || null,
     },
     mutations: {
-      setToken(state, token) {
-        state.token = token;
-      },
-      setxid(state, xid) {
-        state.xid = xid;
-      },
-      setlatlongs(state,latlong){
-        state.latlongs = latlong;
-      },
-      setpincode(state,pincode){
-        state.pincode = pincode;
-      },
+      setToken(state, token) {      state.token       = token;},
+      setxid(state, xid) {          state.xid         = xid;},
+      setlatlongs(state,latlong){   state.latlongs    = latlong;},
+      setpincode(state,pincode){    state.pincode     = pincode;},
+      setaddress(state,address){    state.address     = address;},
+      setshowaddress(state,address){state.showaddress = (address+('...'));},
+      setuserdetails(state,userdetails){state.userdetails = userdetails;},
+      setbaselatlongs(state,baselatlongs){state.baselatlongs = baselatlongs;},
       
-      clearToken(state) {
-        state.token = null;
-      },
-      clearXid(state) {
-        state.xid = null;
-      },
+      clearToken(state) {       state.token       = null;},
+      clearXid(state) {         state.xid         = null;},
+      clearlatlongs(state){     state.latlongs    = null;},
+      clearpincode(state){      state.pincode     = null;},
+      clearaddress(state){      state.showaddress = null;},
+      clearshowaddress(state){  state.showaddress = null;},
+      clearuserdetails(state){  state.userdetails = null;},
+
     },
     actions: {
       login(context,data){
         return new Promise((resolve, reject) => {
-          axios.post('https://chotabeta.app/dev/testenv/api/auth/sign-up', {'mobile':data.mobile,'otp':data.password}).then(function (response) {
+          axios.post('https://stackroger.com/api/auth/sign-up', {'mobile':data.mobile,'otp':data.password}).then(function (response) {
             if(response.data.status_code == 409){
-              axios.post("https://chotabeta.app/dev/testenv/api/auth/login",{'mobile':data.mobile,'password':data.password}).then(function(response) {
+              axios.post("https://stackroger.com/api/auth/login",{'mobile':data.mobile,'password':data.password}).then(function(response) {
                     if(response.data.status_code == 200){
                       context.commit('setToken',response.data.access_token);
                       context.commit('setxid',response.data.xid);
@@ -114,25 +116,121 @@ export default store(function (/* { ssrContext } */) {
       },
       logout(context){
         return new Promise((resolve, reject) => {
-          context.commit('clearToken');
-          context.commit('clearXid');
           localStorage.removeItem('token');
           localStorage.removeItem('xid');
+          localStorage.removeItem('latlongs');
+          localStorage.removeItem('pincode');
+          localStorage.removeItem('address');
+          localStorage.removeItem('showaddress');
+          localStorage.removeItem('userdetails');
+
+          context.commit('clearToken');
+          context.commit('clearXid');
+          context.commit('clearlatlongs');
+          context.commit('clearpincode');
+          context.commit('clearaddress');
+          context.commit('clearshowaddress');
+          context.commit('clearuserdetails');
+
           resolve('LogOut Successfully')
-        })
+        });
       },
       latlongs_data(context,data){
         return new Promise((resolve, reject) => {
-            // console.log(data.position,'sandeep perikala');
-            // localStorage.setItem('latlongs',(data.position.latitude+','+data.position.longitude));
-            // context.commit('latlongs',(data.position.latitude+','+data.position.longitude));
+          localStorage.removeItem('latlongs');
+          context.commit('clearlatlongs');
 
-            localStorage.setItem('latlongs','17.4922902,78.3999551');
-            context.commit('setlatlongs','17.4922902,78.3999551');
+          localStorage.setItem('baselatlongs',(data.position.latitude+','+data.position.longitude));
+          context.commit('setbaselatlongs',(data.position.latitude+','+data.position.longitude));
 
-            localStorage.setItem('pincode','500072');
-            context.commit('setpincode','500072');
+          localStorage.setItem('latlongs',(data.position.latitude+','+data.position.longitude));
+          context.commit('setlatlongs',(data.position.latitude+','+data.position.longitude));
+          resolve(data.position.latitude+','+data.position.longitude);
+        });
+      },
+      adddress_data(context, data){
+        return new Promise((resolve, reject) => {
+          localStorage.removeItem('pincode');
+          context.commit('clearpincode');
+          localStorage.removeItem('address');
+          localStorage.removeItem('showaddress');
+          context.commit('clearaddress');
+          context.commit('clearshowaddress');
 
+          var length = (data.address.address_components).length;
+          if(data.address.address_components[length-1].long_name){
+            localStorage.setItem('pincode',data.address.address_components[length-1].long_name);
+            context.commit('setpincode',data.address.address_components[length-1].long_name);     
+          }else{
+            reject('please select pincode');
+          }
+          localStorage.setItem('address',data.address.formatted_address);
+          context.commit('setaddress',data.address.formatted_address);
+          var showaddress = (data.address.formatted_address).substring(0,28);
+          localStorage.setItem('showaddress',showaddress);
+          context.commit('setshowaddress',showaddress);
+          resolve("success");
+        });
+      },
+      saved_asdderss_data(context, data){
+        return new Promise((resolve, reject) => {
+          localStorage.removeItem('latlongs');
+          context.commit('clearlatlongs');
+          localStorage.removeItem('pincode');
+          context.commit('clearpincode');
+          localStorage.removeItem('address');
+          localStorage.removeItem('showaddress');
+          context.commit('clearaddress');
+          context.commit('clearshowaddress');
+
+          var length = (data.address.address_components).length;
+          if(data.address.address_components[length-1].long_name){
+            localStorage.setItem('pincode',data.address.address_components[length-1].long_name);
+            context.commit('setpincode',data.address.address_components[length-1].long_name);     
+          }else{ reject('please select pincode'); }
+
+          localStorage.setItem('latlongs',(data.saved_address.location));
+          context.commit('setlatlongs',(data.saved_address.location));
+
+          localStorage.setItem('address',data.saved_address.name);
+          localStorage.setItem('showaddress',(data.saved_address.name).substring(0,28));
+          context.commit('setaddress',data.saved_address.name);
+          context.commit('setshowaddress',(data.saved_address.name).substring(0,28));
+          
+          resolve('200');
+
+        });
+      },
+      searched_adderss_data(context, data){
+        console.log(data,"searched data");
+        return new Promise((resolve, reject) => {
+          localStorage.removeItem('latlongs');
+          context.commit('clearlatlongs');
+          localStorage.removeItem('pincode');
+          context.commit('clearpincode');
+          localStorage.removeItem('address');
+          localStorage.removeItem('showaddress');
+          context.commit('clearaddress');
+          context.commit('clearshowaddress');
+
+          localStorage.setItem('pincode',data.pincode);
+          context.commit('setpincode',data.pincode);     
+         
+          localStorage.setItem('latlongs',(data.latlongs));
+          context.commit('setlatlongs',(data.latlongs));
+
+          localStorage.setItem('address',data.address_data);
+          localStorage.setItem('showaddress',(data.address_data).substring(0,28));
+          context.commit('setaddress',data.address_data);
+          context.commit('setshowaddress',(data.address_data).substring(0,28));
+          resolve('200');
+        });
+      },
+      userdetails(context, data){
+        return new Promise((resolve, reject) => {
+          var details = JSON.stringify(data);
+          context.commit('setuserdetails',details);
+          localStorage.setItem('userdetails',details);
         });
       }
 

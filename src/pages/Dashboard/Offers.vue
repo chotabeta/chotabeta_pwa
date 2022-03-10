@@ -15,7 +15,7 @@
 
 
 <script>
-import axios from 'axios'
+import axios from 'boot/axios'
 import { ref}  from 'vue'
 export default {
   setup () {
@@ -40,7 +40,7 @@ export default {
     getalloffers(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      axios.get('https://chotabeta.app/dev/testenv/api/get-offers-new',config).then(function (response) {
+      ps.$api.get('/api/get-offers-new',config).then(function (response) {
         // console.log(response.data)
         ps.offers = response.data.offers;
       }).catch(function (error) {

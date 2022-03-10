@@ -1,0 +1,112 @@
+<template>
+	<q-layout view="lHh lpr lFf">
+		<q-header>
+			<q-toolbar class="cb-bg-white-2 cb-text-blue-8 row justify-center cb-text-blue-8 text-weight-bolder cb-font-16">Available Coupons
+			</q-toolbar>
+		</q-header>
+		<q-page-container>
+			<q-page class="q-px-sm" v-if="coupons_available == 0">
+				<!-- {{coupons_available }} -->
+				<div class="row">
+					<div class="col-12 row cb-shadow-1 q-my-sm q-pa-sm cb-round-borders-10" v-for="i in coupons">
+						<div class="col-2">
+							<q-avatar class="shadow-2" size="60px"> <img :src="i.coupon_image"></q-avatar>
+						</div>
+						<div class="col-10 q-pl-md">
+							<span class="text-weight-bolder cb-font flex cb-text-blue-8">{{ i.name }}
+							<q-space></q-space>
+							<q-btn style="border:2px dashed #F58321;width:120px;font-size: 11px;" class="cb-font-16 q-pa-none text-bold cb-text-orange-8" flat size="xs" rounded @click="screen_redirection(i)">{{ i.code }}</q-btn></span>
+							<span class="q-py-xs cb-font-12 text-grey-8">{{ i.description }}</span>
+						</div>
+					</div>
+				</div>
+			</q-page>
+			<q-page class="q-px-sm flex flex-center q-pa-xl" v-else>
+				<div class="text-center text-grey-6">
+					<q-icon name="emoji_symbols" size="100px"></q-icon><br>
+					<p class="text-h6 text-bold">No Coupon Available</p>
+					<p class="cb-font-16">We are here to serve. Get your packages,groceries and many more to your door step at single click.</p>
+					<q-btn class="full-width cb-round-borders-10 cb-font-16 cb-bg-orange-8 text-white" label="countinue shopping" @click="screen_redirection_no_coupon()"></q-btn>
+				</div>
+			</q-page>
+		</q-page-container>
+	</q-layout>
+</template>
+<script>
+let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+if (!isMobile){ window.location="https://chotabeta.com/pwa"; }
+import axios from 'boot/axios'
+import {ref } from 'vue'
+export default ({
+  setup(){
+    return {
+    	coupons:ref([]),
+    	redeem_points:ref(null),
+    	category:ref(null),
+    	coupons_available:ref(0),
+    }
+  },
+  mounted () {
+  	this.getToken();  		
+  	if(this.$route.query.service_id){
+  		this.getcoupons();
+  	}
+  },
+  methods:{
+  	getToken(){
+  		var ps = this ;
+  		ps.access_token = ps.$store.state.token;
+  		if(ps.access_token == null){ ps.$router.push(''); }  	
+  	},
+  	getcoupons(){
+  		var ps = this;
+  		let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+      	ps.$api.get('/api/available-coupons?service_id='+ps.$route.query.service_id,config).then(function (response) {
+        	console.log(response.data);
+        	if(response.data.status_code == 204){
+        		ps.coupons_available = 1;
+        	}else{
+						ps.coupons = response.data.coupons;
+        		ps.redeem_points = response.data.redeem_points;        	
+        	}
+        }).catch(function (error) {
+          console.log(error);
+        });
+  	},
+  	screen_redirection(coupon){
+  		var ps = this;
+  		// console.log(coupon,"coupon");
+  		ps.category = JSON.parse(localStorage.getItem('category'));
+  		// console.log(ps.category,'category');
+  		if(ps.$route.query.service_id == '1'){
+  			localStorage.setItem('coupon1',coupon.code);
+  			ps.$router.push('PickAndDrop_Checkout');
+  		}
+  		if( ps.$route.query.service_id == ps.category.service_id){
+  			localStorage.setItem('coupon_pick',coupon.code);
+  			ps.$router.push('PickFromStore_Checkout');
+  		}
+  		if(  ps.$route.query.service_id == '11' ){
+  			localStorage.setItem('coupon_rent',coupon.code);
+  			ps.$router.push('rent_me3');
+
+  		}
+
+
+  	},
+  	screen_redirection_no_coupon(coupon){
+  		var ps = this;
+  		// console.log(coupon,"coupon");
+  		ps.category = JSON.parse(localStorage.getItem('category'));
+  		// console.log(ps.category,'category');
+  		if(ps.$route.query.service_id == '1'){
+  			ps.$router.push('PickAndDrop_Checkout');
+  		}
+  		if( ps.$route.query.service_id == ps.category.service_id){
+  			ps.$router.push('PickFromStore_Checkout');
+  		}
+  	},
+  	
+  }
+})
+</script>

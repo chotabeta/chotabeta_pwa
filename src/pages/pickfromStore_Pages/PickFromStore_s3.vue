@@ -2,15 +2,15 @@
 	<q-layout view="lHh lpr lFf">
 		<q-header>
 			<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-				<q-btn flat dense round icon="arrow_back" @click="$router.push('')"/>
-				<q-btn icon="place" class="q-pa-none" size="sm" flat label="HUDA Techno Enclave, HITEC City"></q-btn>
+				<!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('')"/> -->
+				<q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
 				<q-space></q-space>
 				<q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> 
 	    			<q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
 	  			</q-btn>
 	  			<div style="background: transparent;">
 		  			<q-btn round dense icon="shopping_cart" flat style="background: transparent;">
-		    			<q-badge class="cb-bg-orange-8" rounded floating >0</q-badge>
+		    			<q-badge class="cb-bg-orange-8" rounded floating >{{ cartlength}}</q-badge>
 		  			</q-btn>
 		  		</div>
 			</q-toolbar>
@@ -20,114 +20,94 @@
 			</div>
 		</q-header>
 		<q-page-container>
-			<q-page class="q-mb-xl q-pb-sm" v-if="n != 0">
-				<div class="row" v-if="n!=0">
+			<q-page class="q-mb-xl q-pb-sm" v-if="mycart_items.length != 0">
+				<div class="row" v-for="cart in mycart_api_data" :key="cart">
 					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
-						<span>Fruits & Vegitables</span>
+						<span>{{ cart.category_name }}</span>
 						<q-space></q-space>
-						<span>2 Items</span>
+						<span>{{ cart.category_data.length }} Items</span>
 					</div>
-					<div class="col-12 cb-text-grey-5 q-pr-sm" v-for="i in n">
+					<div class="col-12 cb-text-grey-5 q-px-sm" v-for="item in cart.category_data">
 						<div class="row q-pa-xs">
-							<div class="col-2" style="border-right: 2px solid grey;" @click="$router.push('PickFromStore_Item')">
-								<q-img src="https://chotabeta.app/dev/testenv/public/uploads/new_items/1/66/100061.png"></q-img>
+							<div class="col-2" style="border-right: 2px solid grey;" @click="screenredirection_item(item)">
+								<q-img :src="item.image"></q-img>
 							</div>
-							<div class="col-6 q-pl-md" style="font-size: 12px;">
-								<span style="font-size:11px">FRUITS</span><br>
-								<span class="text-weight-bolder">Promegranate</span><br>
-								<span class="text-bold">MRP <q-icon name="currency_rupee"></q-icon>80</span><br>
-								<i>500 gm</i>
-							</div>
-							<div class="col-4 text-right cb-text-orange-8 text-weight-bolder">
-								<q-icon name="info" size="sm" class="cb-text-grey-4 q-pr-sm" @click="$router.push('PickFromStore_Item')"></q-icon>
-								<br>
-								<br>
-								<q-btn icon="remove" flat dense></q-btn>
-								<span class="q-px-sm">1</span>
-								<q-btn icon="add" flat dense></q-btn>
+							<div class="col-10 q-pl-md" style="font-size: 12px;">
+								<div class="flex">
+									<span>
+										<span style="font-size:11px">{{ item.brands }}</span><br>
+										<span class="text-weight-bolder">{{ item.name }}</span>
+									</span>
+									<q-space></q-space>
+									<q-icon name="info" size="sm" class="cb-text-grey-4 q-pr-sm" @click="screenredirection_item(item)"></q-icon>
+								</div>
+								<div class="flex">
+									<span class="text-bold" v-for="(variation,index ) in item.variations"> 
+										<span v-if="index  ==0 ">MRP 
+											<q-icon name="currency_rupee"></q-icon>{{ variation.selling_price }}
+											<br>
+											{{ variation.description }}
+										</span>
+									</span>
+									<q-space></q-space>
+									<span class="cb-text-orange-8">
+										<q-btn icon="remove" flat dense @click="RemoveFromCartfunction(item)"></q-btn>
+										<span class="q-px-sm text-weight-bolder cb-font-16">{{ item.no_of_quantity}}</span>
+										<q-btn icon="add" flat dense @click="AddMoreToCartFunction(item)"></q-btn>
+									</span>
+								</div>
 							</div>
 						</div>
 						<q-separator></q-separator>
 					</div>
 				</div>
-
-				<div class="row"  v-if="n!=0">
-					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
-						<span>Home Essentials</span>
-						<q-space></q-space>
-						<span>2 Items</span>
-					</div>
-					<div class="col-12 cb-text-grey-5 q-pr-sm" v-for="i in n">
-						<div class="row q-pa-xs">
-							<div class="col-2" style="border-right: 2px solid grey;" @click="$router.push('PickFromStore_Item')">
-								<q-img src="https://chotabeta.app/dev/testenv/public/uploads/new_items/1/66/100061.png"></q-img>
-							</div>
-							<div class="col-6 q-pl-md" style="font-size: 12px;">
-								<span style="font-size:11px">FRUITS</span><br>
-								<span class="text-weight-bolder">Promegranate</span><br>
-								<span class="text-bold">MRP <q-icon name="currency_rupee"></q-icon>80</span><br>
-								<i>500 gm</i>
-							</div>
-							<div class="col-4 text-right cb-text-orange-8 text-weight-bolder">
-								<q-icon name="info" size="sm" class="cb-text-grey-4 q-pr-sm" @click="$router.push('PickFromStore_Item')"></q-icon>
-								<br>
-								<br>
-								<q-btn icon="remove" flat dense></q-btn>
-								<span class="q-px-sm">1</span>
-								<q-btn icon="add" flat dense></q-btn>
-							</div>
-						</div>
-						<q-separator></q-separator>
-					</div>
-				</div>
-
-				<div class="row"  v-if="n!=0">
-					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
-						<span>Staples</span>
-						<q-space></q-space>
-						<span>2 Items</span>
-					</div>
-					<div class="col-12 cb-text-grey-5 q-pr-sm" v-for="i in n">
-						<div class="row q-pa-xs">
-							<div class="col-2" style="border-right: 2px solid grey;" @click="$router.push('PickFromStore_Item')">
-								<q-img src="https://chotabeta.app/dev/testenv/public/uploads/new_items/1/66/100061.png"></q-img>
-							</div>
-							<div class="col-6 q-pl-md" style="font-size: 12px;">
-								<span style="font-size:11px">FRUITS</span><br>
-								<span class="text-weight-bolder">Promegranate</span><br>
-								<span class="text-bold">MRP <q-icon name="currency_rupee"></q-icon>80</span><br>
-								<i>500 gm</i>
-							</div>
-							<div class="col-4 text-right cb-text-orange-8 text-weight-bolder">
-								<q-icon name="info" size="sm" class="cb-text-grey-4 q-pr-sm" @click="$router.push('PickFromStore_Item')"></q-icon>
-								<br>
-								<br>
-								<q-btn icon="remove" flat dense></q-btn>
-								<span class="q-px-sm">1</span>
-								<q-btn icon="add" flat dense></q-btn>
-							</div>
-						</div>
-						<q-separator></q-separator>
-					</div>
-				</div>
-
+			
 				<div class="row text-white fixed-bottom ">
-					<div class="col cb-bg-grey-3 q-pl-md  column justify-center text-bold">
-						<i>1 Items| <q-icon name="currency_rupee"></q-icon>240</i>
+					<div class="col cb-bg-grey-3 q-pl-md  row items-center text-bold flex">
+						{{ cartlength }} Items| <q-icon name="currency_rupee"></q-icon>{{ cart_price }}
 					</div>
 					<div class="col cb-bg-orange-8 text-center q-py-sm">
-						<q-btn label="checkout" flat icon-right="chevron_right" @click="$router.push('PickFromStore_Checkout')"></q-btn>
+						<q-btn label="checkout" flat icon-right="chevron_right" @click="check_cart_items_count()"></q-btn>
 					</div>
 				</div>
 
 				<q-dialog v-model="clear_confirm_dialog">
     				<q-card class="q-dialog-plugin cb-round-borders-20 cb-text-grey-4">
     					<q-card-section class="text-center">
-    						<span class="text-weight-bolder cb-font-16">DoYou Want Clear Cart?</span><br>
+    						<span class="text-weight-bolder text-h6">DoYou Want Clear Cart?</span><br>
     						<span>Tying to add items from different categoris, Please empty existing cart.</span>
     						<br>
-    						<q-btn label="clear" class="q-px-xl cb-bg-orange-8 text-white q-mt-lg q-mb-sm" @click="n=0"></q-btn><br>
+    						<q-btn label="clear" class="q-px-xl cb-bg-orange-8 text-white q-mt-lg q-mb-sm" @click="clear_cart_function()"></q-btn><br>
     						<q-btn label="cancel" class="q-px-lg" flat @click="clear_confirm_dialog = false"></q-btn>
+    					</q-card-section>
+				    </q-card>
+				</q-dialog>
+
+				<q-dialog v-model="clear_cart_item_dialog">
+    				<q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-9">
+    					<q-card-section class="text-center">
+    						<q-avatar size="80px" class="bg-orange-3">
+    							<q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
+    						</q-avatar><br>
+    						<span class="text-weight-bolder text-h6">Are You Sure?</span><br>
+    						<span>You Want Delete This Item From Cart.</span>
+    						<br><br><br>
+    						<q-btn label="confirm" class="q-px-lg cb-font-16 cb-bg-orange-8 text-white q-mb-sm" @click="clear_cart_item_function()"></q-btn><br>
+    						<q-btn label="cancel" class="q-px-lg cb-font-16" flat @click="clear_cart_item_dialog = false, splice_index = null"></q-btn>
+    					</q-card-section>
+				    </q-card>
+				</q-dialog>
+
+				<q-dialog v-model="total_qty_retriction_dialog">
+    				<q-card class="q-px-md q-pt-md cb-round-borders-20 text-grey-9">
+    					<q-card-section class="text-center">
+    						<q-avatar size="80px" class="bg-orange-3">
+    							<q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
+    						</q-avatar><br><br>
+    						<span class="text-weight-bolder text-h6">{{ response_data.total_qty_dialog_title }}</span><br><br>
+    						<span>{{ response_data.total_qty_dialog_msg }}</span>
+    						<br><br><br>
+    						<q-btn label="sure" class="q-px-lg cb-font-16 cb-bg-orange-8 text-white q-mb-sm" @click="total_qty_retriction_dialog = false"></q-btn>
     					</q-card-section>
 				    </q-card>
 				</q-dialog>
@@ -150,21 +130,29 @@
 </template>
 <script>
 let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-if (!isMobile){
-     window.location="https://chotabeta.com/pwa";
-}
-import axios from 'axios'
+if (!isMobile){ window.location="https://chotabeta.com/pwa"; }
+import axios from 'boot/axios'
 import {ref } from 'vue'
 export default ({
   setup(){
     return {
     	access_token:ref(null),    
     	clear_confirm_dialog:ref(false),
-    	n:ref(3)
+    	mycart_items:ref([]),
+    	cartlength:ref(0),
+			cart_price:ref(0),
+			clear_cart_item_dialog:ref(false),
+			splice_index:ref(null),
+			mycart_api_data:ref([]),
+			response_data:ref(null),
+			total_qty_retriction_dialog:ref(false),
     }
   },
   mounted () {
-  	this.getToken();  		
+  	this.getToken();
+  	this.mycart_count_and_length_update();
+  	localStorage.removeItem('coupon_pick');
+  	// this.mycart_count_and_length();	
   },
   methods:{
   	getToken(){
@@ -172,13 +160,115 @@ export default ({
   		ps.access_token = ps.$store.state.token;
   		if(ps.access_token == null){
   			ps.$router.push('');
-  		}  	
+  		}  
   	},	
-  	pickfromstore_redirection(item){
+
+  	mycart_count_and_length(){
   		var ps = this;
-  		console.log(item);
-  		ps.$router.push('/PickFromStore_layouts_s2?combinations='+item);
-  	}
+  		ps.cart_price =0;
+  		ps.cartlength =0;
+  		if(localStorage.getItem('mycart')){
+  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  			ps.cartlength =  ps.mycart_items.length;
+  			ps.mycart_items.forEach( cart =>{
+  				ps.cart_price = ps.cart_price+(cart.mycart * parseInt(cart.selected_variation.selling_price));
+  			});
+  		}
+  		else{ localStorage.setItem('mycart','');	}
+  	},
+  	mycart_count_and_length_update(){
+  		var ps = this;
+  		if(localStorage.getItem('mycart')){
+  			var data_sku = [];
+  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  			ps.mycart_items.forEach(cart =>{
+  				var data ={ 
+  										"sku":cart.sku,
+  										"qty":cart.mycart,
+  										"item_id":cart.selected_variation.mycart,
+  									}
+  				data_sku.push(data);
+  			});
+  			let formData = new FormData();
+  			formData.append('xid', ps.$store.state.xid);
+        formData.append('data_sku', JSON.stringify(data_sku));
+        let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+  			ps.$api.post('/api/update-cart-items',formData,config).then(function (response) {
+  				// console.log(response.data,"ref");
+  				ps.mycart_api_data = response.data.data;
+  				ps.response_data = response.data;
+  				ps.mycart_count_and_length();
+      	}).catch(function (error) {
+       		console.log(error,"error");
+       		// ps.$q.notify({ message: error, type: "negative",});
+      	})
+  		}
+  	},
+
+  	AddMoreToCartFunction(item){
+  		var ps = this;
+  		ps.mycart_items.forEach(cart =>{
+  			if(cart.sku == item.sku){
+  				if(item.no_of_quantity < ps.response_data.qty_retriction_count){
+  					cart.mycart = cart.mycart + 1;
+  					cart.selected_variation.mycart = cart.selected_variation.mycart + 1;
+  					item.no_of_quantity = cart.mycart;
+  				}else{
+  					ps.$q.notify({ message: ps.response_data.qty_restriction_msg, type: "negative",});
+  				}
+  			}
+  		});
+  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+  		ps.mycart_count_and_length();
+  	},
+  	RemoveFromCartfunction(item){
+  		var ps = this;
+  		// console.log(item,"item");
+  		ps.mycart_items.forEach( (cart,index )=>{
+  			if(cart.sku == item.sku){
+  				if(cart.mycart == 1){
+  					ps.splice_index  = index;
+  					ps.clear_cart_item_dialog = true;
+  				}else{
+  					cart.mycart = cart.mycart - 1;
+	  				cart.selected_variation.mycart = cart.selected_variation.mycart - 1;
+	  				item.no_of_quantity = cart.mycart;
+  				}
+  			}
+  		})
+  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+  		ps.mycart_count_and_length();
+  	},
+
+  	clear_cart_item_function(){
+  		var ps = this;
+  		ps.mycart_items.splice(ps.splice_index,1);
+  		ps.splice_index = null;
+  		ps.clear_cart_item_dialog =  false;
+  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+  		ps.mycart_count_and_length_update();
+  	},
+
+  	clear_cart_function(){
+  		var ps = this;
+  		localStorage.removeItem('mycart');
+  		ps.mycart_items = [];
+  		ps.clear_confirm_dialog =  false;
+  		ps.mycart_count_and_length_update();
+  	},
+		
+		check_cart_items_count(){
+			var ps= this;
+			if(ps.mycart_items.length <= ps.response_data.total_qty_retriction_count){
+				ps.$router.push('PickFromStore_Checkout');
+			}else{
+				ps.total_qty_retriction_dialog = true;
+			}
+		},
+		screenredirection_item(i){
+			var ps = this;
+			ps.$router.push('PickFromStore_Item?sku='+i.sku);
+		}
   }
 })
 </script>

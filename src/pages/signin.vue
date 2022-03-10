@@ -56,7 +56,7 @@
 <script>
 	let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
   if (!isMobile){ window.location="https://chotabeta.com/pwa"; }
-import axios from 'axios'
+import axios from 'boot/axios'
 import { ref } from 'vue'
 
 export default {
@@ -80,7 +80,7 @@ export default {
   		var ps = this;
   		ps.access_token = ps.$store.state.token;
   		if(ps.access_token != null || ps.access_token){
-  			ps.$router.push('/Home/Dashboard');
+  			ps.$router.push('CheckLocation');
   		}
   	},
   	otp(){
@@ -89,9 +89,9 @@ export default {
   	},
   	Onsubmit(){
   		var ps = this;
-  		axios.post('https://chotabeta.app/dev/testenv/api/auth/sign-up-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
+  		ps.$api.post('/api/auth/sign-up-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
     		if(response.data.status_code == 400){
-    			axios.post('https://chotabeta.app/dev/testenv/api/auth/reset-password-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
+    			ps.$api.post('/api/auth/reset-password-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
     				if(response.data.status_code ==200){
     				 	ps.$q.notify({ message:response.data.message, type: 'positive' });
     				 	document.getElementById('phone_number_div').style.display= "none";
@@ -112,7 +112,8 @@ export default {
     			ps.$q.notify({ message:error, type: 'negative',progress: true, });
     		}
   		}).catch(function (error) {
-    		ps.$q.notify({ message:error, type: 'warning' });
+  			console.log(error);
+    		// ps.$q.notify({ message:error, type: 'warning' });
   		});
   	},
   	changeNumberFunction(){
@@ -140,8 +141,8 @@ export default {
   		ps.$store.dispatch('login',{'mobile':ps.mobile_number, 'password':OTP }).then(res => {
   		 	if(res.status_code == 200){
 	  		 	ps.$q.notify({ message:res.message, type: 'positive' ,progress: true,});
-	  		 	ps.$router.push('/Home/Dashboard');
-  		 	}else{
+	  		 	ps.$router.push('CheckLocation');
+	  		}else{
   		 		
   		 	}
        

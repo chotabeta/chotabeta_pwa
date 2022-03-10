@@ -6,6 +6,14 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/signin.vue'),
   },
   {
+    path: '/CheckLocation',
+    component: () => import('pages/CheckLocation.vue'),
+  },
+  {
+    path: '/adding_address_page',
+    component: () => import('pages/Dashboard/adding_address_page.vue'),
+  },
+  {
     path: '/Home',
     component: () => import('layouts/Home.vue'),
     children: [
@@ -19,6 +27,10 @@ const routes: RouteRecordRaw[] = [
         { path: 'profile', component: () => import('pages/Dashboard/profile.vue') },
         { path: 'Services', component: () => import('pages/Dashboard/Services.vue') },
     ],
+  },
+  {
+    path: '/Home/dashboard_Location',
+    component: () => import('pages/Dashboard/dashboard_Location.vue')
   },
   {
     path: '/Home/RatingAndReview',
@@ -56,12 +68,39 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/Coupons',
-    component: () => import('pages/pickfromStore_Pages/Coupons.vue'),
+    component: () => import('pages/Coupons.vue'),
+  },
+  {
+    path: '/Coupons_pad',
+    component: () => import('pages/coupons_pad.vue'),
   },
   {
     path: '/Custom_items',
     component: () => import('pages/pickfromStore_Pages/Custom_items.vue'),
   },
+  {
+    path: '/camorder_checkout',
+    component: () => import('pages/pickfromStore_Pages/camorder_checkout.vue'),
+  },
+
+
+
+    // Rent Me
+    {
+      path: '/rent_me1',
+      component: () => import('pages/Rent_me/rent_me1.vue'),
+    },
+    {
+      path: '/rent_me2',
+      component: () => import('pages/Rent_me/rent_me2.vue'),
+    },
+    {
+      path: '/rent_me3',
+      component: () => import('pages/Rent_me/rent_me3.vue'),
+    },
+
+
+
 
   // Pick And Drop
   {
@@ -77,6 +116,10 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/Search_location',
     component: () => import('pages/PickAndDrop_Pages/search.vue'),
+  },
+  {
+    path: '/add_address_page',
+    component: () => import('pages/PickAndDrop_Pages/add_address_page.vue'),
   },
   {
     path: '/dashboard',

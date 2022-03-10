@@ -5,7 +5,7 @@
 </template>
 <script>
 import {ref } from 'vue'
-import axios from 'axios'
+import axios from 'boot/axios'
 export default ({
   setup(){
     return {
@@ -37,7 +37,7 @@ export default ({
  			console.log(service,'sandeep perikala');
  			ps.$router.push('');
  			let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-			axios.get('https://chotabeta.app/dev/testenv/api/get-categories-new?pincode=500081&service_id='+service.id+'&xid='+ps.$store.state.xid,config).then(function (response) {
+			ps.$api.get('/api/get-categories-new?pincode=500081&service_id='+service.id+'&xid='+ps.$store.state.xid,config).then(function (response) {
 				if(response.data.status_code ==200){
 				 		console.log(response.data);
 				 
@@ -45,6 +45,7 @@ export default ({
 				 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
 				}
 			}).catch(function (error) {
+				console.log(error);
 				// ps.$q.notify({ message:error, type: 'warning',progress: true, });
 			});
  			

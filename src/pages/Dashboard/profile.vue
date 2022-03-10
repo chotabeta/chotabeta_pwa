@@ -72,7 +72,7 @@
 </q-page>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'boot/axios'
 import { ref}  from 'vue'
 export default {
   setup () {
@@ -105,7 +105,7 @@ export default {
     userdetails(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      axios.get('https://chotabeta.app/dev/testenv/api/user',config).then(function (response) {
+      ps.$api.get('/api/user',config).then(function (response) {
       	ps.profile_pic =  response.data.profile_pic;
         ps.name = response.data.name;
         ps.email = response.data.email;
@@ -126,7 +126,7 @@ export default {
     get_servicing_cities(){
     	 var ps = this;
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-        axios.get("https://chotabeta.app/dev/testenv//api/get-serving-locations",config).then(function(response) {
+        ps.$api.get("/api/get-serving-locations",config).then(function(response) {
                   if(response.data.status_code == 200){
                    	ps.cities = response.data.locations;
                   }else{
@@ -139,7 +139,7 @@ export default {
     update_email(){
     	var ps = this;
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-        axios.post("https://chotabeta.app/dev/testenv/api/edit-profile",{
+        ps.$api.post("/api/edit-profile",{
         	name:ps.name,
         	city:ps.address,
         	email:ps.email
@@ -156,12 +156,14 @@ export default {
     logout(){
 		var ps = this;
 	    let config = { headers: { Authorization: `Bearer ${ps.$store.state.token}` } };
-	    axios.get("https://chotabeta.app/dev/testenv/api/logout",config).then(function(response) {
+	    ps.$api.get("/api/logout",config).then(function(response) {
+	    	console.log(response);
 	            if(response.data.status_code == 200){
 	            	ps.$store.dispatch('logout').then(res => {
 								ps.$q.notify({ message: res , type: 'positive' ,progress: true, });
 								ps.$router.push('/');
 	  		 				}).catch(error => {
+	  		 					console.log(error);
 	        			// ps.$q.notify({ message: error , type: 'negative' ,progress: true, });  	
 	       				});
 	              
@@ -169,7 +171,7 @@ export default {
 	              
 	            }
 	      }).catch(function(error){
-	           
+	           console.log(error);
 	      });
 	   	ps.$router.push('');
 		},

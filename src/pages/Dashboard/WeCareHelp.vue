@@ -31,7 +31,7 @@
 </q-page>b
 </template>
 <script>
-import axios from 'axios'
+import axios from 'boot/axios'
 import { ref}  from 'vue'
 export default {
   setup () {
@@ -52,12 +52,12 @@ export default {
       }
     },
     gettodaydata(){
-      var vm = this;
+      var ps = this;
       vm.loading = true;
-      let config = { headers: { "Authorization": `Bearer ${vm.access_token}`,} }
-      axios.get('https://chotabeta.app/dev/testenv/api/we-care',config).then(function (response) {
-        vm.loading = false;
-        vm.data = response.data.data;
+      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,} }
+      ps.$api.get('https://chotabeta.app/dev/testenv/api/we-care',config).then(function (response) {
+        ps.loading = false;
+        ps.data = response.data.data;
       }).catch(function (error) {
         console.log(error);
       })

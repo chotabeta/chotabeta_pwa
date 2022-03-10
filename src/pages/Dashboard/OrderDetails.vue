@@ -71,7 +71,7 @@
   </q-layout>
 </template>
 <script>
-import axios from "axios";
+import axios from 'boot/axios'
 import { ref } from "vue";
 export default {
   setup() {
@@ -103,7 +103,7 @@ export default {
       var ps = this;
      
       let config = { headers: { Authorization: `Bearer ${ps.access_token}`, },};
-      axios.get('https://chotabeta.app/dev/testenv/api/v2/my-order-details?order_id='+this.$route.query.order_id, config).then(function (response) {
+      ps.$api.get('/api/v2/my-order-details?order_id='+this.$route.query.order_id, config).then(function (response) {
           ps.order = response.data;
           ps.order_data = response.data.orders_details_two;
           ps.payment_details =  response.data.payment_details;

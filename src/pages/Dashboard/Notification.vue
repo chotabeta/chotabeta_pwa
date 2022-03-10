@@ -26,7 +26,7 @@
       </q-card-section>
     </q-card>
   </div>
-  <div v-if="data == null"  class="q-px-md text-center cb-text-grey-4 q-mt-xl" >
+  <div v-if="data == null"  class="q-px-lg text-center cb-text-grey-4 q-mt-xl q-pt-lg" >
     <span class="text-h4 text-weight-bolder text-grey-2">0 Results</span><br>
     <q-img src="https://chotabeta.app/dev/testenv/public/imgs/refandearn.png" width="200px"></q-img><br>
     <span class="text-h6 text-weight-bolder">No Notifications</span><br>
@@ -50,7 +50,7 @@
 
 
 <script>
-import axios from 'axios'
+import axios from 'boot/axios'
 import { ref}  from 'vue'
 export default {
   setup () {
@@ -75,7 +75,7 @@ export default {
     gettodaydata(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      axios.get('https://chotabeta.app/dev/testenv/api/my-notifications',config).then(function (response) {
+      ps.$api.get('/api/my-notifications',config).then(function (response) {
         if(response.data.status_code == 200){
           ps.data = response.data.notifications;
         }else{
@@ -89,13 +89,14 @@ export default {
       clearnotification(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      axios.get('https://www.chotabeta.app/dev/testenv/api/clear-my-notifications',config).then(function (response) {
+      ps.$api.get('/api/clear-my-notifications',config).then(function (response) {
         if(response.data.status_code == 200){
+          ps.data =null;
           ps.$q.notify({ message:response.data.message, type: 'positive' ,progress: true,});
         }else{
           ps.$q.notify({ message:response.data.message, type: 'negative' ,progress: true,});
         }
-        ps.gettodaydata();
+        ps.clear_notification = false;
       }).catch(function (error) {
         console.log(error);
       })

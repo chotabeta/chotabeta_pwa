@@ -114,7 +114,7 @@
 </template>
 <script>
 import {ref } from 'vue'
-import axios from 'axios'
+import axios from 'boot/axios'
 export default ({
   setup(){
     return {
@@ -154,7 +154,7 @@ export default ({
     refferandearn(){
       var ps = this;
       let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-      axios.get('https://chotabeta.app/dev/testenv/api/reffer-earn-two?current_version_name=&device=&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
+      ps.$api.get('/api/reffer-earn-two?current_version_name=&device=&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
       if(response.data.status_code ==200){
         ps.ref_code                  = response.data.ref_code;
         ps.invaite_friend_text = response.data.refer_earn_two.invaite_friend_text;
@@ -175,7 +175,8 @@ export default ({
         ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
       }
     }).catch(function (error) {
-      ps.$q.notify({ message:error, type: 'warning',progress: true, });
+      console.log(error);
+      // ps.$q.notify({ message:error, type: 'warning',progress: true, });
     });
     },
   }

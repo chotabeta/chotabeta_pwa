@@ -234,7 +234,7 @@
 </template>
 <script>
 import {ref } from 'vue'
-import axios from 'axios'
+import axios from 'boot/axios'
 export default ({
   setup(){
     return {

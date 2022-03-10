@@ -3,12 +3,12 @@
 		<q-header  >
 			<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
 				<q-btn flat dense round icon="menu" aria-label="Menu" @click="leftDrawerOpen = !leftDrawerOpen"/>
-				<q-btn icon="place" size="sm" class="q-pa-none" borderless flat label="huda techno enclve padm"></q-btn>
+				<q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
 				<q-space></q-space>
 				<q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
   			</q-btn>
-  			<q-btn round dense icon="shopping_cart" flat>
-    			<q-badge   class="cb-bg-orange-8" rounded floating >0</q-badge>
+  			<q-btn round dense icon="shopping_cart" flat  @click="$router.push('/PickFromStore_layouts_s3')">
+  				<q-badge   class="cb-bg-orange-8" rounded floating >{{ cartlength}}</q-badge>
   			</q-btn>
 				<!-- <q-icon name="" size="20px" class="q-px-sm"> <q-badge color="orange" floating>22</q-badge> </q-icon> -->
 			</q-toolbar>
@@ -75,11 +75,11 @@
 						</q-avatar><br><br>
 						<span class="cb-font-16 text-weight-bolder q-my-md"><q-icon size="sm" name="location_on"></q-icon>Service Location Alert</span><br><br>
 						<span>{{ pick_not_in_territory }}</span><br>
-						<q-btn label="change the location" class="text-red text-bold" flat></q-btn>
+						<q-btn label="change the location" class="text-red text-bold" flat @click="$router.push('dashboard_location')"></q-btn>
 					</q-card-section>
 				</q-card>
 			</q-dialog>
-     		<router-view />
+     		<router-view v-if="location_check != true"/>
     	</q-page-container>
 	</q-layout>
 </template>
@@ -88,8 +88,7 @@
   if (!isMobile){
          window.location="https://chotabeta.com/pwa";
     }
-
-import axios from 'axios'
+import axios from 'boot/axios'
 import {ref } from 'vue'
 export default ({
   setup(){
@@ -100,12 +99,14 @@ export default ({
       Address:ref('Unnamed Road HUDA Techno'),
       profile_pic:ref(null),
       location_check:ref(false),
-      pick_not_in_territory:ref(null)
+      pick_not_in_territory:ref(null),
+      cartlength:ref(0),
+      mycart_items:ref([]),
+
     }
   },
   mounted () {
   	this.getToken();
-  	this.getLocation();
   	this.userdetails();
   	this.territory_checkup();
   },
@@ -115,48 +116,24 @@ export default ({
   		ps.access_token = ps.$store.state.token;
   		if(ps.access_token == null){
   			ps.$router.push('/');
-  		}  
+  		} 
+  		if(localStorage.getItem('mycart')){ 
+  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  			ps.cartlength = ps.mycart_items.length;
+  		}else{
+  			localStorage.setItem('mycart','');
+  		}
   	},
-  	getLocation() {
-  		var ss =  this;
-  		if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(this.showPosition, this.showError);}
-  		 else { ps.$q.notify({ message:"Geolocation is not supported by this browser.", type: 'Warning',progress: true, }); }	
-		},
-		showPosition(position) {
-			var ps = this;
-			ps.$store.dispatch('latlongs_data',{'position': position.coords }).then(res => {
-	  		 }).catch(error => {
-	          	
-	       });
-			// var location =ref(position.coords.latitude +','+ position.coords.longitude);
-			// ps.latlongs = location.value
-		},
-		showError(error) {
-		  var ps = this;
-		  switch(error.code) {
-		    case error.PERMISSION_DENIED:
-		    	ps.$q.notify({ message:"User denied the request for Geolocation.", type: 'Warning',progress: true, });
-		     	break;
-		    case error.POSITION_UNAVAILABLE:
-		      	ps.$q.notify({ message:"Location information is unavailable.", type: 'Warning',progress: true, });
-		     	break;
-		    case error.TIMEOUT:
-		      	ps.$q.notify({ message:"The request to get user location timed out.", type: 'Warning' ,progress: true,});
-		     	break;
-		    case error.UNKNOWN_ERROR:
-		     	ps.$q.notify({ message:"An unknown error occurred.", type: 'Warning',progress: true, });
-		     	break;
-		  }
-		},
-		
-		profile_settings(){
+  	profile_settings(){
 			var ps = this;
 			ps.$router.push('profile');
 		},
 		userdetails(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      axios.get('https://chotabeta.app/dev/testenv/api/user',config).then(function (response) {
+      ps.$api.get('/api/user',config).then(function (response) {
+      	ps.$store.dispatch('userdetails',{'deatils':response.data }).then(res => {
+  		 	}).catch(error => {	ps.$q.notify({ message:error.message, type: 'negative',progress: true, });  });
       	ps.profile_pic =  response.data.profile_pic;
         ps.name = response.data.name;
       }).catch(function (error) {
@@ -166,16 +143,18 @@ export default ({
     territory_checkup(){
     	var ps = this;
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-    	axios.get('https://chotabeta.app/dev/testenv//api/check-territory2?base_location='+ps.$store.state.latlongs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
+    	ps.$api.get('/api/check-territory2?base_location='+ps.$store.state.latlongs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
       	// console.log(response,'territory');
       	if(response.data.change_location_button_status == 1){
       		ps.pick_not_in_territory =  response.data.pick_not_in_territory;
       		ps.location_check = true;
+      	}else{
+      		ps.location_check = false;
       	}
       }).catch(function (error) {
         console.log(error);
       })
-    }
+    },
   }
 })
 </script>

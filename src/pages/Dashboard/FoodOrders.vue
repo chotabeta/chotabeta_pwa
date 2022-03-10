@@ -46,7 +46,7 @@
   </q-layout>
 </template>
 <script>
-import axios from 'axios'
+import axios from 'boot/axios'
 import {ref } from 'vue'
 export default ({
   setup(){

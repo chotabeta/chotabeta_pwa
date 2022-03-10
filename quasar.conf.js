@@ -205,7 +205,7 @@ module.exports = configure(function (ctx) {
       builder: {
         // https://www.electron.build/configuration/configuration
 
-        appId: 'pwa-wibsite'
+        appId: 'pwa-website'
       },
 
       // "chain" is a webpack-chain object https://github.com/neutrinojs/webpack-chain

@@ -4,7 +4,7 @@
 			<span v-if="$route.query.id == 2">Pick From Store</span>
 			<span v-if="$route.query.id == 1">Pick And Drop</span>
 		</div>
-		<q-card class="q-ma-md cb-round-borders shadow-5">
+		<q-card class="q-ma-md cb-round-borders-20 shadow-5">
 			<q-card-section class="text-h6 q-pa-sm cb-bg-blue-8 cb-text-white-1">
 				Select Category
 			</q-card-section>
@@ -12,9 +12,10 @@
 				<div class="row" v-if="categories.length != 0" style="height:70vh;overflow: scroll;">
 					<div class="col-4 text-center cb-text-grey-4 q-mt-sm" v-for="item in categories" :key="item">
 						<div class="q-px-sm" style="border-radius: 100%;" >
-							<q-avatar size="65px" class="shadow-2 " @click="services_page_redirection(item)">
-								<q-avatar size="50px">
+							<q-avatar size="70px" class="shadow-2 " @click="services_page_redirection(item)">
+								<q-avatar size="40px" square>
 									<img :src="item.category_image_for_mobile" >
+									<!-- <img src="https://chotabeta.app/dev/testenv/public/uploads/assets/fruits_vegges.png" class="fit"> -->
 								</q-avatar>
 							</q-avatar><br>
 						<span class="text-black">{{ item.name }}</span>
@@ -28,7 +29,7 @@
 </template>
 <script>
 import {ref } from 'vue'
-import axios from 'axios'
+import axios from 'boot/axios'
 export default ({
   setup(){
     return {
@@ -54,7 +55,7 @@ export default ({
   	service_page(){
   		var ps = this;
   		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-			axios.get('https://chotabeta.app/dev/testenv/api/get-categories-new?pincode='+ps.$store.state.pincode+'&service_id='+ps.$route.query.id+'&xid='+ps.$store.state.xid,config).then(function (response) {
+			ps.$api.get('/api/get-categories-new?pincode='+ps.$store.state.pincode+'&service_id='+ps.$route.query.id+'&xid='+ps.$store.state.xid,config).then(function (response) {
 			if(response.data.status_code ==200){
 			 		// console.log(response.data);
 			 	ps.categories = response.data.all_categories;
@@ -62,16 +63,27 @@ export default ({
 			 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
 			}
 		}).catch(function (error) {
-			ps.$q.notify({ message:error, type: 'warning',progress: true, });
+			console.log(error);
+			// ps.$q.notify({ message:error, type: 'warning',progress: true, });
 		});
 			
   	},
   	services_page_redirection(item){
-  		var ps = this ;
-			if(item.main_service_id == 2){
-  			ps.$router.push('/PickFromStore_layouts_s1?id='+item.id+'&service_id='+item.service_id);
+  		var ps = this;
+  		localStorage.setItem('category',JSON.stringify(item));
+  		if(item.main_service_id == 2){
+  			if( item.screen_redirection == 2 ){
+  				ps.$router.push('/PickFromStore_layouts_s1');
+  			}else if(item.screen_redirection == 0 ){
+  				ps.$router.push('/PickFromStore_layouts_s2');
+  			}
   		}else if(item.main_service_id == 1){
-  			ps.$q.notify({ message:"Pick and Drop pages are Not craeted", type: 'warning',progress: true, });
+  			console.log(item);
+  			if(item.id == 30){
+  				ps.PAD_others_Dailog = true;
+  			}else{
+  				ps.$router.push('/PickAndDrop_s1');
+  			}
   		}
   	}
 

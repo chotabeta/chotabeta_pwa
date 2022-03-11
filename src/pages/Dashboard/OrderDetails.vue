@@ -15,6 +15,7 @@
   </q-header>
   <q-page-container>
     <q-page class="text-grey-8">
+      <div id="loader2" class="pre-loader" style="display:none"></div>
       <div class="flex q-px-md q-py-sm ">
         <q-avatar class="q-mr-sm" size="65px" style="border:1px solid #e6e6e6">  
           <q-img :src="order.image_url+order_data.categ_image" width="40px" height="40px"></q-img>
@@ -101,9 +102,11 @@ export default {
     },
     getorderdata() {
       var ps = this;
-     
+     var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { Authorization: `Bearer ${ps.access_token}`, },};
       ps.$api.get('/api/v2/my-order-details?order_id='+this.$route.query.order_id, config).then(function (response) {
+        loader.style.display="none";
           ps.order = response.data;
           ps.order_data = response.data.orders_details_two;
           ps.payment_details =  response.data.payment_details;

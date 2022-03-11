@@ -10,6 +10,7 @@
     </q-header>
     <q-page-container>
       <q-page class="q-pa-md">
+        <div id="loader2" class="pre-loader" style="display:none"></div>
       	<q-card class="cb-round-borders">
       		<q-card-section class="q-pa-none q-px-md q-pt-md">
       		  <div class="shadow-1 cb-round-borders-20 q-mb-sm q-px-sm">

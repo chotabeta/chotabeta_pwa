@@ -16,6 +16,7 @@
 </q-header>
 <q-page-container>
 	<q-page class="q-px-sm">
+		<div id="loader2" class="pre-loader" style="display:none"></div>
 		<div class="full-width q-py-sm">
       <q-carousel animated infinite swipeable v-model="carousels" style="height:164px" class="cb-shadow-2 q-mt-sm cb-round-borders-10 q-mb-xs" autoplay>
         <q-carousel-slide :name="index" :img-src="offer.image" v-for="(offer,index ) in top_offers"/>
@@ -283,7 +284,10 @@ export default ({
   		let formData = new FormData();
       		formData.append('category_id', ps.category.id);
       		formData.append('service_id', ps.category.service_id);
+      		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
       	ps.$api.post('/api/cart-key',formData,config).then(function (response) {
+      		loader.style.display="none";
       		console.log(response,'response');
       		ps.cart_key_data = response.data;
       		// ps.cart_key_dailog = true;
@@ -310,7 +314,10 @@ export default ({
       		formData.append('category_id', ps.category.id);
       		formData.append('service_id', ps.category.service_id);
       		formData.append('items', JSON.stringify(items));
+      		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
       	ps.$api.post('/api/intermediate-screen-new',formData,config).then(function (response) {
+      		loader.style.display="none";
       		// console.log('response');
       		ps.response_data = response.data;
       		ps.top_offers =  response.data.top_offers;
@@ -569,7 +576,10 @@ export default ({
 		      	formData.append('category_id', category.id);
 		      	formData.append('sub_category_id', '0');
 		  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
+		  		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
 					ps.$api.post('/api/interim-search-items',formData,config).then(function (response) {
+						loader.style.display="none";
 						if(response.data.status_code ==200){
 							ps.global_search_data_s1 = response.data.products;
 

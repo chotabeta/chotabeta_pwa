@@ -20,6 +20,7 @@
 			</div>
 		</q-header>
 		<q-page-container>
+			<div id="loader2" class="pre-loader" style="display:none"></div>
 			<q-page class="q-mb-xl q-pb-sm" v-if="mycart_items.length != 0">
 				<div class="row" v-for="cart in mycart_api_data" :key="cart">
 					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
@@ -178,6 +179,8 @@ export default ({
   	},
   	mycart_count_and_length_update(){
   		var ps = this;
+  		var loader = document.getElementById('loader2');
+	      loader.style.display="block";
   		if(localStorage.getItem('mycart')){
   			var data_sku = [];
   			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
@@ -194,6 +197,7 @@ export default ({
         formData.append('data_sku', JSON.stringify(data_sku));
         let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
   			ps.$api.post('/api/update-cart-items',formData,config).then(function (response) {
+  				loader.style.display="none";
   				// console.log(response.data,"ref");
   				ps.mycart_api_data = response.data.data;
   				ps.response_data = response.data;

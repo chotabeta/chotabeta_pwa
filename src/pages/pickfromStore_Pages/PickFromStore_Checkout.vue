@@ -21,7 +21,7 @@
 
   <q-page-container>
   	<q-page class="q-pa-sm">
-
+      <div id="loader2" class="pre-loader" style="display:none"></div>
   	  <q-card class="cb-round-borders-10 cb-shadow-1"> 
   	  	<q-card-section class="cb-bg-grey-2 q-py-sm">
   	  	  <span class="text-bold cb-text-blue-8 cb-font-16"> Delivery Address </span>
@@ -31,7 +31,7 @@
   	  	<q-card-section class="q-pa-sm">
   	  	  <div class="row">
   	  	  	<div class="col-2 q-pr-md">
-  	  	  		<q-btn class="q-pa-none cb-text-grey-4 cb-round-borders-10 full-height fit" outline >
+  	  	  		<q-btn class="q-pa-none cb-text-grey-4 cb-round-borders-10 full-height fit" outline @click="$router.push('Search_location?address=p1')">
   	  	  			<q-icon name="add" class="text-bold cb-text-grey-4" size="xl"></q-icon>
   	  	  		</q-btn>
   	  	  	</div>
@@ -257,6 +257,7 @@ export default ({
       discount:ref(''),
       transaction_id:ref(null),
       payment_methods:ref([]),
+      pick_from_store_address:ref(null)
     }
   },
   mounted () {
@@ -275,8 +276,11 @@ export default ({
   	},
     get_payment_images(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/get-payment-images?is_gift_wrap=null',config).then(function (response) {
+        loader.style.display="none";
         if(response.data.status_code == 200){
           response.data.payment_modes.forEach((element, i)=> {
             if( (i+1) == response.data.default_payment_mode){ ps.paymnet = element; }
@@ -317,8 +321,12 @@ export default ({
 
   	deliveryaddress(){
   		var ps = this;
-  		if(localStorage.getItem('deliveryAddress')){
-
+  		if(ps.$route.query.adding == 1){
+        // console.log(JSON.parse(localStorage.getItem('pick_from_store_address')));
+        ps.pick_from_store_address = JSON.parse(localStorage.getItem('pick_from_store_address'));
+        ps.delivery_address = ps.pick_from_store_address.name;
+        ps.delivery_pincode = ps.pick_from_store_address.postal_code;
+        ps.delivery_latlngs = ps.pick_from_store_address.location;
   		}else{
   			ps.delivery_address = ps.$store.state.address;
   			ps.delivery_pincode = ps.$store.state.pincode;
@@ -328,8 +336,11 @@ export default ({
   	},
   	check_territory(){
   		var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
   		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
     	ps.$api.get('/api/check-territory2?base_location='+ps.delivery_latlngs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.delivery_latlngs+'&pincode='+ps.delivery_pincode+'&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
+        loader.style.display="none";
       	// console.log(response,'territory');
       	ps.delivery_territory_id = response.data.zone_id;
       	ps.continue_pickstore_function();
@@ -343,8 +354,8 @@ export default ({
 			ps.items = [];
 			ps.category = JSON.parse(localStorage.getItem('category'));
 			ps.service = JSON.parse(localStorage.getItem('service'));
-			console.log(ps.service,"service");
-			console.log(ps.category,'category')
+			// console.log(ps.service,"service");
+			// console.log(ps.category,'category')
 			var userdetails = JSON.parse(localStorage.getItem('userdetails'));
 			ps.userdetails = userdetails.deatils;
 			ps.cart_items = JSON.parse(localStorage.getItem('mycart'));
@@ -369,8 +380,11 @@ export default ({
   		formData.append('items', JSON.stringify(ps.items));
   		formData.append('territory_id', ps.delivery_territory_id);
   		// console.log(formData,"formData");
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
   		let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
   		ps.$api.post('/api/continue-pickstore',formData,config).then(function (response) {
+        loader.style.display="none";
   			// console.log(response.data,"ref");
   			ps.continue_pickstore_data = response.data;
   			if(localStorage.getItem('coupon_pick')){
@@ -441,9 +455,12 @@ export default ({
 										items: JSON.stringify(ps.items)
   		};
   		console.log(formData);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
   		let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
   		ps.$api.post('/api/pay-pickstore',formData,config).then(function (response) {
-  			console.log(response.data,"ref");
+  			// console.log(response.data,"ref");
+        loader.style.display="none";
   			if(response.data.status_code == 200){
   				localStorage.removeItem('category');
   				localStorage.removeItem('mycart');

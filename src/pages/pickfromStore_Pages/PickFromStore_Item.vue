@@ -17,7 +17,7 @@
       </q-header>
       <q-page-container>
         <q-page class="q-pb-xl q-mb-sm">
-
+          <div id="loader2" class="pre-loader" style="display:none"></div>
           <div class="row justify-center q-pa-sm">
             <q-carousel animated infinite v-model="item_iamge" style="width:250px;height:250px" class="rounded-borders" control-class="cb-text-blue-8">
               <q-carousel-slide :name="index" :img-src="i.url" v-for="(i,index) in images_array"/>
@@ -39,12 +39,15 @@
               <div class="flex flex-center">
                 <span class="text-weight-bolder">{{ product.name }}</span>
                 <q-space></q-space>
-                <q-btn label="add to cart" dense class="q-px-sm cb-bg-orange-8 text-white rounded-borders" @click="AddToCartFunction_product(product,product.weight_description)" v-if="mycart == 0"></q-btn>
-                <div class="cb-bg-orange-8 rounded-borders text-white" v-else>
-                  <q-btn icon="remove" flat dense @click="RemoveToCartFunction_product(product,product.weight_description)"></q-btn>
-                  <span class="q-px-md text-weight-bolder cb-font-16">{{ mycart }}</span>
-                  <q-btn icon="add" flat dense @click="AddMoreToCartFunction_product(product,product.weight_description)"> </q-btn>
-                </div>
+                <span v-if="product.item_disabled == 0">
+                  <q-btn label="add to cart" dense class="q-px-sm cb-bg-orange-8 text-white rounded-borders" @click="AddToCartFunction_product(product,product.weight_description)" v-if="mycart == 0"></q-btn>
+                  <div class="cb-bg-orange-8 rounded-borders text-white" v-else>
+                    <q-btn icon="remove" flat dense @click="RemoveToCartFunction_product(product,product.weight_description)"></q-btn>
+                    <span class="q-px-md text-weight-bolder cb-font-16">{{ mycart }}</span>
+                    <q-btn icon="add" flat dense @click="AddMoreToCartFunction_product(product,product.weight_description)"> </q-btn>
+                  </div>
+                </span>
+                <span v-else class="text-red text-weight-bolder">Product Not Available</span>
               </div>
               <div class="text-weight-bolder cb-font-16">
                 <q-icon name="currency_rupee"></q-icon>{{ sample_mrp }}
@@ -88,12 +91,15 @@
                       </select>
                     </q-card-section>
                     <q-card-section class="q-pa-none flex flex-center q-pt-sm cb-text-orange-8">
-                      <q-btn dense flat class="cb-text-orange-8" label="Add To Cart" v-if="i.mycart == 0" @click="AddToCartFunction(i,i.description)"></q-btn>
-                      <span v-else>
-                        <q-btn icon="remove" flat dense @click="RemoveFromCartfunction(i,i.description)"></q-btn>
-                        <span class="q-px-md">{{ i.mycart }}</span>
-                        <q-btn icon="add" flat dense @click="AddMoreToCartFunction(i,i.description)"></q-btn>
+                      <span v-if="i.item_disabled == 0">
+                        <q-btn dense flat class="cb-text-orange-8" label="Add To Cart" v-if="i.mycart == 0" @click="AddToCartFunction(i,i.description)"></q-btn>
+                        <span v-else>
+                          <q-btn icon="remove" flat dense @click="RemoveFromCartfunction(i,i.description)"></q-btn>
+                          <span class="q-px-md">{{ i.mycart }}</span>
+                          <q-btn icon="add" flat dense @click="AddMoreToCartFunction(i,i.description)"></q-btn>
+                        </span>
                       </span>
+                      <span v-else class="text-red text-weight-bolder">Product Not Available</span>
                     </q-card-section>
                     <q-card-section class="q-pa-none flex flex-center q-pt-sm  text-weight-bolder">
                     </q-card-section>
@@ -217,7 +223,10 @@
         let formData = new FormData();
         formData.append('category_id', ps.category.id);
         formData.append('service_id', ps.category.service_id);
+        var loader = document.getElementById('loader2');
+          loader.style.display="block";
         ps.$api.post('/api/cart-key',formData,config).then(function (response) {
+          loader.style.display="none";
           console.log(response,'response');
           ps.cart_key_data = response.data;
           // ps.cart_key_dailog = true;
@@ -229,12 +238,15 @@
 
       details_individualitem() {
         var ps = this;
+        var loader = document.getElementById('loader2');
+          loader.style.display="block";
         let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
         ps.$api.post("/api/get-product-details",{
               xid: ps.$store.state.xid,
               sku: ps.$route.query.sku,
               items: "[]",
             },config).then(function (response) {
+              loader.style.display="none";
               // console.log(response.data,"response.data");
               ps.images_array = response.data.images_array;
               ps.product = response.data.product;

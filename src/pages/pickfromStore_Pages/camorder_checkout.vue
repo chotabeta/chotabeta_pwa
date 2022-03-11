@@ -18,6 +18,7 @@
 
     <q-page-container>
       <q-page class="q-pa-sm">
+        <div id="loader2" class="pre-loader" style="display:none"></div>
         <div class="row justify-center">
           <q-img src="https://chotabeta.app/dev/testenv/public/imgs/cam_order.png"  width="65%"/>
         </div>
@@ -108,7 +109,10 @@ export default {
       formData.append('payment_mode', ps.pmt_method);
       formData.append('payment_status',"pending");
       formData.append('order_id', cam_uid);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       ps.$api.post('/api/place-cam-orders',formData,config).then(function (response) {
+        loader.style.display="none";
         if(response.data.status_code == 200){
           ps.order_success_dailog = true;
         }
@@ -120,8 +124,11 @@ export default {
     },
     get_payment_images(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/get-payment-images',config).then(function (response) {
+        loader.style.display="none";
         if(response.data.status_code == 200){
           ps.endPoint = response.data.endPoint;
           ps.payment_modes = response.data.payment_modes;

@@ -2,6 +2,7 @@
 	<q-layout>
 		<q-page-container>
 			<q-page class="flex flex-center">
+				<div id="loader2" class="pre-loader" style="display:none"></div>
 				<div class="column items-center">
 					<q-avatar size="100px" class="shadow-5">
 						<q-img src="~assets/images/logo.png" width="100px" class="shadow-5 "  ></q-img>
@@ -89,9 +90,15 @@ export default {
   	},
   	Onsubmit(){
   		var ps = this;
+  		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
   		ps.$api.post('/api/auth/sign-up-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
+  			loader.style.display="none";
     		if(response.data.status_code == 400){
+    			var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
     			ps.$api.post('/api/auth/reset-password-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
+    				loader.style.display="none";
     				if(response.data.status_code ==200){
     				 	ps.$q.notify({ message:response.data.message, type: 'positive' });
     				 	document.getElementById('phone_number_div').style.display= "none";
@@ -138,17 +145,17 @@ export default {
   	SigninWithOtp(){
   		var ps =  this;	
   		var OTP = ps.OTP1+ps.OTP2+ps.OTP3+ps.OTP4+ps.OTP5+ps.OTP6;
+  		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
   		ps.$store.dispatch('login',{'mobile':ps.mobile_number, 'password':OTP }).then(res => {
   		 	if(res.status_code == 200){
 	  		 	ps.$q.notify({ message:res.message, type: 'positive' ,progress: true,});
 	  		 	ps.$router.push('CheckLocation');
-	  		}else{
-  		 		
-  		 	}
-       
-       }).catch(error => {
+	  		}
+      }).catch(error => {
           	ps.$q.notify({ message:error.message, type: 'negative',progress: true, });
        });
+      loader.style.display="none";
   	},
   }
 }

@@ -15,7 +15,7 @@
   </q-header>
   <q-page-container>
     <q-page class="q-pb-sm q-px-sm">
-
+      <div id="loader2" class="pre-loader" style="display:none"></div>
 		  <q-carousel v-model="carousels" swipeable style="height:164px" class="cb-shadow-1 q-my-md cb-round-borders-10" navigation animated infinite control-color="primary">
 			  <template v-slot:navigation-icon="{ active, btnProps, onClick }">
       		<q-btn v-if="active" size="xs" :icon="btnProps.icon" color="red-7" flat round dense @click="onClick" />
@@ -139,8 +139,11 @@ export default ({
   	},
   	pickanddrop_sliders(){
   		var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
     	let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       	ps.$api.get('/api/pick-and-drop-sliders',config).then(function (response) {
+          loader.style.display="none";
       		// console.log('response');
           ps.sliders =  response.data.sliders;
       	}).catch(function (error) {
@@ -153,7 +156,10 @@ export default ({
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
 
       if(ps.$route.query.address == null ){
+        var loader = document.getElementById('loader2');
+          loader.style.display="block";
         ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
               ps.territory_data = response.data;
               ps.picked_address_array = { flat_no: null,
@@ -176,9 +182,11 @@ export default ({
             });
 
       }else if(ps.$route.query.address == 1){
-
+          var loader = document.getElementById('loader2');
+          loader.style.display="block";
         var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
             ps.territory_data = response.data;
               ps.picked_address_array = {   drop_flat:      picked_address_array.drop_flat,
@@ -206,8 +214,10 @@ export default ({
             });
 
       }else if(ps.$route.query.address == 2){
-
+        var loader = document.getElementById('loader2');
+          loader.style.display="block";
         ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
             ps.territory_data = response.data;
               ps.picked_address_array = { flat_no: null,
@@ -228,9 +238,11 @@ export default ({
               console.log(error);
               // ps.$q.notify({ message: error, type: "negative",});
         });
-
+        var loader = document.getElementById('loader2');
+          loader.style.display="block";
         var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
               ps.delivery_address_array = { drop_flat:      delivery_address_array.drop_flat,
                                             flat_no:        delivery_address_array.flat_no,
@@ -258,9 +270,11 @@ export default ({
 
 
       }else if(ps.$route.query.address == 12){
-
+          var loader = document.getElementById('loader2');
+          loader.style.display="block";
         var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          loader.style.display="none";
             if(response.data.full_screen_error_status == 0){
               ps.territory_data = response.data;
               ps.picked_address_array = {   drop_flat:      picked_address_array.drop_flat,
@@ -286,9 +300,11 @@ export default ({
               console.log(error);
               // ps.$q.notify({ message: error, type: "negative",});
             });
-
+        var loader = document.getElementById('loader2');
+          loader.style.display="block";
         var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          loader.style.display="none";
           if(response.data.full_screen_error_status ==0){
 
               ps.delivery_address_array = {   drop_flat:      delivery_address_array.drop_flat,
@@ -343,8 +359,11 @@ export default ({
       formData.append("week_end", null);
       formData.append("plan", null);
       formData.append("pick_territory_id", ps.picked_address_array.territory_id);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
+        loader.style.display="none";
         if(response.data.distance_in_km <= (ps.territory_data.vicinity_range/1000)){ ps.$router.push('PickAndDrop_Checkout'); }
          else{  ps.territory_checkup_dialog = true; }
       }).catch(function (error) {

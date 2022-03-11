@@ -8,6 +8,7 @@
   </q-header>
   <q-page-container>
     <q-page class="q-px-md q-py-xs">
+      <div id="loader2" class="pre-loader" style="display:none"></div>
       <div class="cb-shadow-1 q-px-sm cb-round-borders-10" >
         <q-input borderless placeholder="Address Search e.g. Prashant Towers" @click="initAutocomplete()" v-model="location_search" for="toLocation1">
           <template v-slot:prepend> <q-icon name="search" class="cb-text-orange-8" /> </template>
@@ -96,9 +97,12 @@ export default ({
     },
     pickanddrop_locationsearch(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
         ps.$api.get('/api/favourite-locations-get-two',config).then(function (response) {
           console.log('response');
+          loader.style.display="none";
           ps.saved_locations =  response.data.favourite_locations;
         }).catch(function (error) {
           console.log(error);
@@ -146,6 +150,8 @@ export default ({
           // console.log(results);
           var address = (results[0]);
           // console.log(address,"address")
+          var loader = document.getElementById('loader2');
+          loader.style.display="block";
         	this.$store.dispatch('saved_asdderss_data',{ 'address': address,'saved_address':ps.selected_location }).then(res => {
 				    if(res == 200){
 				      setTimeout( ps.$router.push('/home/dashboard') ,500);
@@ -153,6 +159,7 @@ export default ({
 			    }).catch(error => {
 	     		  console.log(error);
 	    	  });
+          loader.style.display="none";
         }
     	});
 	  }

@@ -7,6 +7,7 @@
 		<q-page-container>
 			<q-page class="q-px-sm" v-if="coupons_available == 0">
 				<!-- {{coupons_available }} -->
+				<div id="loader2" class="pre-loader" style="display:none"></div>
 				<div class="row">
 					<div class="col-12 row cb-shadow-1 q-my-sm q-pa-sm cb-round-borders-10" v-for="i in coupons">
 						<div class="col-2">
@@ -60,8 +61,11 @@ export default ({
   	},
   	getcoupons(){
   		var ps = this;
+  		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
   		let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       	ps.$api.get('/api/available-coupons?service_id='+ps.$route.query.service_id,config).then(function (response) {
+      		loader.style.display="none";
         	console.log(response.data);
         	if(response.data.status_code == 204){
         		ps.coupons_available = 1;
@@ -87,7 +91,7 @@ export default ({
   			ps.$router.push('PickFromStore_Checkout');
   		}
   		if(  ps.$route.query.service_id == '11' ){
-  			localStorage.setItem('coupon_rent',coupon.code);
+  			localStorage.setItem('coupon_rent_me',coupon.code);
   			ps.$router.push('rent_me3');
 
   		}

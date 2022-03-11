@@ -8,6 +8,7 @@
     </q-header>
     <q-page-container>
       <q-page class="bg-white">
+        <div id="loader2" class="pre-loader" style="display:none"></div>
         <div class="q-pa-xs">
           <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d60910.91201828438!2d78.3955557446126!3d17.41505064173751!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb99daeaebd2c7%3A0xae93b78392bafbc2!2sHyderabad%2C%20Telangana!5e0!3m2!1sen!2sin!4v1644564642528!5m2!1sen!2sin" class="full-width" style="height: 300px" allowfullscreen="" loading="lazy"></iframe>
         </div>
@@ -174,15 +175,21 @@ export default {
         }
       }
       else if(ps.$route.query.address =="c1"){
-            localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
-            ps.$router.push('/PickAndDrop_Checkout');
-          }else if(ps.$route.query.address =="c2"){
-            localStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
-            ps.$router.push('/PickAndDrop_Checkout');
-          }else if(ps.$route.query.address =="r1"){
-            localStorage.setItem('rentment_address',JSON.stringify(ps.selected_location));
-            ps.$router.push('/rent_me3');
-          }                             
+        localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
+        ps.$router.push('/PickAndDrop_Checkout');
+      }else if(ps.$route.query.address =="c2"){
+        localStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
+        ps.$router.push('/PickAndDrop_Checkout');
+      }else if(ps.$route.query.address =="r1"){
+        localStorage.setItem('rentment_address',JSON.stringify(ps.selected_location));
+        ps.$router.push('/rent_me3');
+      }else if(ps.$route.query.address =="rp"){
+        localStorage.setItem('rentment_address',JSON.stringify(ps.selected_location));
+        ps.$router.push('/rent_me1?address=rp');
+      }else if(ps.$route.query.address =="p1"){
+        localStorage.setItem('pick_from_store_address',JSON.stringify(ps.selected_location));
+        ps.$router.push('/PickFromStore_Checkout?adding=1');
+      }                             
     },
 
     storing_the_address() {
@@ -193,8 +200,11 @@ export default {
       formData.append("location_name", ps.address_data);
       formData.append("location_nick_name", 'None');
       formData.append("location_type", ps.type);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
       ps.$api.post("/api/favourite-locations",formData,config).then(function (response) {
+        loader.style.display="none";
         // ps.saved_locations = response.data.favourite_locations;
       }).catch(function (error) {
         console.log(error);

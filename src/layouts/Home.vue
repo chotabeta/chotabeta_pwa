@@ -67,6 +67,7 @@
 	      	</span> -->
 	    </q-drawer>
 		<q-page-container>
+			<div id="loader2" class="pre-loader" style="display:none"></div>
 			<q-dialog v-model="location_check" persistent>
 				<q-card class="full-width cb-round-borders-20">
 					<q-card-section class="text-center">
@@ -130,8 +131,11 @@ export default ({
 		},
 		userdetails(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/user',config).then(function (response) {
+      	loader.style.display="none";
       	ps.$store.dispatch('userdetails',{'deatils':response.data }).then(res => {
   		 	}).catch(error => {	ps.$q.notify({ message:error.message, type: 'negative',progress: true, });  });
       	ps.profile_pic =  response.data.profile_pic;
@@ -142,8 +146,11 @@ export default ({
     },
     territory_checkup(){
     	var ps = this;
+    	var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
     	ps.$api.get('/api/check-territory2?base_location='+ps.$store.state.latlongs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
+    		loader.style.display="none";
       	// console.log(response,'territory');
       	if(response.data.change_location_button_status == 1){
       		ps.pick_not_in_territory =  response.data.pick_not_in_territory;

@@ -1,5 +1,6 @@
 <template>
 <q-page>
+  <div id="loader2" class="pre-loader" style="display:none"></div>
   <div class="row justify-center  cb-bg-white-2 text-weight-bolder cb-font-16 q0pb-xs">
     <span class="cb-text-orange-8">We Care | Help</span>
   </div>
@@ -53,10 +54,11 @@ export default {
     },
     gettodaydata(){
       var ps = this;
-      vm.loading = true;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,} }
       ps.$api.get('https://chotabeta.app/dev/testenv/api/we-care',config).then(function (response) {
-        ps.loading = false;
+        loader.style.display="none";
         ps.data = response.data.data;
       }).catch(function (error) {
         console.log(error);

@@ -18,7 +18,7 @@
 
     <q-page-container>
       <q-page class="q-px-md q-py-sm">
-
+        <div id="loader2" class="pre-loader" style="display:none"></div>
         <q-card class="cb-round-borders-10 cb-shadow-2">
           <q-card-section class="text-grey-8">
             <div class="row" >
@@ -252,8 +252,11 @@ export default ({
     },
     get_payment_images(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/get-payment-images',config).then(function (response) {
+        loader.style.display="none";
         if(response.data.status_code == 200){
           response.data.payment_modes.forEach((element, i)=> {
             if( (i+1) == response.data.default_payment_mode){ ps.paymnet = element; }
@@ -304,7 +307,10 @@ export default ({
       formData.append("week_end", null);
       formData.append("plan", null);
       formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
+        loader.style.display="none";
           ps.pickanddrop_fare_data =  response.data; 
             if(ps.coupon_code){
               if(response.data.coupon == "Rs. 0"){
@@ -384,8 +390,11 @@ export default ({
       formData.append("drop_territory_id", ps.delivery_address_array.territory_id);
       formData.append("to_lat_lng", ps.delivery_address_array.location);
       formData.append("drop_name", ps.user_data.name);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/pay-pickdrop',formData,config).then(function (response) {
+        loader.style.display="none";
           if(response.data.status_code == 204){
             ps.$q.notify({ message: response.data.message, }); 
           } else if(response.data.status_code == 200){

@@ -36,6 +36,7 @@
 		</q-header>
 		<q-page-container>
 			<q-page class="q-pa-sm">
+				<div id="loader2" class="pre-loader" style="display:none"></div>
 				<div class="row" style="padding-bottom: 50px;">
 
 					<div class="col-6  q-pa-xs" v-for="i in data">
@@ -58,12 +59,15 @@
 								</select>
 							</q-card-section>
 							<q-card-section class="q-pa-none flex flex-center q-pt-sm" >
+								<span v-if="i.item_disabled == 0">
 									<q-btn dense flat class="cb-text-orange-8" label="Add To Cart" @click="AddToCartFunction(i,i.description)" v-if="i.mycart == 0"></q-btn>
 									<div class="cb-text-orange-8" v-else>
 										<q-btn icon="remove" flat dense @click="RemoveFromCartfunction(i,i.description)"></q-btn>
  										<span class="q-px-md text-weight-bolder cb-font-16">{{ i.mycart }}</span>
 										<q-btn icon="add" flat dense @click="AddMoreToCartFunction(i,i.description)"></q-btn>
 									</div>
+								</span>
+								<span v-else class="text-red text-weight-bolder">Product Not Available</span>
 							</q-card-section>
 						</q-card>
 					</div>
@@ -302,7 +306,10 @@ export default ({
   		let formData = new FormData();
       		formData.append('category_id', ps.category.id);
       		formData.append('service_id', ps.category.service_id);
+      		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
       	ps.$api.post('/api/cart-key',formData,config).then(function (response) {
+      		loader.style.display="none";
       		console.log(response,'response');
       		ps.cart_key_data = response.data;
       		// ps.cart_key_dailog = true;
@@ -356,7 +363,10 @@ export default ({
 
 			let formData = new FormData();
       formData.append('combinations', (JSON.stringify(combinations)));
+      var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
   		ps.$api.post('/api/interim-sub-cat',formData,config).then(function (response) {
+  			loader.style.display="none";
 				ps.combinations = response.data.combinations[0];
 				ps.tabs = response.data.combinations[0].sub_categories[0].id;
 				ps.getItems();
@@ -394,8 +404,12 @@ export default ({
 	  			var service_id = ps.category.service_id;
 	  			var sub_category_id = ps.tabs;
   			}
+  		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
   		// ps.$api.get('/api/auth/getitems?category_id='+category_id+'&service_id='+service_id+'&sub_category_id='+sub_category_id+'&item_name&update_fromcart=0&page='+ps.page,config).then(function (response) {
   		ps.$api.get('/swift/public/get-items5?category_id='+category_id+'&service_id='+service_id+'&sub_category_id='+sub_category_id+'&item_name&update_fromcart=0&page='+ps.page,config).then(function (response) {
+
+  			loader.style.display="none";
   				if(response.data.status_code == 400){
   					ps.$q.notify({ message: response.data.items_error_heading});
   					ps.errorpage = 1;
@@ -554,7 +568,10 @@ export default ({
       formData.append('service_id', 2);
       formData.append('current_location', ps.get_lat_lngs);
       formData.append('cam_image', ps.cam_image);
+      var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
   		ps.$api.post('/api/cam-orders',formData,config).then(function (response) {
+  			loader.style.display="none";
         if(response.data.status_code == 200){
           ps.order_id = response.data.order_id;
 		 		  localStorage.setItem('cam_uid',ps.order_id);
@@ -599,8 +616,11 @@ export default ({
 		      	formData.append('service_id', category.service_id);
 		      	formData.append('category_id', category.id);
 		      	formData.append('sub_category_id', sub_category.id);
+		      	var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
 		  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
 					ps.$api.post('/api/interim-search-items',formData,config).then(function (response) {
+						loader.style.display="none";
 						if(response.data.status_code ==200){
 							ps.global_search_data_s2 = response.data.products;
 

@@ -1,5 +1,6 @@
 <template>
 	<q-page padding>
+		<div id="loader2" class="pre-loader" style="display:none"></div>
 		<q-input outlined :placeholder="search_box_text" dense @click="my_function()">
 			<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
 		</q-input>
@@ -223,8 +224,11 @@ export default ({
 	      	formData.append('base_location', ps.$store.state.latlongs);
 	      	formData.append('lat_lng', ps.$store.state.latlongs);
 	      	formData.append('playstore_version_name', null);
+	      	var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
 	  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
 				ps.$api.post('/api/v4/dashboard-six',formData,config).then(function (response) {
+					loader.style.display="none";
 					if(response.data.status_code ==200){
 					 	ps.sliders = response.data.sliders;
 					 	ps.service0 = response.data.all_services[0];
@@ -328,8 +332,11 @@ export default ({
   	},
   	GetCallBackRequestFunction(){
   		var ps = this;
+  		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
   		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
 				ps.$api.get('/api/get-call?current_location='+ps.$store.state.latlongs,config).then(function (response) {
+					loader.style.display="none";
 					if(response.data.status_code ==200){
 					 	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
 					 }
@@ -367,7 +374,8 @@ export default ({
   		if(ps.$store.state.latlongs){
   		if(ps.user_search_input.length > 1){
 			  var pincode = localStorage.getItem('pincode');
-			  
+			  var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
 	  		let formData = new FormData();
 	      	formData.append('item_name', ps.user_search_input);
 	      	formData.append('page_no', 1);
@@ -375,6 +383,7 @@ export default ({
 	      	formData.append('lat_lng', ps.$store.state.latlongs);
 	  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
 				ps.$api.post('/api/global-search',formData,config).then(function (response) {
+					loader.style.display="none";
 					if(response.data.status_code ==200){
 						ps.global_search_data = response.data.products;
 

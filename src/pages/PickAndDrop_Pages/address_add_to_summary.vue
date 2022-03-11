@@ -8,6 +8,7 @@
   </q-header>
   <q-page-container>
     <q-page class="q-px-md q-py-xs">
+      <div id="loader2" class="pre-loader" style="display:none"></div>
       <div class="cb-shadow-1 q-px-sm cb-round-borders-10" >
         <q-input borderless placeholder="Address Search e.g. Prashant Towers" @click="initAutocomplete()" v-model="location_search" for="toLocation1">
           <template v-slot:prepend> <q-icon name="search" class="cb-text-orange-8" /> </template>
@@ -112,8 +113,11 @@ export default ({
     },
     pickanddrop_locationsearch(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
         ps.$api.get('/api/favourite-locations-get-two',config).then(function (response) {
+          loader.style.display="none";
           // console.log('response');
           ps.saved_locations =  response.data.favourite_locations;
         }).catch(function (error) {
@@ -156,9 +160,11 @@ export default ({
           // console.log(address);
           var length = address.address_components.length;
           var pincode = address.address_components[length - 1].long_name;
-
+            var loader = document.getElementById('loader2');
+          loader.style.display="block";
           let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
           ps.$api.get('/api/check-territory2?lat_lng='+ps.searched_latlong+'&pincode='+pincode+'&xid='+ps.$store.state.xid,config).then(function (response) {
+            loader.style.display="none";
               console.log(response);
               if( response.data.full_screen_error_status == 0 ){
                 ps.$router.push('/add_address_page?searchaddress='+ps.location_search+'&searched_latlong='+ps.searched_latlong+'&pincode='+pincode+'&address='+ps.$route.query.address);

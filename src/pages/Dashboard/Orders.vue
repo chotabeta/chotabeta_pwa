@@ -1,5 +1,6 @@
 <template>
   <q-page>
+    <div id="loader2" class="pre-loader" style="display:none"></div>
     <div class="row items-center justify-center cb-bg-white-2">
       <span class="cb-text-orange-8 text-weight-bolder cb-font-16"
         >My Orders</span
@@ -190,9 +191,11 @@ export default {
     },
     gettodaydata() {
       var ps = this;
-
+        var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
       ps.$api.get("/api/v2/my-orders2", config).then(function (response) {
+        loader.style.display="none";
           console.log(response.data, "my orders");
           ps.Active_orders = response.data.open_orders;
           ps.image_url = response.data.image_url;
@@ -205,8 +208,11 @@ export default {
 
     trackorderdata(uid) {
       var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
       ps.$api.get('/api/livetrack-two?order_id='+uid,config).then(function (response) {
+        loader.style.display="none";
         console.log(response);
         ps.tracking_details = response.data.tracking_details;
         ps.open('bottom');

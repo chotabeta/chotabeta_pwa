@@ -18,7 +18,7 @@
 
     <q-page-container>
       <q-page class="q-px-md q-py-sm">
-
+        <div id="loader2" class="pre-loader" style="display:none"></div>
         <q-card class="cb-round-borders-10 cb-shadow-2">
           <q-card-section class="text-grey-8">
             <div class="row" >
@@ -63,11 +63,11 @@
             <div class="flex q-pt-xs"> Usage hours<q-space></q-space>{{rm_usage_hrs}}</div>
             <div class="flex q-pt-xs">Service Charge<q-space></q-space>{{rm_service_charges}}</div>
             <div class="flex q-pt-xs">Tax & Fees<q-space></q-space>{{rm_taxes}}</div>
+            <div class="flex q-pt-xs text-red" v-if="discount != null">Discount<q-space></q-space>{{ discount }}</div>
             <div class="flex q-pt-xs text-weight-bolder">Total<q-space></q-space>{{rm_grand_total}}</div>
           </q-card-section>
         </q-card>
-
-        <div class="flex q-py-md">
+        <div class="flex q-py-md" v-if="discount == null">
           <div class="cb-shadow-1 cb-round-borders-10 bg-white q-px-sm" style="width:75%">
             <q-input dense placeholder="ENTER COUPON CODE" borderless @click="screenredirection()">
               <template v-slot:prepend>
@@ -75,7 +75,18 @@
               </template>
             </q-input>
           </div>
-          <q-btn label="apply" class="cb-bg-orange-8 text-white q-ml-sm" style="width:22%"></q-btn>
+          <q-btn label="apply" class="cb-bg-orange-8 cb-round-borders-10 text-white q-ml-sm" style="width:22%"></q-btn>
+        </div>
+
+        <div class="flex q-py-md" v-if="discount != null">
+          <div class="cb-shadow-1 cb-round-borders-10 bg-white q-px-sm" style="width:75%">
+            <q-input dense :placeholder="coupon_code" borderless @click="screenredirection()">
+              <template v-slot:prepend>
+                  <q-avatar><img src="https://chotabeta.app/dev/testenv/public/imgs/discount_1.png"></q-avatar>
+              </template>
+            </q-input>
+          </div>
+          <q-btn label="remove" class="cb-bg-orange-8 cb-round-borders-10 text-white q-ml-sm" style="width:22%" @click="couponremove_function()"></q-btn>
         </div>
 
         <q-card class="cb-round-borders-10 q-my-md cb-shadow-2">
@@ -123,8 +134,40 @@
           </q-card>
         </q-dialog>
 
+        <q-dialog v-model="coupon_dailog_error">
+          <q-card class="cb-round-borders-10" @click="coupon_dailog_error= false">
+            <q-card-section class="text-center q-pa-lg">
+              <q-avatar color="red" text-color="white" size="60px" class=
+              'q-pa-none' icon="sentiment_dissatisfied" font-size="60px"/><br>
+              <div class="text-h5 q-py-sm "><b>Oops!</b></div>
+              <div>Not applied</div>
+              <q-btn label="add another coupon" @click="coupon_dailog_error= false" flat class="text-red-8 text-bold"></q-btn>
+            </q-card-section>  
+          </q-card>
+        </q-dialog>
 
+        <q-dialog v-model="coupon_dailog_applied">
+          <q-card class="cb-round-borders-10" @click="coupon_dailog_applied =  false">
+            <q-card-section class="text-center q-pa-lg">
+              <q-avatar color="green" text-color="white" size="60px" class='q-pa-none' icon="sentiment_satisfied" font-size="60px"/><br>
+              <div class="text-h5 q-py-sm "><b>HoHoo!</b></div>
+              <div>Coupon Code <span class="text-weight-bolder">{{ $route.query.coupon }}</span> Applied</div>
+              <div class="text-green text-bold cb-font-16"><q-icon name="currency_rupee"></q-icon> Saved</div>
+            </q-card-section>  
+          </q-card>
+        </q-dialog>
 
+        <q-dialog v-model="coupon_dailog_remove">
+          <q-card class="cb-round-borders-10" @click="coupon_dailog_remove= false">
+            <q-card-section class="text-center q-pa-lg">
+              <q-avatar color="green" text-color="white" size="60px" class='q-pa-none' icon="sentiment_satisfied" font-size="60px"/><br>
+              <div class="text-h5 q-py-sm "><b>Oops!</b></div>
+              <div>Coupon Removed!</div>
+              <q-btn label="add another coupon" @click="coupon_dailog_remove= false" flat class="text-red-8 text-weight-bolder"></q-btn>
+            </q-card-section>  
+          </q-card>
+        </q-dialog>
+        
       </q-page>
     </q-page-container>
   </q-layout>
@@ -162,12 +205,16 @@ export default ({
       rm_taxes:ref(null),
       rm_usage_hrs:ref(1),
       order_success_dailog:ref(false),
-
+      coupon_dailog_error:ref(false),
+      coupon_dailog_applied:ref(false),
+      coupon_dailog_remove:ref(false),
+      coupon_code:ref(null),
+      discount:ref(null),
     }
   },
    mounted () {
     this.getToken();
-    this.location_address();
+    // this.location_address();
     this.pickdate_selection();
     this.rent_me_summery_data();
   },
@@ -176,6 +223,7 @@ export default ({
       var ps = this ;
       ps.access_token = ps.$store.state.token;
       if(ps.access_token == null){ ps.$router.push(''); }
+      ps.coupon_code = localStorage.getItem('coupon_rent_me');
     },
     Subscription_function(){
       var ps = this;
@@ -191,7 +239,7 @@ export default ({
       ps.category = JSON.parse(localStorage.getItem('category'));
       ps.service = JSON.parse(localStorage.getItem('service'));
       var user_data = JSON.parse(ps.$store.state.userdetails);
-      console.log(user_data)
+      // console.log(user_data)
       ps.user_data = user_data.deatils;
       
       console.log(ps.pickuplocation_array,"pickuplocation_array");
@@ -207,8 +255,10 @@ export default ({
       formData.append("wseek_end", null);
       formData.append("plan", null);
       // formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
-
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
+        loader.style.display="none";
           // console.log(response);
           ps.pickanddrop_fare_data =  response.data;
         }).catch(function (error) {
@@ -226,9 +276,17 @@ export default ({
       ps.pick_time = d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds();
     },
     screenredirection(){
-        var ps = this;
-        // ps.$router.push('Coupons?service_id='+ps.category.main_service_id);
-        ps.$router.push('Coupons?service_id='+ps.service.id);
+      var ps = this;
+      // ps.$router.push('Coupons?service_id='+ps.category.main_service_id);
+      ps.$router.push('Coupons?service_id='+ps.service.id);
+    },
+    couponremove_function(){
+      var ps = this;
+      ps.discount = null;
+      ps.coupon_code = null;
+      localStorage.removeItem('coupon_rent_me');
+      ps.coupon_dailog_remove = true;
+      ps.location_address();
     },
     placeorder(){
       var ps = this;
@@ -237,7 +295,6 @@ export default ({
         return false;
       }
       let formData = new FormData();
-
       // formData.append("base_location", ps.pickuplocation_array.location);
       formData.append("base_pincode", 0);
       formData.append("xid", ps.$store.state.xid);
@@ -246,7 +303,7 @@ export default ({
       formData.append("plan", null);
       formData.append("transaction_id", null);
       formData.append("payment_mode", ps.payment);
-      formData.append("coupon", 'none');
+      formData.append("coupon", ps.coupon_code);
       formData.append("payment_status", "pending");
       formData.append("schedule_timestamp", (new Date()));
       formData.append("weight", null);
@@ -269,8 +326,11 @@ export default ({
       // formData.append("drop_territory_id", ps.delivery_address_array.territory_id);
       formData.append("to_lat_lng", ps.delivery_address_array.location);
       formData.append("drop_name", ps.user_data.name);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/pay-pickdrop',formData,config).then(function (response) {
+        loader.style.display="none";
           if(response.data.status_code == 204){
             ps.$q.notify({ message: response.data.message, });
           } else if(response.data.status_code == 200){
@@ -288,8 +348,7 @@ export default ({
     },
     rent_me_summery_data(){
       var ps = this;
-        ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-           ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
+      ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
           //  alert(ps.delivery_address_array.location);
       ps.category = JSON.parse(localStorage.getItem('category'));
       ps.service = JSON.parse(localStorage.getItem('service'));
@@ -303,23 +362,31 @@ export default ({
       formData.append("trip_type", 0);
       formData.append("to_location", ps.pickuplocation_array.location);
       formData.append("category_id", 11);
-      formData.append("coupon", null);
+      formData.append("coupon", ps.coupon_code);
       formData.append("service_id", 11);
       formData.append("drop_territory_id", null);
       formData.append("from_location", ps.pickuplocation_array.location);
       formData.append("pick_territory_id", 229);
       formData.append("vehicle", 0);
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/conf-terms-one',formData,config).then(function (response) {
+        loader.style.display="none";
           if(response.data.status_code == 204){
             ps.$q.notify({ message: response.data.message, });
           } else if(response.data.status_code == 200){
             ps.rm_grand_total  = response.data.grand_total;
             ps.rm_service_charges  = response.data.delivery_fee;
             ps.rm_taxes  = response.data.gst;
-
-
-
+            if(ps.coupon_code){
+              if(response.data.coupon == "Rs. 0"){
+                ps.coupon_dailog_error = true;
+              }else{
+                ps.discount = response.data.coupon;
+                ps.coupon_dailog_applied = true;
+              }
+            }
           }
         }).catch(function (error) {
           // console.log(error);
@@ -327,88 +394,94 @@ export default ({
     },
     hr_incr(inc_dec){
       var ps = this;
-  if(inc_dec == 1){
-      if(ps.rm_usage_hrs > 1){
-      ps.rm_usage_hrs = ps.rm_usage_hrs - 1;
-      ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-           ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
-          //  alert(ps.delivery_address_array.location);
-      ps.category = JSON.parse(localStorage.getItem('category'));
-      ps.service = JSON.parse(localStorage.getItem('service'));
-      var user_data = JSON.parse(ps.$store.state.userdetails);
-      console.log(user_data)
-      ps.user_data = user_data.deatils;
+      if(inc_dec == 1){
+          if(ps.rm_usage_hrs > 1){
+          ps.rm_usage_hrs = ps.rm_usage_hrs - 1;
+          ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
+               ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
+              //  alert(ps.delivery_address_array.location);
+          ps.category = JSON.parse(localStorage.getItem('category'));
+          ps.service = JSON.parse(localStorage.getItem('service'));
+          var user_data = JSON.parse(ps.$store.state.userdetails);
+          console.log(user_data)
+          ps.user_data = user_data.deatils;
 
-      let formData = new FormData();
+          let formData = new FormData();
 
-      formData.append("hours", ps.rm_usage_hrs);
-      formData.append("trip_type", 0);
-      formData.append("to_location", ps.pickuplocation_array.location);
-      formData.append("category_id", 11);
-      formData.append("coupon", null);
-      formData.append("service_id", 11);
-      formData.append("drop_territory_id", null);
-      formData.append("from_location", ps.pickuplocation_array.location);
-      formData.append("pick_territory_id", 229);
-      formData.append("vehicle", 0);
-      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      ps.$api.post('/api/conf-terms-one',formData,config).then(function (response) {
-          if(response.data.status_code == 204){
-            ps.$q.notify({ message: response.data.message, });
-          } else if(response.data.status_code == 200){
-            ps.rm_grand_total  = response.data.grand_total;
-            ps.rm_service_charges  = response.data.delivery_fee;
-            ps.rm_taxes  = response.data.gst;
+          formData.append("hours", ps.rm_usage_hrs);
+          formData.append("trip_type", 0);
+          formData.append("to_location", ps.pickuplocation_array.location);
+          formData.append("category_id", 11);
+          formData.append("coupon", ps.coupon_code);
+          formData.append("service_id", 11);
+          formData.append("drop_territory_id", null);
+          formData.append("from_location", ps.pickuplocation_array.location);
+          formData.append("pick_territory_id", 229);
+          formData.append("vehicle", 0);
+          var loader = document.getElementById('loader2');
+              loader.style.display="block";
+          let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+          ps.$api.post('/api/conf-terms-one',formData,config).then(function (response) {
+            loader.style.display="none";
+              if(response.data.status_code == 204){
+                ps.$q.notify({ message: response.data.message, });
+              } else if(response.data.status_code == 200){
+                ps.rm_grand_total  = response.data.grand_total;
+                ps.rm_service_charges  = response.data.delivery_fee;
+                ps.rm_taxes  = response.data.gst;
 
 
 
+              }
+            }).catch(function (error) {
+              console.log(error);
+            });
           }
-        }).catch(function (error) {
-          console.log(error);
-        });
+      }else if(inc_dec == 2){
+        if(ps.rm_usage_hrs < 8){
+        ps.rm_usage_hrs = ps.rm_usage_hrs + 1;
+
+        ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
+               ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
+              //  alert(ps.delivery_address_array.location);
+          ps.category = JSON.parse(localStorage.getItem('category'));
+          ps.service = JSON.parse(localStorage.getItem('service'));
+          var user_data = JSON.parse(ps.$store.state.userdetails);
+          console.log(user_data)
+          ps.user_data = user_data.deatils;
+
+          let formData = new FormData();
+
+          formData.append("hours", ps.rm_usage_hrs);
+          formData.append("trip_type", 0);
+          formData.append("to_location", ps.pickuplocation_array.location);
+          formData.append("category_id", 11);
+          formData.append("coupon", ps.coupon_code);
+          formData.append("service_id", 11);
+          formData.append("drop_territory_id", null);
+          formData.append("from_location", ps.pickuplocation_array.location);
+          formData.append("pick_territory_id", 229);
+          formData.append("vehicle", 0);
+          var loader = document.getElementById('loader2');
+              loader.style.display="block";
+          let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+          ps.$api.post('/api/conf-terms-one',formData,config).then(function (response) {
+            loader.style.display="none";
+              if(response.data.status_code == 204){
+                ps.$q.notify({ message: response.data.message, });
+              } else if(response.data.status_code == 200){
+                ps.rm_grand_total  = response.data.grand_total;
+                ps.rm_service_charges  = response.data.delivery_fee;
+                ps.rm_taxes  = response.data.gst;
+
+
+
+              }
+            }).catch(function (error) {
+              console.log(error);
+            });
+        }
       }
-  }else if(inc_dec == 2){
-    if(ps.rm_usage_hrs < 8){
-    ps.rm_usage_hrs = ps.rm_usage_hrs + 1;
-
-    ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-           ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
-          //  alert(ps.delivery_address_array.location);
-      ps.category = JSON.parse(localStorage.getItem('category'));
-      ps.service = JSON.parse(localStorage.getItem('service'));
-      var user_data = JSON.parse(ps.$store.state.userdetails);
-      console.log(user_data)
-      ps.user_data = user_data.deatils;
-
-      let formData = new FormData();
-
-      formData.append("hours", ps.rm_usage_hrs);
-      formData.append("trip_type", 0);
-      formData.append("to_location", ps.pickuplocation_array.location);
-      formData.append("category_id", 11);
-      formData.append("coupon", null);
-      formData.append("service_id", 11);
-      formData.append("drop_territory_id", null);
-      formData.append("from_location", ps.pickuplocation_array.location);
-      formData.append("pick_territory_id", 229);
-      formData.append("vehicle", 0);
-      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      ps.$api.post('/api/conf-terms-one',formData,config).then(function (response) {
-          if(response.data.status_code == 204){
-            ps.$q.notify({ message: response.data.message, });
-          } else if(response.data.status_code == 200){
-            ps.rm_grand_total  = response.data.grand_total;
-            ps.rm_service_charges  = response.data.delivery_fee;
-            ps.rm_taxes  = response.data.gst;
-
-
-
-          }
-        }).catch(function (error) {
-          console.log(error);
-        });
-    }
-  }
     },
 
     rm_pay_now(){
@@ -417,9 +490,9 @@ export default ({
         ps.$q.notify({ message: "Please Select Payment Method", type: "negative",});
         return false;
       }
-  var random =       (Math.random().toString(36).substring(2,4)).toUpperCase();
-  var today = new Date();
-  var rm_transaction_id = today.getFullYear()+''+(today.getMonth()+1)+''+today.getDate()+''+random+''
+      var random =       (Math.random().toString(36).substring(2,4)).toUpperCase();
+      var today = new Date();
+      var rm_transaction_id = today.getFullYear()+''+(today.getMonth()+1)+''+today.getDate()+''+random+''
               +today.getHours()+''+today.getMinutes()+''+today.getSeconds() ;
 
       // var rm_transaction_id =
@@ -452,7 +525,7 @@ export default ({
       formData.append("to_lat_lng", ps.pickuplocation_array.location);
       formData.append("tasks", ps.task_details);
       formData.append("week_end", "");
-      formData.append("coupon", "");
+      formData.append("coupon", ps.coupon_code);
       formData.append("hours", ps.rm_usage_hrs);
       formData.append("trip_type", "0");
 
@@ -466,16 +539,19 @@ export default ({
       formData.append("service_id", "11");
       formData.append("drop_territory_id", "");
       formData.append("from_lat_lng", ps.pickuplocation_array.location);
-
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/confirm-drive-trip',formData,config).then(function (response) {
+        loader.style.display="none";
           if(response.data.status_code == 200){
-
-        ps.order_success_dailog = true;
-
-        localStorage.removeItem('tasks_temp');
-        localStorage.removeItem('tasks');
-        }
+            ps.order_success_dailog = true;
+            localStorage.removeItem('service');
+            localStorage.removeItem('category');
+            localStorage.removeItem('coupon_rent_me');
+            localStorage.removeItem('tasks_temp');
+            localStorage.removeItem('tasks');
+          }
         }).catch(function (error) {
           console.log(error);
         });

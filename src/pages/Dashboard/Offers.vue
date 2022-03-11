@@ -1,5 +1,6 @@
 <template>
 <q-page >
+  <div id="loader2" class="pre-loader" style="display:none"></div>
   <div class="flex cb-bg-white-2 flex-center">
     <span class="cb-text-orange-8 cb-font-16 text-weight-bolder">Offers</span>
   </div>
@@ -39,8 +40,11 @@ export default {
     },
     getalloffers(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+          loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/get-offers-new',config).then(function (response) {
+        loader.style.display="none";
         // console.log(response.data)
         ps.offers = response.data.offers;
       }).catch(function (error) {

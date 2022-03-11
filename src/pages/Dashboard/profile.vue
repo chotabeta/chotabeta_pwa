@@ -1,5 +1,6 @@
 <template>
 <q-page>
+	<div id="loader2" class="pre-loader" style="display:none"></div>
 	<div class=" flex cb-bg-white-2">
 		<q-space></q-space>
 		<q-space></q-space>
@@ -104,8 +105,11 @@ export default {
     },
     userdetails(){
       var ps = this;
+      var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/user',config).then(function (response) {
+      	loader.style.display="none";
       	ps.profile_pic =  response.data.profile_pic;
         ps.name = response.data.name;
         ps.email = response.data.email;
@@ -125,8 +129,11 @@ export default {
     },
     get_servicing_cities(){
     	 var ps = this;
+    	 var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
         ps.$api.get("/api/get-serving-locations",config).then(function(response) {
+        	loader.style.display="none";
                   if(response.data.status_code == 200){
                    	ps.cities = response.data.locations;
                   }else{
@@ -138,12 +145,15 @@ export default {
     },
     update_email(){
     	var ps = this;
+    	var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
         ps.$api.post("/api/edit-profile",{
         	name:ps.name,
         	city:ps.address,
         	email:ps.email
         },config).then(function(response) {
+        	loader.style.display="none";
                   if(response.data.status_code == 200){
                   	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
                   }else{
@@ -155,9 +165,12 @@ export default {
     },
     logout(){
 		var ps = this;
+		var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
 	    let config = { headers: { Authorization: `Bearer ${ps.$store.state.token}` } };
 	    ps.$api.get("/api/logout",config).then(function(response) {
 	    	console.log(response);
+	    	loader.style.display="none";
 	            if(response.data.status_code == 200){
 	            	ps.$store.dispatch('logout').then(res => {
 								ps.$q.notify({ message: res , type: 'positive' ,progress: true, });

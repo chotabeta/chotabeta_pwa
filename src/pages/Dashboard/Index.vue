@@ -227,7 +227,7 @@ export default ({
 	      	var loader = document.getElementById('loader2');
 	      	loader.style.display="block";
 	  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-				ps.$api.post('/api/v4/dashboard-six',formData,config).then(function (response) {
+				ps.$api.post('/api/v4/dashboard-eight',formData,config).then(function (response) {
 					loader.style.display="none";
 					if(response.data.status_code ==200){
 					 	ps.sliders = response.data.sliders;

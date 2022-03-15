@@ -44,13 +44,13 @@
           <span class="text-bold">How Long Will You Use (hrs)?</span>
         </div>
         <div class="row items-center justify-center flex q-py-md">
-                <q-space></q-space>
-                <q-space></q-space>
-								<q-btn icon="remove" round color="orange" dense @click="hr_incr(1)"></q-btn>
-								<span class="q-px-md text-bold">{{rm_usage_hrs}}</span>
-								<q-btn icon="add" round color="orange" dense @click="hr_incr(2)"></q-btn>
-                <q-space></q-space>
-                <q-btn icon="add" rounded color="orange"  label="task" dense @click="$router.push('rent_me2')"></q-btn>
+          <q-space></q-space>
+          <q-space></q-space>
+					<q-btn icon="remove" round color="orange" dense @click="hr_incr(1)"></q-btn>
+					<span class="q-px-md text-bold">{{rm_usage_hrs}}</span>
+					<q-btn icon="add" round color="orange" dense @click="hr_incr(2)"></q-btn>
+          <q-space></q-space>
+          <q-btn icon="add" rounded color="orange"  label="task" dense @click="$router.push('rent_me2')"></q-btn>
         </div>
 
         <br />
@@ -122,7 +122,7 @@
           </q-card>
         </q-dialog>
 
-         <q-dialog v-model="order_success_dailog" persistent>
+        <q-dialog v-model="order_success_dailog" persistent>
           <q-card class="cb-round-borders-10">
             <q-card-section class="text-center q-pa-lg">
               <q-avatar size="70px" font-size="70px" icon="check_circle" class="text-white bg-orange"/>
@@ -278,7 +278,7 @@ export default ({
     screenredirection(){
       var ps = this;
       // ps.$router.push('Coupons?service_id='+ps.category.main_service_id);
-      ps.$router.push('Coupons?service_id='+ps.service.id);
+      ps.$router.push('Coupons_rentme?service_id='+ps.service.id);
     },
     couponremove_function(){
       var ps = this;

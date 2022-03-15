@@ -77,33 +77,15 @@ export default ({
           console.log(error);
         });
   	},
-  	screen_redirection(coupon){
-  		var ps = this;
-  		// console.log(coupon,"coupon");
-  		ps.category = JSON.parse(localStorage.getItem('category'));
-  		// console.log(ps.category,'category');
-  		if(ps.$route.query.service_id == '1'){
-  			localStorage.setItem('coupon1',coupon.code);
-  			ps.$router.push('PickAndDrop_Checkout');
-  		}
-  		if( ps.$route.query.service_id == ps.category.service_id){
-  			localStorage.setItem('coupon_pick',coupon.code);
-  			ps.$router.push('PickFromStore_Checkout');
-  		}
-
-
-  	},
   	screen_redirection_no_coupon(coupon){
   		var ps = this;
-  		// console.log(coupon,"coupon");
-  		ps.category = JSON.parse(localStorage.getItem('category'));
-  		// console.log(ps.category,'category');
-  		if(ps.$route.query.service_id == '1'){
-  			ps.$router.push('PickAndDrop_Checkout');
-  		}
-  		if( ps.$route.query.service_id == ps.category.service_id){
-  			ps.$router.push('PickFromStore_Checkout');
-  		}
+  		localStorage.setItem('coupon_rent_me',coupon.code);
+			ps.$router.push('rent_me3');
+  	},
+  	screen_redirection(coupon){
+  		var ps = this;
+			localStorage.setItem('coupon_rent_me',coupon.code);
+			ps.$router.push('rent_me3');
   	},
   	
   }

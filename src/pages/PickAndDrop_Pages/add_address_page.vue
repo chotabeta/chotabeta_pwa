@@ -116,6 +116,7 @@ export default {
   },
   mounted() {
     this.getToken();
+    this.getuserdetails();
     if (this.$route.query.searchaddress && this.$route.query.searched_latlong) {
     }
   },
@@ -124,6 +125,11 @@ export default {
       var ps = this;
       ps.access_token = ps.$store.state.token;
       if (ps.access_token == null) { ps.$router.push("/"); }
+    },
+    getuserdetails(){
+      var ps = this;
+      ps.userdetails =JSON.parse(localStorage.getItem('userdetails'));
+      ps.phone = ps.userdetails.deatils.mobile;
     },
     add_address() {
       var ps = this;
@@ -189,7 +195,13 @@ export default {
       }else if(ps.$route.query.address =="p1"){
         localStorage.setItem('pick_from_store_address',JSON.stringify(ps.selected_location));
         ps.$router.push('/PickFromStore_Checkout?adding=1');
-      }                             
+      }else if(ps.$route.query.address =="d1"){
+        localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
+        ps.$router.push('/DriveMe_Summary');
+      }else if(ps.$route.query.address =="d2"){
+        localStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
+        ps.$router.push('/DriveMe_Summary');
+      }                           
     },
 
     storing_the_address() {

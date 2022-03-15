@@ -12,7 +12,6 @@
 			<q-card-section class="q-pa-sm" >
 				<div class="row" v-if="categories.length != 0" style="height:70vh;overflow: scroll;">
 					<div class="col-4 text-center cb-text-grey-4 q-mt-sm" v-for="item in categories" :key="item">
-						<div class="q-px-sm" style="border-radius: 100%;" >
 							<q-avatar size="70px" class="shadow-2 " @click="services_page_redirection(item)">
 								<q-avatar size="40px" square>
 									<img :src="item.category_image_for_mobile" >
@@ -20,7 +19,7 @@
 								</q-avatar>
 							</q-avatar><br>
 						<span class="text-black">{{ item.name }}</span>
-						</div>
+					
 					</div>
 				</div> 
 			</q-card-section>
@@ -63,6 +62,7 @@ export default ({
 			if(response.data.status_code ==200){
 			 		// console.log(response.data);
 			 	ps.categories = response.data.all_categories;
+ 				localStorage.setItem('categories',JSON.stringify(ps.categories));
 			}else{
 			 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
 			}
@@ -88,7 +88,10 @@ export default ({
   			}else{
   				ps.$router.push('/PickAndDrop_s1');
   			}
-  		}
+  		}else if(item.main_service_id == 3){
+				// localStorage.setItem('dm_vehicle_data', JSON.stringify(item));
+			  ps.$router.push('/PickAndDrop_s1?s_id=3');
+		  }
   	}
 
   }

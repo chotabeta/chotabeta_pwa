@@ -47,7 +47,7 @@
                     <q-btn icon="add" flat dense @click="AddMoreToCartFunction_product(product,product.weight_description)"> </q-btn>
                   </div>
                 </span>
-                <span v-else class="text-red text-weight-bolder">Product Not Available</span>
+                <span v-else class="text-red text-weight-bolder">Out of Stock</span>
               </div>
               <div class="text-weight-bolder cb-font-16">
                 <q-icon name="currency_rupee"></q-icon>{{ sample_mrp }}
@@ -99,7 +99,7 @@
                           <q-btn icon="add" flat dense @click="AddMoreToCartFunction(i,i.description)"></q-btn>
                         </span>
                       </span>
-                      <span v-else class="text-red text-weight-bolder">Product Not Available</span>
+                      <span v-else class="text-red text-weight-bolder">Out of Stock</span>
                     </q-card-section>
                     <q-card-section class="q-pa-none flex flex-center q-pt-sm  text-weight-bolder">
                     </q-card-section>
@@ -279,7 +279,7 @@
           if (item2.description == weight_description) {
             vm.mrp_123 = item2.mrp;
             vm.id_123 = item2.id;
-
+            vm.product = item2.item_disabled;
             vm.product_id_123 = item2.product_id;
             // console.log(vm.mrp_123, "sp");
           }
@@ -297,6 +297,7 @@
                 vm.id_1234 = item2.id;
                 item.mycart = item2.mycart;
                 vm.product_id_1234 = item2.product_id;
+                item.item_disabled = item2.item_disabled;
                 // console.log(vm.mrp_1234, "sp");
               }
             });

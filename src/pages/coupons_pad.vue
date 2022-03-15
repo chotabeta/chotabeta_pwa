@@ -11,7 +11,7 @@
 				<div class="row">
 					<div class="col-12 row cb-shadow-1 q-my-sm q-pa-sm cb-round-borders-10" v-for="i in coupons">
 						<div class="col-2">
-							<q-avatar class="shadow-2" size="60px"> <img :src="i.coupon_image"></q-avatar>
+							<q-avatar class="shadow-2" size="60px"> <img src="~assets/images/logo.png"></q-avatar>
 						</div>
 						<div class="col-10 q-pl-md">
 							<span class="text-weight-bolder cb-font flex cb-text-blue-8">{{ i.name }}
@@ -85,15 +85,22 @@ export default ({
   		if(ps.$route.query.service_id == '1'){
   			localStorage.setItem('coupon1',coupon.code);
   			ps.$router.push('PickAndDrop_Checkout');
+  		}else if(ps.$route.query.service_id == '3'){
+  			localStorage.setItem('coupon1',coupon.code);
+  			ps.$router.push('DriveMe_Summary');
   		}
+
   	},
   	screen_redirection_no_coupon(coupon){
   		var ps = this;
-  		// console.log(coupon,"coupon");
+  		console.log(coupon,"coupon");
   		ps.category = JSON.parse(localStorage.getItem('category'));
   		// console.log(ps.category,'category');
   		if(ps.$route.query.service_id == '1'){
   			ps.$router.push('PickAndDrop_Checkout');
+  		}else if(ps.$route.query.service_id == '3'){
+  			localStorage.setItem('coupon1',coupon.code);
+  			ps.$router.push('DriveMe_Summary');
   		}
   	},
   	

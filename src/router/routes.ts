@@ -75,6 +75,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/coupons_pad.vue'),
   },
   {
+    path: '/Coupons_rentme',
+    component: () => import('pages/Coupons_rentme.vue'),
+  },
+  {
     path: '/Custom_items',
     component: () => import('pages/pickfromStore_Pages/Custom_items.vue'),
   },
@@ -85,21 +89,19 @@ const routes: RouteRecordRaw[] = [
 
 
 
-    // Rent Me
-    {
-      path: '/rent_me1',
-      component: () => import('pages/Rent_me/rent_me1.vue'),
-    },
-    {
-      path: '/rent_me2',
-      component: () => import('pages/Rent_me/rent_me2.vue'),
-    },
-    {
-      path: '/rent_me3',
-      component: () => import('pages/Rent_me/rent_me3.vue'),
-    },
-
-
+  // Rent Me
+  {
+    path: '/rent_me1',
+    component: () => import('pages/Rent_me/rent_me1.vue'),
+  },
+  {
+    path: '/rent_me2',
+    component: () => import('pages/Rent_me/rent_me2.vue'),
+  },
+  {
+    path: '/rent_me3',
+    component: () => import('pages/Rent_me/rent_me3.vue'),
+  },
 
 
   // Pick And Drop
@@ -125,6 +127,14 @@ const routes: RouteRecordRaw[] = [
     path: '/dashboard',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Index.vue') }],
+  },
+  {
+    path: '/DriveMeMap',
+    component: () => import('pages/PickAndDrop_Pages/DriveMeMap.vue')
+  },
+  {
+    path: '/DriveMe_Summary',
+    component: () => import('pages/PickAndDrop_Pages/DriveMe_Summary.vue')
   },
 
   // Always leave this as last one,

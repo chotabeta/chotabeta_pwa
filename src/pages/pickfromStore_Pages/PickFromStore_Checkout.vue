@@ -433,7 +433,7 @@ export default ({
 										pick_date: ps.pick_date,
 										from_address: ps.delivery_address,  
 										territory_id: ps.delivery_territory_id,
-										transaction_id: "03032022Q91H120503",
+										transaction_id:ps.transaction_id,
 										store_id: null,
 										pincode: ps.delivery_pincode,
 										delivery: ps.delivery_address,

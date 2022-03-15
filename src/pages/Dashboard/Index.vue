@@ -317,10 +317,13 @@ export default ({
   			console.log(item);
   			if(item.id == 30){
   				ps.PAD_others_Dailog = true;
-  			}else{
+  			}else if(item.service_id == 3) {
+				  ps.$router.push('Services?id='+item.service_id);				
+				}else{
   				ps.$router.push('/PickAndDrop_s1');
   			}
   		}
+
   	},
   	PAD_others_sunction(){
   		var ps = this;
@@ -352,22 +355,22 @@ export default ({
   	screen_redirection_sliders(item){
   		var ps =  this;
   		console.log(item,'item');
-  		if(item.redirection_enabled == 0){
-  			var ps = this;
-  			var category = JSON.parse(localStorage.getItem('category'));
-  			var service = JSON.parse(localStorage.getItem('service'));
-  			// console.log(category);
-  			// console.log(service);
-				category.id = item.category_id;
-				category.main_service_id = service.id;
-				category.name = item.service_name;
-				category.screen_redirection = item.screen_redirection;
-				category.service_id = item.service_id;
-				category.vehicle_type = item.vicinity;
-				service.mode = item.service_mode;
-				localStorage.setItem('service',service);
-				ps.services_page_redirection(category);
-  		}
+  		// if(item.redirection_enabled == 0){
+  		// 	var ps = this;
+  		// 	var category = JSON.parse(localStorage.getItem('category'));
+  		// 	var service = JSON.parse(localStorage.getItem('service'));
+  		// 	// console.log(category);
+  		// 	// console.log(service);
+				// category.id = item.category_id;
+				// category.main_service_id = service.id;
+				// category.name = item.service_name;
+				// category.screen_redirection = item.screen_redirection;
+				// category.service_id = item.service_id;
+				// category.vehicle_type = item.vicinity;
+				// service.mode = item.service_mode;
+				// localStorage.setItem('service',service);
+				// ps.services_page_redirection(category);
+  		// }
   	},
   	search_products(){
 			var ps = this;

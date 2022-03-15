@@ -231,6 +231,12 @@ export default ({
           }else if(ps.$route.query.address =="p1"){
             localStorage.setItem('pick_from_store_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/PickFromStore_Checkout?adding=1');
+          }else if(ps.$route.query.address =="d1"){
+            localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
+            ps.$router.push('/DriveMe_Summary');
+          }else if(ps.$route.query.address =="d2"){
+            localStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
+            ps.$router.push('/DriveMe_Summary');
           }
         }
       });

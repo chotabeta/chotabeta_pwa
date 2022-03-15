@@ -55,7 +55,7 @@ export default store(function (/* { ssrContext } */) {
     state: {
       token:      localStorage.getItem('token')       || null,
       xid:        localStorage.getItem('xid')         || null,
-      pincode:    localStorage.getItem('pincode')     || null ,
+      pincode:    localStorage.getItem('pincode')     || null,
       latlongs:   localStorage.getItem('latlongs')    || null,
       address:    localStorage.getItem('address')     || null,
       showaddress:localStorage.getItem('showaddress') || null,
@@ -101,17 +101,27 @@ export default store(function (/* { ssrContext } */) {
               });
             }
             else if(response.data.status_code == 200){
-              context.commit('setToken',response.data.access_token);
-              context.commit('setxid',response.data.xid);
-              localStorage.setItem('token',response.data.access_token);
-              localStorage.setItem('xid',response.data.xid);
-              resolve(response.data);
+              resolve('new');
+              // context.commit('setToken',response.data.access_token);
+              // context.commit('setxid',response.data.xid);
+              // localStorage.setItem('token',response.data.access_token);
+              // localStorage.setItem('xid',response.data.xid);
+              // resolve(response.data);
             }else{
               reject(response.data);
             }
           }).catch(function (error) {
             reject(error);
           });
+        });
+      },
+      set_access_token(context,data){
+        return new Promise((resolve, reject) => {
+          context.commit('setToken',data.access_token);
+          context.commit('setxid',data.xid);
+          localStorage.setItem('token',data.access_token);
+          localStorage.setItem('xid',data.xid);
+          resolve('');
         });
       },
       logout(context){

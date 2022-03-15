@@ -122,6 +122,7 @@ export default ({
       territory_checkup_dialog:ref(false),
       territory_data:ref([]),
       vicinity_range:ref(null),
+      category:ref(null),
     }
   },
   mounted () {
@@ -360,12 +361,19 @@ export default ({
       formData.append("plan", null);
       formData.append("pick_territory_id", ps.picked_address_array.territory_id);
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+      loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
         loader.style.display="none";
-        if(response.data.distance_in_km <= (ps.territory_data.vicinity_range/1000)){ ps.$router.push('PickAndDrop_Checkout'); }
+        ps.category = JSON.parse(localStorage.getItem('category'));
+        if( ps.category.main_service_id == 3){
+         if(response.data.distance_in_km <= (ps.territory_data.vicinity_range/1000)){ ps.$router.push('/DriveMeMap'); }
          else{  ps.territory_checkup_dialog = true; }
+
+        }else{
+          if(response.data.distance_in_km <= (ps.territory_data.vicinity_range/1000)){ ps.$router.push('PickAndDrop_Checkout'); }
+           else{  ps.territory_checkup_dialog = true; }
+        }
       }).catch(function (error) {
         console.log(error);
         // ps.$q.notify({ message: error, type: "negative",});

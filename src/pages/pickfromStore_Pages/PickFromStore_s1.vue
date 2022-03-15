@@ -67,7 +67,7 @@
 								<q-btn icon="add" flat dense size="sm" @click="AddMoreToCartFunction(item,item.description)"></q-btn>
 							</div>
 						</div>
-						<span v-else class="text-red text-weight-bolder">Product Not Available</span>
+						<span v-else class="text-red text-weight-bolder">Out of Stock</span>
 					</div>
 				</div>
 			</div>
@@ -357,6 +357,7 @@ export default ({
 						  item.id = item2.id;
 						  item.mycart= item2.mycart;
 						  vm.product_id_123 = item2.product_id;
+						  item.item_disabled = item2.item_disabled;
 					  }
 				  });
 		    }

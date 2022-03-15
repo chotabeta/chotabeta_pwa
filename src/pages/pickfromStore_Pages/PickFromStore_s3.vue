@@ -51,11 +51,15 @@
 										</span>
 									</span>
 									<q-space></q-space>
-									<span class="cb-text-orange-8">
+									<span class="cb-text-orange-8"  v-if="item.item_disabled == 0">
 										<q-btn icon="remove" flat dense @click="RemoveFromCartfunction(item)"></q-btn>
 										<span class="q-px-sm text-weight-bolder cb-font-16">{{ item.no_of_quantity}}</span>
 										<q-btn icon="add" flat dense @click="AddMoreToCartFunction(item)"></q-btn>
 									</span>
+									<span v-else class="text-red text-weight-bolder">
+									Out of Stock
+									<q-icon name="delete_sweep" color="red" @click="RemoveFromCartfunction(item)"></q-icon>
+								</span>
 								</div>
 							</div>
 						</div>
@@ -122,7 +126,7 @@
         			<br>
         			<br>
         			<span class="">We are here to serve. Get your packages,groceries and many more to your door step at single click.</span><br><br>
-        	    	<q-btn label="Shop now" class="cb-bg-orange-8 text-white q-px-xl" @click="$router.push('/')"></q-btn>
+        	    	<q-btn label="Shop now" class="cb-bg-orange-8 text-white q-px-xl" @click="$router.push('/home/dashboard')"></q-btn>
         		</div>
       		</q-page>
 
@@ -153,7 +157,7 @@ export default ({
   	this.getToken();
   	this.mycart_count_and_length_update();
   	localStorage.removeItem('coupon_pick');
-  	// this.mycart_count_and_length();	
+  	this.mycart_count_and_length();	
   },
   methods:{
   	getToken(){
@@ -172,6 +176,7 @@ export default ({
   			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
   			ps.cartlength =  ps.mycart_items.length;
   			ps.mycart_items.forEach( cart =>{
+  				cart.item_disabled = 1;
   				ps.cart_price = ps.cart_price+(cart.mycart * parseInt(cart.selected_variation.selling_price));
   			});
   		}
@@ -179,8 +184,6 @@ export default ({
   	},
   	mycart_count_and_length_update(){
   		var ps = this;
-  		var loader = document.getElementById('loader2');
-	      loader.style.display="block";
   		if(localStorage.getItem('mycart')){
   			var data_sku = [];
   			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
@@ -195,6 +198,9 @@ export default ({
   			let formData = new FormData();
   			formData.append('xid', ps.$store.state.xid);
         formData.append('data_sku', JSON.stringify(data_sku));
+        
+  		var loader = document.getElementById('loader2');
+	      loader.style.display="block";
         let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
   			ps.$api.post('/api/update-cart-items',formData,config).then(function (response) {
   				loader.style.display="none";

@@ -1,7 +1,7 @@
 <template>
 	<q-layout>
 		<q-page-container>
-			<q-page class="flex flex-center">
+			<q-page class="flex flex-center q-mt-xl q-py-xl" id="sign_in_page" style="display:block">
 				<div id="loader2" class="pre-loader" style="display:none"></div>
 				<div class="column items-center">
 					<q-avatar size="100px" class="shadow-5">
@@ -51,6 +51,27 @@
 
 				</div>
 			</q-page>
+			<q-page class="flex flex-center q-pa-xl" id="user_details_add" style="display:none">
+				<div class="text-center">
+					<q-avatar size="100px" class="shadow-2">
+						<img src="~assets/images/logo.png">
+					</q-avatar><br><br>
+					<span class="text-h5 text-bold">we need some basic information</span><br>
+					<p class="text-h6 text-grey-8"> just to know more about you</p>
+					<q-form @submit="save_user()" class="q-px-md">
+						<q-input  v-model="mobile" outlined  rounded class="text-h6" disable>  
+							<template v-slot:prepend>+91 <span class="q-px-xs">|</span></template>
+						</q-input>
+						<q-input  v-model="name" outlined placeholder="Name" rounded class="text-h6 q-my-sm"></q-input>
+						<q-select  v-model="location" outlined placeholder="Select" :options="locations" rounded class="text-h6 q-my-sm"></q-select>
+						<q-input v-model="referral" placeholder="Referral code (Optional)" outlined  rounded class="text-h6"></q-input>
+						<br>
+						<span class="text-h6">T&C <q-icon name="check_circle" color="orange" size="sm"></q-icon></span>
+						<br><br>
+						<q-btn type="submit" class="cb-bg-orange-8 text-white q-px-xl cb-round-borders-10 cb-font-16" label="submit"></q-btn>
+					</q-form>
+				</div>
+			</q-page>
 		</q-page-container>
 	</q-layout>
 </template>
@@ -71,6 +92,11 @@ export default {
       OTP5 : ref(''),
       OTP6 : ref(''),
       Timer: ref('00:00'),
+      mobile:ref(null),
+      locations:ref([]),
+      location:ref(null),
+      referral:ref(null),
+      name:ref(null),
     }
   },
   mounted () {
@@ -95,7 +121,7 @@ export default {
   		ps.$api.post('/api/auth/sign-up-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
   			loader.style.display="none";
     		if(response.data.status_code == 400){
-    			var loader = document.getElementById('loader2');
+    			// var loader = document.getElementById('loader2');
 	      	loader.style.display="block";
     			ps.$api.post('/api/auth/reset-password-send-otp',{ mobile: ps.mobile_number }).then(function (response) {
     				loader.style.display="none";
@@ -151,12 +177,52 @@ export default {
   		 	if(res.status_code == 200){
 	  		 	ps.$q.notify({ message:res.message, type: 'positive' ,progress: true,});
 	  		 	ps.$router.push('CheckLocation');
+	  		}else if(res == 'new'){
+	  			ps.mobile = ps.mobile_number;
+	  			document.getElementById('sign_in_page').style.display = 'none';
+	  			document.getElementById('user_details_add').style.display = 'block';
+	  			ps.get_cities();
 	  		}
       }).catch(error => {
           	ps.$q.notify({ message:error.message, type: 'negative',progress: true, });
        });
       loader.style.display="none";
   	},
+  	get_cities(){
+  		var ps = this;
+  		ps.$api.get('/api/get-serving-locations').then(function (response) {
+  			ps.locations = response.data.locations;
+  		}).catch(function (error) {
+  			console.log(error);
+    		// ps.$q.notify({ message:error, type: 'warning' });
+  		});
+  	},
+  	save_user(){
+  		var ps = this;
+  		if(!ps.name){ ps.$q.notify({ message:'Name is required', type: 'negative'}); return false;}
+  		if(!ps.location){ ps.$q.notify({ message:'Name is required', type: 'negative'}); return false;}
+  		var formdata={
+									password: "********",
+									full_name: ps.name,
+									city: ps.location,
+									mobile: ps.mobile,
+									ref_code: ps.referral,
+									l_number:'',
+									device: "",
+									email: null
+									}
+			ps.$api.post('/api/auth/self-details',formdata).then(function (response) {
+  			ps.$store.dispatch('set_access_token',{'access_token':response.data.access_token, 'xid':response.data.sh }).then(res => {
+  				ps.$router.push('CheckLocation');
+				 }).catch(error => {
+        	ps.$q.notify({ message:error, type: 'negative',progress: true, });
+       });
+  		}).catch(function (error) {
+  			console.log(error);
+    		// ps.$q.notify({ message:error, type: 'warning' });
+  		});
+
+  	}
   }
 }
 </script>

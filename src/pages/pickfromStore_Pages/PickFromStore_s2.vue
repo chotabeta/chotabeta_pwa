@@ -24,7 +24,7 @@
 			</div>
 			 <div class="cb-bg-grey-3 q-px-sm">
           <q-tabs v-model="tabs" align="left" :breakpoint="0" active-class="cb-bg-white-1 cb-text-grey-8 cb-round-borders-10 q-px-xs" indicator-color="transparent" dense>
-            <q-tab :label="i.name" :name="i.id" class="q-my-xs" v-for="i in combinations.sub_categories" :key="i" @click="page = 1,errorpage = null,getItems()"></q-tab>
+            <q-tab :label="i.name" :name="i.id" class="q-my-xs" v-for="i in combinations.sub_categories" :key="i" @click="page = 1,errorpage = null,getItems(i.id)"></q-tab>
           </q-tabs>
         </div>
         <div class="q-ma-sm flex">
@@ -94,115 +94,89 @@
 
 
         <q-dialog v-model="alert">
-      <q-card style="min-width:75%">
-        <q-card-section>
-          <div class="text-h6">Choose</div>
-        </q-card-section>
+		      <q-card style="min-width:75%">
+		        <q-card-section>
+		          <div class="text-h6">Choose</div>
+		        </q-card-section>
+		        <q-card-section>
+		          <div class="row items-center justify-center">
+		            <div class="col">
+		          <q-icon name="photo_camera" class="cb-text-grey-4" style="font-size: 3em; align:center !important"></q-icon><br>
+		          <span>Camera</span>
+		            </div>
+		          <div class="col">
+		             <label for="file-input">
+		            <q-icon name="image" class="cb-text-grey-4" style="font-size: 3em; align:center !important"></q-icon>
+		            </label>
+		            <br>
+		            <input id="file-input" type="file"  class="hidden" @change="onFileChange_combo" />
+		          <!-- <q-icon name="image" class="cb-text-grey-4" style="font-size: 3em; align:center !important; cursor:pointer" @click="onFileChange_combo(event)"></q-icon><br> -->
+		          <!-- <input type= "file" name="image" class="cb-text-grey-4" style="font-size: 3em; align:center !important" @change="onFileChange_combo"><br> -->
+		          <span>Gallery</span>
+		          </div>
+		          </div>
+		        </q-card-section>
 
-        <q-card-section>
-          <div class="row items-center justify-center">
-            <div class="col">
-          <q-icon name="photo_camera" class="cb-text-grey-4" style="font-size: 3em; align:center !important"></q-icon><br>
-          <span>Camera</span>
-            </div>
-          <div class="col">
-             <label for="file-input">
-            <q-icon name="image" class="cb-text-grey-4" style="font-size: 3em; align:center !important"></q-icon>
-            </label>
-            <br>
-            <input id="file-input" type="file"  class="hidden" @change="onFileChange_combo" />
-          <!-- <q-icon name="image" class="cb-text-grey-4" style="font-size: 3em; align:center !important; cursor:pointer" @click="onFileChange_combo(event)"></q-icon><br> -->
-          <!-- <input type= "file" name="image" class="cb-text-grey-4" style="font-size: 3em; align:center !important" @change="onFileChange_combo"><br> -->
-          <span>Gallery</span>
-          </div>
-          </div>
-        </q-card-section>
-
-        <q-card-actions align="right">
-          <q-btn flat label="Cancel" color="primary" v-close-popup />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-
-    <q-dialog
-      v-model="cam_dialog"
-      persistent
-      :maximized="maximizedToggle"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-    >
-      <q-card class="my-card">
+		        <q-card-actions align="right">
+		          <q-btn flat label="Cancel" color="primary" v-close-popup />
+		        </q-card-actions>
+		      </q-card>
+		    </q-dialog>
 
 
+		    <q-dialog v-model="cam_dialog" persistent :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down">
+		      <q-card class="my-card">
+		        <q-card-section class="q-pt-none flex flex-center" style="min-height:90%">
+			        <img :src="selected_cam_image" id ="img_id" spinner-color="white" class="justify-center" style="min-height: 100%; width: 100%;margin:auto;margin-top:auto;text-align: center">
+					  </q-card-section>
+					  <q-card-actions align="right">
+		          <q-btn v-close-popup flat color="primary" label="Cancel" ></q-btn><q-space></q-space>
+		          <q-btn v-close-popup flat color="primary" round  label="OK" @click="cam_order_placement1()" ></q-btn>
+		        </q-card-actions>
+		      </q-card>
+		    </q-dialog>
 
-        <q-card-section class="q-pt-none flex flex-center" style="min-height:90%">
-        <img :src="selected_cam_image" id ="img_id"
-      spinner-color="white" class="justify-center"
-      style="min-height: 100%; width: 100%;margin:auto;margin-top:auto;text-align: center">
+				<q-dialog v-model="mycart_length_restriction">
+	        <q-card class="cb-round-borders-20" style="max-width: 300px;">
+	          <q-card-section class="text-center text-grey-9 q-py-xl">
+	          	<q-avatar size="80px" class="bg-orange-3">
+								<q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
+							</q-avatar><br><br>
+	            <p class="text-h6 text-weight-bolder">{{ restrictions.total_qty_dialog_title }}</p>
+	            <p class="cb-font-16">{{ restrictions.total_qty_dialog_msg }}</p>
+	            <q-btn label="Sure" class="cb-bg-orange-8 text-white q-px-xl cb-round-borders-10" @click="mycart_length_restriction = false"></q-btn>
+	          </q-card-section>
+	        </q-card>
+	      </q-dialog>
 
-		  </q-card-section>
-
-		  <q-card-actions align="right">
-          <q-btn v-close-popup flat color="primary" label="Cancel" ></q-btn><q-space></q-space>
-          <q-btn v-close-popup flat color="primary" round  label="OK" @click="cam_order_placement1()" ></q-btn>
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
-
-			<q-dialog v-model="mycart_length_restriction">
-        <q-card class="cb-round-borders-20" style="max-width: 300px;">
-          <q-card-section class="text-center text-grey-9 q-py-xl">
-          	<q-avatar size="80px" class="bg-orange-3">
-							<q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
-						</q-avatar><br><br>
-            <p class="text-h6 text-weight-bolder">{{ restrictions.total_qty_dialog_title }}</p>
-            <p class="cb-font-16">{{ restrictions.total_qty_dialog_msg }}</p>
-            <q-btn label="Sure" class="cb-bg-orange-8 text-white q-px-xl cb-round-borders-10" @click="mycart_length_restriction = false"></q-btn>
-          </q-card-section>
-        </q-card>
-      </q-dialog>
-
-      <q-dialog
-      v-model="global_search_dialog_s2"
-      persistent
-      :maximized="maximizedToggle_s2"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-    >
-      <q-card >
-        <q-bar>
-          <q-space></q-space>
-
-          
-          <q-btn dense flat icon="close" @click="search_focusout_s2()">
-            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
-          </q-btn>
-        </q-bar>
-
-        <q-card-section>
-          <q-input autofocus outlined for="input_id" placeholder="Enter Product Name " v-model="user_search_input_s2" dense @keyup="search_products_s2()">
-			<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
-		</q-input>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-			<div v-for="products in global_search_data_s2" :key="products" @click="go_to_product_page(products)">
-         <div class="row">
-			 <div class="col-3">
-				 <img :src="products.image" 
-				  style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;" >
-				 </div>
-			 <div class="col-9">
-				<span v-html="products.name"></span>
-				 </div>
-			 </div>
-				 <q-separator color="orange"></q-separator>
-				 </div>
-			 
-		  </q-card-section>
-      </q-card>
-    </q-dialog>
+	      <q-dialog v-model="global_search_dialog_s2" persistent :maximized="maximizedToggle_s2" transition-show="slide-up" transition-hide="slide-down">
+	      	<q-card >
+	        	<q-bar>
+	          	<q-space></q-space>
+	          	<q-btn dense flat icon="close" @click="search_focusout_s2()">
+	            	<q-tooltip class="bg-white text-primary">Close</q-tooltip>
+	          	</q-btn>
+	        	</q-bar>
+		        <q-card-section>
+	  	        <q-input autofocus outlined for="input_id" placeholder="Enter Product Name " v-model="user_search_input_s2" dense @keyup="search_products_s2()">
+								<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
+							</q-input>
+	        	</q-card-section>
+		        <q-card-section class="q-pt-none">
+							<div v-for="products in global_search_data_s2" :key="products" @click="go_to_product_page(products)">
+	        			<div class="row">
+				 					<div class="col-3">
+					 					<img :src="products.image" style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;" >
+					 				</div>
+				 					<div class="col-9">
+										<span v-html="products.name"></span>
+					 				</div>
+				 				</div>
+					 			<q-separator color="orange"></q-separator>
+					 		</div>	 
+					  </q-card-section>
+	      	</q-card>
+	    	</q-dialog>
 
 			</q-page>
 		</q-page-container>
@@ -287,7 +261,6 @@ export default ({
   			ps.$router.push('');
   		}
   	},
-
 
     onFileChange_combo(event){
  		  this.cam_image = event.target.files[0];
@@ -394,8 +367,9 @@ export default ({
 
   	getItems(item){
   		var ps = this;
+  		if(item!=undefined){ ps.tabs = item; }
 		  let config = { headers: { "Authorization": `Bearer ${ps.access_token}`, },}
-  		if( ps.tabs){
+		 	if( ps.tabs){
 	  		if(ps.category.screen_redirection == 2){
 	  			var category_id = ps.sub_category.category_id;
 	  			var service_id  = ps.sub_category.service_id;
@@ -420,6 +394,7 @@ export default ({
 						  response.data.data.forEach(ele => { ps.data.push(ele); });
 						  // console.log(ps.data,"ps.data");
 					  }else{
+					  	ps.data = [];
 					  	window.scrollTo(0,0);
 						  ps.data = response.data.data;
 					  }

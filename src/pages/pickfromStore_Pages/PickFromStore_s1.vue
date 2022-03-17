@@ -13,7 +13,7 @@
     			<q-badge   class="cb-bg-orange-8" rounded floating >{{ cartlength }}</q-badge>
   			</q-btn>
 		</q-toolbar>
-</q-header>
+	</q-header>
 <q-page-container>
 	<q-page class="q-px-sm">
 		<div id="loader2" class="pre-loader" style="display:none"></div>
@@ -52,7 +52,7 @@
 					<div class="flex flex-center">
 						<q-icon name="currency_rupee"></q-icon>{{ item.mrp }}
 						<q-space ></q-space>
-						<select  v-model="item.description" @input="change_item(item,item.description)" class="bg-white text-grey-8 shadow-2 rounded-borders q-py-xs" style="width:70px; border :none;">
+						<select  v-model="item.description" @change="change_item(item,item.description)" class="bg-white text-grey-8 shadow-2 rounded-borders q-py-xs" style="width:70px; border :none;">
 							<option v-for="variation in item.variations" >{{variation.description}}</option>
 						</select>
 					</div>
@@ -78,7 +78,7 @@
 		</div>
 		<div class="row coupon-wrap" v-if="combo_offers" >
 			<div class="col-8 q-pa-xs" v-for="combo in combo_offers">
-				<q-img :src="combo.images_array" class="cb-round-borders-10 full-height" v-if="combo != '' ">
+				<q-img :src="combo.images_array" class="cb-round-borders-10 full-height" v-if="combo!=''">
 					<div class="full-height full-width" style="background: transparent;">
 						<div style="height:90%;width:60%" @click="get_item_screen(combo)">
 							<span class="text-weight-bolder cb-font-16">{{ combo.name }}</span><br>
@@ -92,7 +92,7 @@
 				  			</span>
 				  		</span>
 				  		<q-space></q-space>
-				  			<q-btn label="add to cart" class="cb-text-orange-8 bg-white cb-round-borders-10" size="sm" v-if="combo.mycart == 0" @click="AddToCartFunction_combo(combo)"></q-btn>
+				  			<q-btn label="add to cart" class="cb-text-orange-8 bg-white cb-round-borders-10" size="sm" v-if="combo.mycart == 0" @click="AddMoreToCartFunction_combo(combo)"></q-btn>
 				  			<div class="cb-text-orange-8 bg-white shadow-1 cb-round-borders-10 flex" v-else>
 									<q-btn icon="remove" flat dense size="sm" @click="RemoveFromCartfunction_combo(combo)"></q-btn>
 									<q-space></q-space>
@@ -159,50 +159,36 @@
         </q-card>
       </q-dialog>
 
-      <q-dialog
-      v-model="global_search_dialog_s1"
-      persistent
-      :maximized="maximizedToggle_s1"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-    >
-      <q-card >
-        <q-bar>
-          <q-space></q-space>
-
-          
-          <q-btn dense flat icon="close" @click="search_focusout_s1()">
-            <q-tooltip class="bg-white text-primary">Close</q-tooltip>
-          </q-btn>
-        </q-bar>
-
-        <q-card-section>
-          <q-input autofocus outlined for="input_id" placeholder="Enter Product Name " v-model="user_search_input_s1" dense @keyup="search_products_s1()">
-			<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
-		</q-input>
-        </q-card-section>
-
-        <q-card-section class="q-pt-none">
-			<div v-for="products in global_search_data_s1" :key="products" @click="go_to_product_page(products)">
-         <div class="row">
-			 <div class="col-3">
-				 <img :src="products.image" 
-				  style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;" >
-				 </div>
-			 <div class="col-9">
-				<span v-html="products.name"></span>
-				 </div>
-			 </div>
-				 <q-separator color="orange"></q-separator>
-				 </div>
-			 
-		  </q-card-section>
-      </q-card>
-    </q-dialog>
-
-	</q-page>
-
-</q-page-container>
+      <q-dialog v-model="global_search_dialog_s1" persistent :maximized="maximizedToggle_s1" transition-show="slide-up" transition-hide="slide-down">
+      	<q-card>
+        	<q-bar>
+          	<q-space></q-space>
+	          <q-btn dense flat icon="close" @click="search_focusout_s1()">
+    	        <q-tooltip class="bg-white text-primary">Close</q-tooltip>
+  	        </q-btn>
+      	  </q-bar>
+        	<q-card-section>
+          	<q-input autofocus outlined for="input_id" placeholder="Enter Product Name " v-model="user_search_input_s1" dense @keyup="search_products_s1()">
+							<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
+						</q-input>
+        	</q-card-section>
+        	<q-card-section class="q-pt-none">
+						<div v-for="products in global_search_data_s1" :key="products" @click="go_to_product_page(products)">
+         			<div class="row">
+			 					<div class="col-3">
+				 					<img :src="products.image" style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;">
+				 				</div>
+				 				<div class="col-9">
+									<span v-html="products.name"></span>
+					 			</div>
+			 				</div>
+				 			<q-separator color="orange"></q-separator>
+				 		</div>
+				  </q-card-section>
+      	</q-card>
+    	</q-dialog>
+		</q-page>
+	</q-page-container>
 </q-layout>
 </template>
 <script>
@@ -241,9 +227,9 @@ export default ({
     	response_data:ref(null),
     	mycart_length_restriction:ref(false),
     	global_search_dialog_s1: ref(false),
-		maximizedToggle_s1: ref(true),
-		user_search_input_s1: ref(null),
-		global_search_data_s1: ref([]),
+			maximizedToggle_s1: ref(true),
+			user_search_input_s1: ref(null),
+			global_search_data_s1: ref([]),
     }
   },
   mounted () {
@@ -357,7 +343,7 @@ export default ({
 						  item.id = item2.id;
 						  item.mycart= item2.mycart;
 						  vm.product_id_123 = item2.product_id;
-						  item.item_disabled = item2.item_disabled;
+						  // item.item_disabled = item2.item_disabled;
 					  }
 				  });
 		    }
@@ -477,7 +463,8 @@ export default ({
   		ps.combo_offers.forEach(combo =>{	combo.mycart = 0; });
 				ps.mycart_items.forEach(cart =>{
   				ps.combo_offers.forEach(combo =>{
-  					if(cart.sku == combo.sku){ combo.mycart = cart.mycart; }
+  					if(cart.sku == combo.sku){
+  						 combo.mycart = cart.mycart; }
   				});
   			});
   		ps.mycart_count_and_length();
@@ -490,21 +477,23 @@ export default ({
   			localStorage.setItem('cart_key',ps.cart_key_data.cart_key);
   		}
   		if( ps.cart_key_data.cart_key == localStorage.getItem('cart_key')){
-	  		combo.selected_variation = combo.variations[0];
+  			combo.selected_variation = combo.variations[0];
 	  		combo.selected_variation.mycart = 1;
 	  		combo.mycart = 1;
-	  		ps.mycart_items.push(combo);
-	  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
-	  		setTimeout(ps.cart_checkup_combo_offers(), 500);
-	  	}else{
+	  		ps.mycart_items.push(combo);	
+  		}else{
   			ps.cart_key_dailog = true;
   		}
+  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items))
+  		ps.cart_checkup_combo_offers();
   	},
 		AddMoreToCartFunction_combo(combo){
 			var ps = this;
+			var existing = null;
 			ps.mycart_items.forEach(cart=>{
 				if(cart.sku == combo.sku){
-					if(cart.mycart < ps.response_data.qty_retriction_count){
+					existing = 1;
+					if(cart.mycart < ps.response_data.combo_offers_qty_restriction){
 						cart.mycart = 1 + cart.mycart;  
 						cart.selected_variation.mycart = cart.selected_variation.mycart + 1;
 					}else{
@@ -512,6 +501,9 @@ export default ({
 					}
 				}
 			});
+			if(existing == null){
+				ps.AddToCartFunction_combo(combo);
+			}
 			localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
 			ps.cart_checkup_combo_offers();
 		},

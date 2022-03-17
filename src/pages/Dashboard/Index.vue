@@ -50,6 +50,14 @@
   				</div>
   			</q-btn>
   		</div>
+  		<!-- <div class="col-6 q-pa-sm" v-if="service3" >
+    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm" id="service3" @click="services_menu(service3,3)">
+    			<div class="fit">
+  					<q-img :src="service3.service_image" style="width:100px;height:70px"></q-img><br>
+  					<span class="cb-text-blue-8 cb-font-12 text-weight-bolder ">{{ service3.name }}</span>
+  				</div>
+  			</q-btn>
+  		</div> -->
     </div>
 
     <div class="row" v-if="service_details">
@@ -104,8 +112,6 @@
 		      	</q-input>
 		      	<q-btn type="submit" label="Save" class="cb-bg-orange-8 text-white q-mt-md"></q-btn>
 	      	</q-form>
-
-
 	      </q-card-section>
 	    </q-card>
 	  </q-dialog>
@@ -128,43 +134,31 @@
 	    </q-card>
 	  </q-dialog>
 
-	  <q-dialog
-      v-model="global_search_dialog"
-      persistent
-      :maximized="maximizedToggle"
-      transition-show="slide-up"
-      transition-hide="slide-down"
-    >
+	  <q-dialog v-model="global_search_dialog" persistent :maximized="maximizedToggle" transition-show="slide-up" transition-hide="slide-down">
       <q-card >
         <q-bar>
           <q-space></q-space>
-
-          
           <q-btn dense flat icon="close" @click="search_focusout()">
             <q-tooltip class="bg-white text-primary">Close</q-tooltip>
           </q-btn>
         </q-bar>
-
         <q-card-section>
           <q-input autofocus outlined for="input_id" :placeholder="search_box_text" v-model="user_search_input" dense @keyup="search_products()">
-			<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
-		</q-input>
+						<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
+					</q-input>
         </q-card-section>
-
         <q-card-section class="q-pt-none">
-			<div v-for="products in global_search_data" :key="products" @click="go_to_product_page(products)">
-         <div class="row">
-			 <div class="col-3">
-				 <img :src="products.image" 
-				  style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;" >
+					<div v-for="products in global_search_data" :key="products" @click="go_to_product_page(products)">
+         		<div class="row">
+			 				<div class="col-3">
+				 				<img :src="products.image" style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;" >
+				 			</div>
+			 				<div class="col-9">
+								<span v-html="products.name"></span>
+				 			</div>
+			 			</div>
+				 		<q-separator color="orange"></q-separator>
 				 </div>
-			 <div class="col-9">
-				<span v-html="products.name"></span>
-				 </div>
-			 </div>
-				 <q-separator color="orange"></q-separator>
-				 </div>
-			 
 		  </q-card-section>
       </q-card>
     </q-dialog>
@@ -300,6 +294,7 @@ export default ({
   			document.getElementById('service0').classList.add('cb-bg-gradient-orange-4');
   			document.getElementById('service1').classList.add('cb-bg-gradient-orange-4');
   			document.getElementById('service2').classList.add('cb-bg-gradient-orange-4');
+  			ps.$router.push('/food');
   		}
   	},
   	services_page_redirection(item){
@@ -336,21 +331,21 @@ export default ({
   	GetCallBackRequestFunction(){
   		var ps = this;
   		var loader = document.getElementById('loader2');
-	      	loader.style.display="block";
+	    loader.style.display="block";
   		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-				ps.$api.get('/api/get-call?current_location='+ps.$store.state.latlongs,config).then(function (response) {
-					loader.style.display="none";
-					if(response.data.status_code ==200){
-					 	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
-					 }
-					 else{
-					 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
-					}
-				 	ps.CallBackRequestDialog = false;
-				}).catch(function (error) {
-					console.log(error);
-					// ps.$q.notify({ message:error, type: 'warning',progress: true, });
-				});
+			ps.$api.get('/api/get-call?current_location='+ps.$store.state.latlongs,config).then(function (response) {
+				loader.style.display="none";
+				if(response.data.status_code ==200){
+				 	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
+				 }
+				 else{
+				 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
+				}
+			 	ps.CallBackRequestDialog = false;
+			}).catch(function (error) {
+				console.log(error);
+				// ps.$q.notify({ message:error, type: 'warning',progress: true, });
+			});
   	},
   	screen_redirection_sliders(item){
   		var ps =  this;
@@ -402,26 +397,20 @@ export default ({
   		}else{
 					ps.$q.notify({ message:"Please Refresh", type: 'warning',progress: true, });
   		}
-
-
-
-	},
-	go_to_product_page(product_data){
-		
-  		var ps = this;
+		},
+		go_to_product_page(product_data){
+			var ps = this;
   		ps.$router.push('/PickFromStore_Item?sku='+product_data.sku);
-  
-	},
-	search_focusout(){
-		var ps = this;
-		ps.global_search_dialog = false;
-
-	},
-	my_function(){
-		this.global_search_dialog = true; 
+		},
+		search_focusout(){
+			var ps = this;
+			ps.global_search_dialog = false;
+		},
+		my_function(){
+			this.global_search_dialog = true; 
 			document.getElementById('input_id').focus();
 			document.getElementById('input_id').focus();
-	}
+		}
   }
 })
 </script>

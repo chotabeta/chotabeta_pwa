@@ -137,6 +137,12 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/PickAndDrop_Pages/DriveMe_Summary.vue')
   },
 
+  // food pages
+  {
+    path:'/food',
+    component:()=>import('pages/food/food_home.vue')
+  },
+
   // Always leave this as last one,
   // but you can also remove it
   {

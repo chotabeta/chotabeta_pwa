@@ -279,7 +279,7 @@
           if (item2.description == weight_description) {
             vm.mrp_123 = item2.mrp;
             vm.id_123 = item2.id;
-            vm.product = item2.item_disabled;
+            // vm.product = item2.item_disabled;
             vm.product_id_123 = item2.product_id;
             // console.log(vm.mrp_123, "sp");
           }

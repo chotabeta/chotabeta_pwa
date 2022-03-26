@@ -243,6 +243,7 @@ export default ({
       location_alert:ref(true),
       terms_conditions:ref(false),
       privacy_policy:ref(false),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -253,10 +254,13 @@ export default ({
   methods:{
     getAccessToken(){
       var ps = this;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null ||  !ps.access_token){
-        ps.$router.push('');
-      }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
   }
 })

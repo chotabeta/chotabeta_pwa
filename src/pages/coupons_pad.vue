@@ -34,8 +34,8 @@
 	</q-layout>
 </template>
 <script>
-let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-if (!isMobile){ window.location="https://chotabeta.com/pwa"; }
+// let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+// if (!isMobile){ window.location="https://chotabeta.com/pwa"; }
 import axios from 'boot/axios'
 import {ref } from 'vue'
 export default ({
@@ -45,6 +45,8 @@ export default ({
     	redeem_points:ref(null),
     	category:ref(null),
     	coupons_available:ref(0),
+    	access_token:ref(null),
+    	xid:ref(null),
     }
   },
   mounted () {
@@ -56,8 +58,12 @@ export default ({
   methods:{
   	getToken(){
   		var ps = this ;
-  		ps.access_token = ps.$store.state.token;
-  		if(ps.access_token == null){ ps.$router.push(''); }  	
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+  		else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
   	},
   	getcoupons(){
   		var ps = this;

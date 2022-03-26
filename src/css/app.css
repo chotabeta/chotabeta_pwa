@@ -86,6 +86,46 @@
   background-size: 50% 350px,50% 350px;
 }
 
- #loader2{ position: fixed;  top: 0;left: 0; right: 0;bottom: 0;
+#loader2{ position: fixed;  top: 0;left: 0; right: 0;bottom: 0;
            background-image: url(assets/loader2.svg),linear-gradient(rgba(0,0,0,0.5),rgba(0,0,0,0.5));
            z-index: 99999;background-position: center; background-repeat: no-repeat;}
+
+
+@media only screen and (max-width: 768px) {
+ 
+	#page_refresh_1{
+		display: none!important; 
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	  background-image: linear-gradient(to bottom, #FD9A55 50%, #F8766C 100%);
+	  z-index: 99999;
+	  background-position: 100% 100%; 
+	  background-repeat: no-repeat;
+	}
+	.page_refresh{
+		display: block!important; 
+	}
+
+}
+@media only screen and (min-width: 769px) {
+ 
+	#page_refresh_1{
+		display: block!important; 
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	  background-image: linear-gradient(to bottom, #FD9A55 50%, #F8766C 100%);
+	  z-index: 99999;
+	  background-position: 100% 100%; 
+	  background-repeat: no-repeat;
+	}
+	.page_refresh{
+		display: none!important; 
+	}
+
+}

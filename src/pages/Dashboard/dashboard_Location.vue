@@ -1,11 +1,13 @@
 <template>
 <q-layout view="lHh lpr lFf">
+
   <q-header>
     <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
       <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/>
       <span class="cb-font-16 text-weight-bolder q-px-sm">Search For Your Location</span>
     </q-toolbar>
   </q-header>
+
   <q-page-container>
     <q-page class="q-px-md q-py-xs">
       <div id="loader2" class="pre-loader" style="display:none"></div>
@@ -56,7 +58,7 @@
 		        </q-item-section>
 		        <q-item-section>
 		        	<q-item-label>{{ i.location_type }}</q-item-label>
-          			<q-item-label caption lines="2">{{ i.name }}</q-item-label>
+          		<q-item-label caption lines="2">{{ i.name }}</q-item-label>
 		        </q-item-section>
 		      </q-item>
 		  	</q-list>
@@ -81,6 +83,7 @@ export default ({
       location_search:ref(null),
       searched_latlong:ref(null),
       selected_location:ref(null),
+      xid:ref(null)
     }
   },
   mounted () {
@@ -90,53 +93,54 @@ export default ({
   methods:{
     getToken(){
       var ps = this ;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null){
-        ps.$router.push('');
-      }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null){ ps.$router.push('/'); }
     },
     pickanddrop_locationsearch(){
       var ps = this;
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+      loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-        ps.$api.get('/api/favourite-locations-get-two',config).then(function (response) {
-          console.log('response');
-          loader.style.display="none";
-          ps.saved_locations =  response.data.favourite_locations;
-        }).catch(function (error) {
-          console.log(error);
-        })
+      ps.$api.get('/api/favourite-locations-get-two',config).then(function (response) {
+        // console.log('response');
+        loader.style.display="none";
+        ps.saved_locations =  response.data.favourite_locations;
+      }).catch(function (error) {
+        console.log(error);
+      });
     },
     initAutocomplete(){
-        var ps = this;
-        var input_data = document.getElementById('toLocation1');
-        const options = {
-         fields: ["formatted_address", "geometry.location"],
-        };
-        var autocomplete = new google.maps.places.Autocomplete(input_data,options);
-        console.log(autocomplete,'autocomplete');
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {
-              var place = autocomplete.getPlace();
-              console.log(place,"place",place.formatted_address);
-              var aaa=place.geometry.location.lat();
-              var bbb = place.geometry.location.lng();
-              var x = aaa+ ',' +bbb;
-              console.log(x,"jygsdyu");
-              ps.location_search = place.formatted_address;
-              ps.searched_latlong  = x;
-              ps.$router.push('/adding_address_page?searchaddress='+ps.location_search+'&searched_latlong='+ps.searched_latlong);
-            });
+      var ps = this;
+      var input_data = document.getElementById('toLocation1');
+      const options = { fields: ["formatted_address", "geometry.location"], };
+      var autocomplete = new google.maps.places.Autocomplete(input_data,options);
+      // console.log(autocomplete,'autocomplete');
+      google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        var place = autocomplete.getPlace();
+        // console.log(place,"place",place.formatted_address);
+        var aaa=place.geometry.location.lat();
+        var bbb = place.geometry.location.lng();
+        var x = aaa+ ',' +bbb;
+        // console.log(x,"jygsdyu");
+        ps.location_search = place.formatted_address;
+        ps.searched_latlong  = x;
+        ps.$router.push('/adding_address_page?searchaddress='+ps.location_search+'&searched_latlong='+ps.searched_latlong);
+      });
     },
     saved_location_add(location){
     	var ps = this;
-    	console.log(location,"saved location");
+    	// console.log(location,"saved location");
     	ps.selected_location =  location;
     	ps.getReverseGeocodingData(location.location);
     },
    	getReverseGeocodingData(latlongs) {
    		var ps= this;
-    	console.log(latlongs,"latlongs dataaaaaaaaaaaaaaa");
+    	// console.log(latlongs,"latlongs dataaaaaaaaaaaaaaa");
     	var myArray = latlongs.split(',');
     	var latlng = new google.maps.LatLng(myArray[0],myArray[1]);
     	// This is making the Geocode request
@@ -144,7 +148,8 @@ export default ({
     	geocoder.geocode({ 'latLng': latlng },  (results, status) =>{
         if (status !== google.maps.GeocoderStatus.OK) { 
         	console.log(google.maps.GeocoderStatus);
-        	alert(status); }
+        	// alert(status); 
+        }
         // This is checking to see if the Geocode Status is OK before proceeding
         if (status == google.maps.GeocoderStatus.OK) {
           // console.log(results);
@@ -152,8 +157,10 @@ export default ({
           // console.log(address,"address")
           var loader = document.getElementById('loader2');
           loader.style.display="block";
-        	this.$store.dispatch('saved_asdderss_data',{ 'address': address,'saved_address':ps.selected_location }).then(res => {
+        	ps.$store.dispatch('saved_asdderss_data',{ 'address': address,'saved_address':ps.selected_location }).then(res => {
 				    if(res == 200){
+              var length = (address.address_components).length;
+              ps.update_user_details(address.address_components[length-1].long_name);
 				      setTimeout( ps.$router.push('/home/dashboard') ,500);
 				    }
 			    }).catch(error => {
@@ -162,7 +169,21 @@ export default ({
           loader.style.display="none";
         }
     	});
-	  }
+	  },
+    update_user_details(pincode){
+      var ps = this;
+      var loader = document.getElementById('loader2');
+      loader.style.display="block";
+      let formData  = new FormData();
+      formData.append('pincode',pincode)
+      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+      ps.$api.post('/api/update-user-details',formData,config).then(function (response) {
+        // console.log('response');
+      }).catch(function (error) {
+        // console.log(error);
+      });
+      loader.style.display="none";
+    },
   }
 })
 </script>

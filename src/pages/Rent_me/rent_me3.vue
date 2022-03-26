@@ -6,7 +6,7 @@
         <!-- <q-btn flat dense icon="arrow_back" @click="$router.push('/home/dashboard')"/> -->
         <q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
         <q-space></q-space>
-        <q-btn dense icon="notifications" flat @click="$router.push('Notification')">
+        <q-btn dense icon="notifications" flat @click="$router.push('/home/Notification')">
           <q-badge color="red" rounded floating style="margin-top: 8px; margin-right: 8px"></q-badge>
         </q-btn>
         <q-btn round dense icon="shopping_cart" flat>
@@ -89,18 +89,25 @@
           <q-btn label="remove" class="cb-bg-orange-8 cb-round-borders-10 text-white q-ml-sm" style="width:22%" @click="couponremove_function()"></q-btn>
         </div>
 
-        <q-card class="cb-round-borders-10 q-my-md cb-shadow-2">
-          <q-card-section class="cb-bg-grey-2 cb-text-blue-8 text-weight-bolder cb-font-16 q-pa-sm">
-            <span>Payment Method</span>
-          </q-card-section>
-          <q-card-section class="cb-font-16 q-pa-sm">
-            <q-option-group :options="options" v-model="payment" color="orange"  class="full-width"></q-option-group>
-          </q-card-section>
-        </q-card>
+        <span  v-if="xid != 2">
+          <q-card class="cb-round-borders-10 q-my-md cb-shadow-2">
+            <q-card-section class="cb-bg-grey-2 cb-text-blue-8 text-weight-bolder cb-font-16 q-pa-sm">
+              <span>Payment Method</span>
+            </q-card-section>
+            <q-card-section class="cb-font-16 q-pa-sm">
+              <q-option-group :options="options" v-model="payment" color="orange"  class="full-width"></q-option-group>
+            </q-card-section>
+          </q-card>
 
+          <div class="row justify-center">
+            <q-btn label="Pay now"  class="cb-bg-orange-8 text-white q-px-xl" @click="rm_pay_now()"></q-btn>
+          </div>
+        </span>
+        <span v-if="xid == 2">
         <div class="row justify-center">
-          <q-btn label="Pay now"  class="cb-bg-orange-8 text-white q-px-xl" @click="rm_pay_now()"></q-btn>
+          <q-btn label="Sign In" class="cb-bg-green-8 text-white q-px-xl" @click="$router.push('sign-in?service=RM')"></q-btn>
         </div>
+      </span>
 
         <q-dialog v-model="calander_dailog">
           <q-card class="q-dialog-plugin">
@@ -151,8 +158,8 @@
             <q-card-section class="text-center q-pa-lg">
               <q-avatar color="green" text-color="white" size="60px" class='q-pa-none' icon="sentiment_satisfied" font-size="60px"/><br>
               <div class="text-h5 q-py-sm "><b>HoHoo!</b></div>
-              <div>Coupon Code <span class="text-weight-bolder">{{ $route.query.coupon }}</span> Applied</div>
-              <div class="text-green text-bold cb-font-16"><q-icon name="currency_rupee"></q-icon> Saved</div>
+            <div>Coupon Code <span class="text-weight-bolder">{{ coupon_code }}</span> Applied</div>
+            <div class="text-green text-bold cb-font-16"><q-icon name="currency_rupee"></q-icon>{{ discount }} Saved</div>
             </q-card-section>  
           </q-card>
         </q-dialog>
@@ -210,6 +217,7 @@ export default ({
       coupon_dailog_remove:ref(false),
       coupon_code:ref(null),
       discount:ref(null),
+      xid:ref(null),
     }
   },
    mounted () {
@@ -221,8 +229,11 @@ export default ({
   methods:{
     getToken(){
       var ps = this ;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null){ ps.$router.push(''); }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
       ps.coupon_code = localStorage.getItem('coupon_rent_me');
     },
     Subscription_function(){
@@ -231,42 +242,42 @@ export default ({
         ps.calander_dailog = true;
       }
     },
-    location_address(){
-      var ps = this;
-      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+    // location_address(){
+    //   var ps = this;
+    //   let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
 
-      ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
-      ps.category = JSON.parse(localStorage.getItem('category'));
-      ps.service = JSON.parse(localStorage.getItem('service'));
-      var user_data = JSON.parse(ps.$store.state.userdetails);
-      // console.log(user_data)
-      ps.user_data = user_data.deatils;
+    //   ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
+    //   ps.category = JSON.parse(localStorage.getItem('category'));
+    //   ps.service = JSON.parse(localStorage.getItem('service'));
+    //   var user_data = JSON.parse(ps.$store.state.userdetails);
+    //   // console.log(user_data)
+    //   ps.user_data = user_data.deatils;
       
-      console.log(ps.pickuplocation_array,"pickuplocation_array");
+    //   console.log(ps.pickuplocation_array,"pickuplocation_array");
      
-      const d = new Date();
-      let formData = new FormData();
-      // formData.append("to_location", ps.pickuplocation_array.location);
-      formData.append("coupon", null);
-      formData.append("pick_time", (d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds()) );
-      formData.append("weight", null);
-      formData.append("pick_date", d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate()));
-      formData.append("schedule_timestamp",null );
-      formData.append("wseek_end", null);
-      formData.append("plan", null);
-      // formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
-      var loader = document.getElementById('loader2');
-          loader.style.display="block";
-      ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
-        loader.style.display="none";
-          // console.log(response);
-          ps.pickanddrop_fare_data =  response.data;
-        }).catch(function (error) {
-          console.log(error);
-        });
-    },
+    //   const d = new Date();
+    //   let formData = new FormData();
+    //   // formData.append("to_location", ps.pickuplocation_array.location);
+    //   formData.append("coupon", null);
+    //   formData.append("pick_time", (d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds()) );
+    //   formData.append("weight", null);
+    //   formData.append("pick_date", d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate()));
+    //   formData.append("schedule_timestamp",null );
+    //   formData.append("wseek_end", null);
+    //   formData.append("plan", null);
+    //   // formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
+    //   var loader = document.getElementById('loader2');
+    //       loader.style.display="block";
+    //   ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
+    //     loader.style.display="none";
+    //       // console.log(response);
+    //       ps.pickanddrop_fare_data =  response.data;
+    //     }).catch(function (error) {
+    //       console.log(error);
+    //     });
+    // },
     addZero(i) {
-     if (i < 10) {i = "0" + i}
+      if (i < 10) {i = "0" + i}
       return i;
     },
     pickdate_selection(){
@@ -286,7 +297,8 @@ export default ({
       ps.coupon_code = null;
       localStorage.removeItem('coupon_rent_me');
       ps.coupon_dailog_remove = true;
-      ps.location_address();
+      // ps.location_address();
+      ps.rent_me_summery_data();
     },
     placeorder(){
       var ps = this;
@@ -297,7 +309,7 @@ export default ({
       let formData = new FormData();
       // formData.append("base_location", ps.pickuplocation_array.location);
       formData.append("base_pincode", 0);
-      formData.append("xid", ps.$store.state.xid);
+      formData.append("xid", ps.xid);
       formData.append("category_id", ps.category.id);
       formData.append("service_id", ps.category.main_service_id);
       formData.append("plan", null);
@@ -352,9 +364,11 @@ export default ({
           //  alert(ps.delivery_address_array.location);
       ps.category = JSON.parse(localStorage.getItem('category'));
       ps.service = JSON.parse(localStorage.getItem('service'));
-      var user_data = JSON.parse(ps.$store.state.userdetails);
-      console.log(user_data)
-      ps.user_data = user_data.deatils;
+      if(ps.$store.state.userdetails){
+          var user_data = JSON.parse(ps.$store.state.userdetails);
+          console.log(user_data)
+          ps.user_data = user_data.deatils;
+      }
 
       let formData = new FormData();
 
@@ -369,7 +383,7 @@ export default ({
       formData.append("pick_territory_id", 229);
       formData.append("vehicle", 0);
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+      loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/conf-terms-one',formData,config).then(function (response) {
         loader.style.display="none";
@@ -397,8 +411,9 @@ export default ({
       if(inc_dec == 1){
           if(ps.rm_usage_hrs > 1){
           ps.rm_usage_hrs = ps.rm_usage_hrs - 1;
-          ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-               ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
+          ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
+          // ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
+          //      ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
               //  alert(ps.delivery_address_array.location);
           ps.category = JSON.parse(localStorage.getItem('category'));
           ps.service = JSON.parse(localStorage.getItem('service'));
@@ -411,12 +426,12 @@ export default ({
           formData.append("hours", ps.rm_usage_hrs);
           formData.append("trip_type", 0);
           formData.append("to_location", ps.pickuplocation_array.location);
-          formData.append("category_id", 11);
+          formData.append("category_id", ps.service.id);
           formData.append("coupon", ps.coupon_code);
-          formData.append("service_id", 11);
+          formData.append("service_id", ps.service.id);
           formData.append("drop_territory_id", null);
           formData.append("from_location", ps.pickuplocation_array.location);
-          formData.append("pick_territory_id", 229);
+          formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
           formData.append("vehicle", 0);
           var loader = document.getElementById('loader2');
               loader.style.display="block";
@@ -440,10 +455,9 @@ export default ({
       }else if(inc_dec == 2){
         if(ps.rm_usage_hrs < 8){
         ps.rm_usage_hrs = ps.rm_usage_hrs + 1;
-
-        ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-               ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
-              //  alert(ps.delivery_address_array.location);
+           ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
+        // ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
+        // ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
           ps.category = JSON.parse(localStorage.getItem('category'));
           ps.service = JSON.parse(localStorage.getItem('service'));
           var user_data = JSON.parse(ps.$store.state.userdetails);
@@ -455,12 +469,12 @@ export default ({
           formData.append("hours", ps.rm_usage_hrs);
           formData.append("trip_type", 0);
           formData.append("to_location", ps.pickuplocation_array.location);
-          formData.append("category_id", 11);
+          formData.append("category_id", ps.service.id);
           formData.append("coupon", ps.coupon_code);
-          formData.append("service_id", 11);
+          formData.append("service_id", ps.service.id);
           formData.append("drop_territory_id", null);
           formData.append("from_location", ps.pickuplocation_array.location);
-          formData.append("pick_territory_id", 229);
+          formData.append("pick_territory_id", ps.pickuplocation_array.territory_id );
           formData.append("vehicle", 0);
           var loader = document.getElementById('loader2');
               loader.style.display="block";
@@ -499,9 +513,12 @@ export default ({
       var user_details;
       var user_data = JSON.parse(ps.$store.state.userdetails);
       ps.user_data = user_data.deatils;
-       ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
+      //  ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
+
+        ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
        ps.task_details = (localStorage.getItem('tasks'));
        console.log(ps.task_details);
+       ps.service = JSON.parse(localStorage.getItem('service'));
 
        let formData = new FormData();
 
@@ -524,7 +541,7 @@ export default ({
       formData.append("vehicle", "");
       formData.append("to_lat_lng", ps.pickuplocation_array.location);
       formData.append("tasks", ps.task_details);
-      formData.append("week_end", "");
+      formData.append("week_end", "");  
       formData.append("coupon", ps.coupon_code);
       formData.append("hours", ps.rm_usage_hrs);
       formData.append("trip_type", "0");
@@ -536,7 +553,7 @@ export default ({
       formData.append("subscription_option", "");
       formData.append("territory_id", "1");
       formData.append("pick_name", ps.user_data.name);
-      formData.append("service_id", "11");
+      formData.append("service_id", ps.service.id);
       formData.append("drop_territory_id", "");
       formData.append("from_lat_lng", ps.pickuplocation_array.location);
       var loader = document.getElementById('loader2');
@@ -555,8 +572,6 @@ export default ({
         }).catch(function (error) {
           console.log(error);
         });
-
-
     }
   }
 })

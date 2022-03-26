@@ -1,6 +1,8 @@
 <template>
   <q-page>
+
     <div id="loader2" class="pre-loader" style="display:none"></div>
+
     <div class="row justify-center cb-bg-white-2">
       <span class="cb-text-orange-8 cb-font-16 text-weight-bolder q-pb-xs">Refer and Earn</span>
     </div>
@@ -135,29 +137,31 @@ export default ({
       total_refrels_text:ref(null),
       how_to_use_refer_points:ref(null),
       sub_text:ref(null),
+      xid:ref(null),
     }
   },
   mounted () {
     var ps = this;
     ps.getAccessToken();
-
     ps.refferandearn();
    
   },
   methods:{
     getAccessToken(){
       var ps = this;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null ||  !ps.access_token){
-        ps.$router.push('');
-      }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     refferandearn(){
       var ps = this;
       var loader = document.getElementById('loader2');
           loader.style.display="block";
       let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-      ps.$api.get('/api/reffer-earn-two?current_version_name=&device=&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
+      ps.$api.get('/api/reffer-earn-two?current_version_name=&device=&playstore_version_name=&xid='+ps.xid,config).then(function (response) {
         loader.style.display="none";
       if(response.data.status_code ==200){
         ps.ref_code                  = response.data.ref_code;

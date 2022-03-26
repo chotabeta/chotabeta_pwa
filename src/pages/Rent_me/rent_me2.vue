@@ -5,7 +5,7 @@
       <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/> -->
       <q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
       <q-space></q-space>
-      <q-btn round dense icon="notifications" flat @click="$router.push('Notification')">
+      <q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')">
         <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
       </q-btn>
       <q-btn round dense icon="shopping_cart" flat>
@@ -67,7 +67,7 @@
   	      </q-card>
 
         <div class="row justify-center q-pt-lg">
-          <q-btn type="submit" class="q-px-lg cb-bg-orange-8 text-white" @click="redi_to_rm_summary()" label="Confirm"></q-btn>
+          <q-btn  class="q-px-lg cb-bg-orange-8 text-white" @click="redi_to_rm_summary()" label="Confirm"></q-btn>
         </div>
       </q-form>
 	</q-page>
@@ -94,6 +94,7 @@ export default ({
       added_task_aray:ref([]),
       taskadding:ref(null),
       add_update:ref('add'),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -106,8 +107,11 @@ export default ({
   methods:{
   	getToken(){
   		var ps = this ;
-  		ps.access_token = ps.$store.state.token;
-  		if(ps.access_token == null){	ps.$router.push('');	}
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
   	},
     removeRow(index) {
       this.added_task_aray.splice(index, 1);
@@ -156,7 +160,6 @@ export default ({
       var ps = this;
       if(ps.added_task_aray != null){
         var obj1  = [];
-     
         ps.added_task_aray.forEach(element => {
           var obj = {'task' : element};
           obj1.push(obj);

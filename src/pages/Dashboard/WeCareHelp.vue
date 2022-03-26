@@ -38,6 +38,8 @@ export default {
   setup () {
     return {
       data:ref(null),
+      xid:ref(null),
+      access_token:ref(null),
     }
   },
   mounted(){
@@ -47,15 +49,16 @@ export default {
   methods:{
     getAccessToken(){
       var ps = this;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null ||  !ps.access_token){
-        ps.$router.push('');
-      }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     gettodaydata(){
       var ps = this;
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,} }
       ps.$api.get('https://chotabeta.app/dev/testenv/api/we-care',config).then(function (response) {
         loader.style.display="none";

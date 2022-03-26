@@ -2,11 +2,11 @@
 <q-page>
   <div id="loader2" class="pre-loader" style="display:none"></div>
   <div class="flex cb-bg-white-2 flex-center cb-font-16 text-weight-bolder">
-    <q-space></q-space>
+    <q-space v-if="xid != 2"></q-space>
     <q-space></q-space>
     <span class="cb-text-orange-8">Notifications</span>
     <q-space></q-space>
-    <q-btn label="clear" icon-right="delete_sweep" class="cb-text-orange-8 text-weight-bolder" flat @click="clear_notification = true"></q-btn>
+    <q-btn label="clear" icon-right="delete_sweep" class="cb-text-orange-8 text-weight-bolder" v-if="xid != 2" flat @click="clear_notification = true"></q-btn>
   </div>
 
   <div v-if="data != null" class="q-px-md">
@@ -14,11 +14,11 @@
       <q-card-section class="q-pa-none q-pt-sm">
         <div class="row">
           <div class="col-3 q-pa-md">
-            <q-avatar class="fit cb-shadow-2">
+            <q-avatar class="cb-shadow-2" size="65px">
               <img src="https://chotabeta.com/icons/Group%202.png">
             </q-avatar>
           </div>
-          <div class="col-9">
+          <div class="col-9 cb-font-12">
             <span class="cb-text-blue-8 text-bold">{{ note.subject }}</span><br>
             <span class="cb-text-grey-5">{{ note.message }}</span><br>
             <span class="cb-text-grey-4">Pickup Id : {{ note.id}}</span>
@@ -27,6 +27,7 @@
       </q-card-section>
     </q-card>
   </div>
+
   <div v-if="data == null"  class="q-px-lg text-center cb-text-grey-4 q-mt-xl q-pt-lg" >
     <span class="text-h4 text-weight-bolder text-grey-2">0 Results</span><br>
     <q-img src="https://chotabeta.app/dev/testenv/public/imgs/refandearn.png" width="200px"></q-img><br>
@@ -58,6 +59,7 @@ export default {
     return {
       data:ref(null),
       clear_notification:ref(false),
+      xid:ref(null),
     }
   },
 
@@ -68,10 +70,12 @@ export default {
   methods:{
     getAccessToken(){
       var ps = this;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null ||  !ps.access_token){
-        ps.$router.push('');
-      }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     gettodaydata(){
       var ps = this;
@@ -90,10 +94,10 @@ export default {
       })
     },
 
-      clearnotification(){
+    clearnotification(){
       var ps = this;
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/clear-my-notifications',config).then(function (response) {
         loader.style.display="none";

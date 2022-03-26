@@ -1,5 +1,6 @@
 <template>
   <q-layout  view="lHh lpr lFf">
+
     <q-header  style="background: transparent;">
       <q-toolbar>
         <q-btn icon="chevron_left" flat class="cb-text-grey-4 q-px-none" @click="$router.push('/home/')"></q-btn>
@@ -8,8 +9,9 @@
         <q-space></q-space>
       </q-toolbar>
     </q-header>
+
     <q-page-container>
-      <q-page  >
+      <q-page>
         <div class="row items-center justify-center">
           <q-img src="https://chotabeta.app/dev/testenv/public/imgs/viewOrder.png" width="60%" />
         </div>
@@ -53,6 +55,7 @@ export default ({
     return {
       access_token:ref(null),
       food_tab:ref('active'),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -61,10 +64,13 @@ export default ({
   methods:{
     getToken(){
       var ps = this ;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null){
-        ps.$router.push('/');
-      }  
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      
+      if(ps.access_token == null){  ps.$router.push('/');}  
     },
   }
 })

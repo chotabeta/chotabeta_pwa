@@ -1,11 +1,12 @@
 <template>
 <q-layout  view="lHh lpr lFf">
+
   <q-header>
     <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
       <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/>
-      <q-btn icon="place" class="q-pa-none" flat :label="$store.state.showaddress"></q-btn>
+      <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
       <q-space></q-space>
-      <q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> 
+      <q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')"> 
         <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
       </q-btn>
       <q-btn round dense icon="shopping_cart" flat>
@@ -13,6 +14,7 @@
       </q-btn>
     </q-toolbar>
   </q-header>
+
   <q-page-container>
     <q-page class="q-pb-sm q-px-sm">
       <div id="loader2" class="pre-loader" style="display:none"></div>
@@ -21,8 +23,8 @@
       		<q-btn v-if="active" size="xs" :icon="btnProps.icon" color="red-7" flat round dense @click="onClick" />
       		<q-btn v-else :icon="btnProps.icon" color="grey-5" class="q-px-none" size="xs" flat round dense @click="onClick" />
    		  </template>
-     	  <q-carousel-slide :name="index"  class="column no-wrap q-pa-none" v-for="(offer,index ) in sliders" :key="offer" >
-        	<q-img class="rounded-borders "  :src="offer.link"></q-img>
+     	  <q-carousel-slide :name="index" class="column no-wrap q-pa-none" v-for="(offer,index ) in sliders" :key="offer" >
+        	<q-img class="rounded-borders" :src="offer.link"></q-img>
       	</q-carousel-slide>
       </q-carousel>
 
@@ -123,6 +125,7 @@ export default ({
       territory_data:ref([]),
       vicinity_range:ref(null),
       category:ref(null),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -135,35 +138,40 @@ export default ({
   methods:{
   	getToken(){
   		var ps = this ;
-  		ps.access_token = ps.$store.state.token;
-  		if(ps.access_token == null){	ps.$router.push('');	}
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
   	},
   	pickanddrop_sliders(){
   		var ps = this;
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        loader.style.display="block";
     	let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      	ps.$api.get('/api/pick-and-drop-sliders',config).then(function (response) {
-          loader.style.display="none";
-      		// console.log('response');
-          ps.sliders =  response.data.sliders;
-      	}).catch(function (error) {
-       		console.log(error);
-          // ps.$q.notify({ message: error, type: "negative",}); 
-      	});
+      ps.$api.get('/api/pick-and-drop-sliders',config).then(function (response) {
+        loader.style.display="none";
+      	// console.log('response');
+        ps.sliders =  response.data.sliders;
+      }).catch(function (error) {
+      	console.log(error);
+        // ps.$q.notify({ message: error, type: "negative",}); 
+      });
   	},
     pickupaddress_select(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-
       if(ps.$route.query.address == null ){
         var loader = document.getElementById('loader2');
-          loader.style.display="block";
-        ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.$store.state.xid,config).then(function (response) {
+        loader.style.display="block";
+        ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
               ps.territory_data = response.data;
-              ps.picked_address_array = { flat_no: null,
+              ps.picked_address_array = { 
+                                          flat_no: null,
                                           location: ps.$store.state.latlongs,
                                           location_type: null,
                                           name: ps.$store.state.address,
@@ -173,20 +181,18 @@ export default ({
                                         }
               localStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
               ps.picked_address  = ps.picked_address_array.name; 
-              }
-              else{
+              }else{
                 ps.territory_checkup_dialog =  true;
               }
             }).catch(function (error) {
               console.log(error);
               // ps.$q.notify({ message: error, type: "negative",});
             });
-
       }else if(ps.$route.query.address == 1){
-          var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        var loader = document.getElementById('loader2');
+        loader.style.display="block";
         var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
-        ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+        ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
             ps.territory_data = response.data;
@@ -213,11 +219,10 @@ export default ({
               console.log(error);
               // ps.$q.notify({ message: error, type: "negative",});
             });
-
       }else if(ps.$route.query.address == 2){
         var loader = document.getElementById('loader2');
           loader.style.display="block";
-        ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.$store.state.xid,config).then(function (response) {
+        ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
             ps.territory_data = response.data;
@@ -242,7 +247,7 @@ export default ({
         var loader = document.getElementById('loader2');
           loader.style.display="block";
         var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
-        ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+        ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
               ps.delivery_address_array = { drop_flat:      delivery_address_array.drop_flat,
@@ -274,7 +279,7 @@ export default ({
           var loader = document.getElementById('loader2');
           loader.style.display="block";
         var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
-        ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+        ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
             if(response.data.full_screen_error_status == 0){
               ps.territory_data = response.data;
@@ -304,7 +309,7 @@ export default ({
         var loader = document.getElementById('loader2');
           loader.style.display="block";
         var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
-        ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+        ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status ==0){
 
@@ -369,7 +374,6 @@ export default ({
         if( ps.category.main_service_id == 3){
          if(response.data.distance_in_km <= (ps.territory_data.vicinity_range/1000)){ ps.$router.push('/DriveMeMap'); }
          else{  ps.territory_checkup_dialog = true; }
-
         }else{
           if(response.data.distance_in_km <= (ps.territory_data.vicinity_range/1000)){ ps.$router.push('PickAndDrop_Checkout'); }
            else{  ps.territory_checkup_dialog = true; }

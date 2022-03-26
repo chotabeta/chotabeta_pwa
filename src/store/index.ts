@@ -55,6 +55,10 @@ export default store(function (/* { ssrContext } */) {
     state: {
       token:      localStorage.getItem('token')       || null,
       xid:        localStorage.getItem('xid')         || null,
+
+      token_cb:   localStorage.getItem('token_cb')    || null,
+      xid_cb:     localStorage.getItem('xid_cb')      || null,
+      
       pincode:    localStorage.getItem('pincode')     || null,
       latlongs:   localStorage.getItem('latlongs')    || null,
       address:    localStorage.getItem('address')     || null,
@@ -76,7 +80,7 @@ export default store(function (/* { ssrContext } */) {
       clearXid(state) {         state.xid         = null;},
       clearlatlongs(state){     state.latlongs    = null;},
       clearpincode(state){      state.pincode     = null;},
-      clearaddress(state){      state.showaddress = null;},
+      clearaddress(state){      state.address     = null;},
       clearshowaddress(state){  state.showaddress = null;},
       clearuserdetails(state){  state.userdetails = null;},
 
@@ -84,9 +88,9 @@ export default store(function (/* { ssrContext } */) {
     actions: {
       login(context,data){
         return new Promise((resolve, reject) => {
-          axios.post('https://stackroger.com/api/auth/sign-up', {'mobile':data.mobile,'otp':data.password}).then(function (response) {
+          axios.post('https://chotabeta.app/dev/testenv/api/auth/sign-up', {'mobile':data.mobile,'otp':data.password}).then(function (response) {
             if(response.data.status_code == 409){
-              axios.post("https://stackroger.com/api/auth/login",{'mobile':data.mobile,'password':data.password}).then(function(response) {
+              axios.post("https://chotabeta.app/dev/testenv/api/auth/login",{'mobile':data.mobile,'password':data.password}).then(function(response) {
                     if(response.data.status_code == 200){
                       context.commit('setToken',response.data.access_token);
                       context.commit('setxid',response.data.xid);
@@ -102,11 +106,6 @@ export default store(function (/* { ssrContext } */) {
             }
             else if(response.data.status_code == 200){
               resolve('new');
-              // context.commit('setToken',response.data.access_token);
-              // context.commit('setxid',response.data.xid);
-              // localStorage.setItem('token',response.data.access_token);
-              // localStorage.setItem('xid',response.data.xid);
-              // resolve(response.data);
             }else{
               reject(response.data);
             }

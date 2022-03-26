@@ -1,9 +1,10 @@
 <template>
-<q-layout>
+<q-layout  view="lHh lpr lFf">
+
   <q-header>
     <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
       <q-btn flat dense icon="arrow_back" @click="$router.push('/home/Orders')"/>
-      <q-btn icon="place" class="q-pa-none" size="sm" flat label="HUDA Techno Enclave, HITEC City"></q-btn>
+      <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
       <q-space></q-space>
       <q-btn dense icon="notifications" flat @click="$router.push('Notification')">
         <q-badge color="red" rounded floating style="margin-top: 8px; margin-right: 8px"></q-badge>
@@ -13,9 +14,11 @@
       </q-btn>
     </q-toolbar>
   </q-header>
+
   <q-page-container>
     <q-page class="text-grey-8">
       <div id="loader2" class="pre-loader" style="display:none"></div>
+
       <div class="flex q-px-md q-py-sm ">
         <q-avatar class="q-mr-sm" size="65px" style="border:1px solid #e6e6e6">  
           <q-img :src="order.image_url+order_data.categ_image" width="40px" height="40px"></q-img>
@@ -34,8 +37,10 @@
             {{order_data.actual_schedule_timestamp}}
           </div> 
         </div>
-      </div>  
+      </div>
+
       <q-separator />
+
       <div class="flex q-py-xs q-px-md" v-for=" i in payment_details">{{ i.key }}<q-space></q-space>{{ i.Value }}</div>
       <q-separator />
       <div class="flex q-py-sm q-px-md ">
@@ -50,6 +55,7 @@
           <span class="cb-text-grey-5">{{ order_data.to_location }}</span>
         </div>
       </div>
+
       <div class="row q-px-md cb-bg-grey-2 q-py-xs">
         <span class="cb-text-orange-8 cb-font-14 text-bold">Item Details</span>
       </div>
@@ -84,6 +90,7 @@ export default {
       order_data:ref([]),
       image_url:ref(null),
       payment_details:ref([]),
+      xid:ref(null),
     };
   },
 
@@ -97,23 +104,28 @@ export default {
   methods: {
     getAccessToken() {
       var ps = this;
-      ps.access_token = ps.$store.state.token;
-      if (ps.access_token == null || !ps.access_token) { ps.$router.push(""); }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     getorderdata() {
       var ps = this;
-     var loader = document.getElementById('loader2');
-          loader.style.display="block";
+      var loader = document.getElementById('loader2');
+        loader.style.display="block";
       let config = { headers: { Authorization: `Bearer ${ps.access_token}`, },};
       ps.$api.get('/api/v2/my-order-details?order_id='+this.$route.query.order_id, config).then(function (response) {
         loader.style.display="none";
-          ps.order = response.data;
-          ps.order_data = response.data.orders_details_two;
-          ps.payment_details =  response.data.payment_details;
-        }).catch(function (error) {
-          // handle error
-          console.log(error);
-        });
+        ps.order = response.data;
+        ps.order_data = response.data.orders_details_two;
+        ps.payment_details =  response.data.payment_details;
+      }).catch(function (error) {
+        // handle error
+        console.log(error);
+      });
     },
 
     postData(e) {

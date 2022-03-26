@@ -1,11 +1,13 @@
 <template>
   <q-layout view="lHh lpr lFf">
+
     <q-header>
       <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
         <q-btn flat dense round icon="arrow_back" />
         <span class="cb-font-16 text-weight-bolder q-px-sm">Search For Your Location</span>
       </q-toolbar>
     </q-header>
+
     <q-page-container>
       <q-page class="bg-white">
         <div id="loader2" class="pre-loader" style="display:none"></div>
@@ -90,8 +92,8 @@
 </template>
 <script>
 
-let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-if (!isMobile) { window.location = "https://chotabeta.com/pwa"; }
+// let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+// if (!isMobile) { window.location = "https://chotabeta.com/pwa"; }
 import axios from 'boot/axios'
 import { ref } from "vue"
 export default {
@@ -109,6 +111,8 @@ export default {
       landmark: ref(null),
       phone: ref(null),
       address_data: ref(null),
+      access_token:ref(null),
+      xid:ref(null),
     };
   },
   mounted() {
@@ -121,31 +125,39 @@ export default {
     
     getToken() {
       var ps = this;
-      ps.access_token = ps.$store.state.token;
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
       if (ps.access_token == null) { ps.$router.push("/"); }
     },
 
     getuserdetails(){
       var ps = this;
-      ps.userdetails =JSON.parse(localStorage.getItem('userdetails'));
-      ps.phone = ps.userdetails.deatils.mobile;
+      if(localStorage.getItem('userdetails')){
+        ps.userdetails =JSON.parse(localStorage.getItem('userdetails'));
+        ps.phone = ps.userdetails.deatils.mobile;
+      }
     },
 
     add_address() {
       var ps = this;
+      if (ps.type == null) {
+        ps.$q.notify({ message: "Invalid Select As", type: "negative" });
+        return false;
+      }
       if (ps.type == "Others") { ps.type = ps.custom_type; } 
       if (ps.building_floor == null) {
         ps.$q.notify({ message: "Invalid Flat,Floor,Building Name", type: "negative",});
         return false;
       }
-      if (ps.phone == null) {
-        ps.$q.notify({ message: "Invalid contact Details", type: "negative" });
-        return false;
-      }
-      if (ps.type == null) {
-        ps.$q.notify({ message: "Invalid Select As", type: "negative" });
-        return false;
-      }
+      // if (ps.phone == null) {
+      //   ps.$q.notify({ message: "Invalid contact Details", type: "negative" });
+      //   return false;
+      // }
+      
       ps.address_data = ps.building_floor+"," +ps.landmark+"," +ps.$route.query.searchaddress;
       ps.storing_the_address();
       ps.getReverseGeocodingData();
@@ -170,7 +182,12 @@ export default {
               address_data: ps.address_data,
               latlongs: ps.$route.query.searched_latlong,
             }).then((res) => {
-              if (res == 200) { setTimeout(ps.$router.push("/home/dashboard"), 1000); }
+              if (res == 200) { 
+                var length = (address.address_components).length;
+              // console.log(address.address_components[length-1].long_name, 'jjjjjjjjjjjjj');
+              ps.update_user_details(address.address_components[length-1].long_name);
+                setTimeout(ps.$router.push("/home/dashboard"), 1000); 
+              }
             }).catch((error) => { console.log(error); });
         }
       });
@@ -194,6 +211,20 @@ export default {
         console.log(error);
       });
     },
+    update_user_details(pincode){
+      var ps = this;
+      var loader = document.getElementById('loader2');
+      loader.style.display="block";
+      let formData  = new FormData();
+      formData.append('pincode',pincode)
+      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+      ps.$api.post('/api/update-user-details',formData,config).then(function (response) {
+        // console.log('response');
+        loader.style.display="none";
+      }).catch(function (error) {
+        console.log(error);
+      })
+    }
   },
 };
 </script>

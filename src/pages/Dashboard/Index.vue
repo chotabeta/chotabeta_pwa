@@ -1,10 +1,12 @@
 <template>
 	<q-page padding>
 		<div id="loader2" class="pre-loader" style="display:none"></div>
+
 		<q-input outlined :placeholder="search_box_text" dense @click="my_function()">
 			<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
 		</q-input>
 
+	<!-- sliders -->
     <div class="full-width">
       <q-carousel animated autoplay infinite swipeable v-model="carousels" style="height:164px" class="cb-shadow-2 q-mt-sm cb-round-borders-10 q-mb-xs" >
         <q-carousel-slide :name="index" :img-src="slide.image" v-for="(slide,index ) in sliders" @click="screen_redirection_sliders(slide)"/>
@@ -14,6 +16,7 @@
       <q-icon name="fiber_manual_record" :class="(index == carousels)? 'text-blue-10':'text-grey-6'" v-for="(slide,index ) in sliders" @click='carosel_set(index)'></q-icon>
     </div>
 
+  <!-- services -->
     <div class="row">
     	<div class="col-6 q-pa-sm" v-if="service0" >
     		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-blue-4 q-pt-sm" id="service0" @click="services_menu(service0,0)">
@@ -41,7 +44,7 @@
   			</q-btn>
   		</div>
 
-  		<div class="col-6 q-pa-sm" v-if="service3" >
+  		<!-- <div class="col-6 q-pa-sm" v-if="service3" >
     		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm" disable  id="service3" @click="services_menu(service3,3)">
     			<div class="fit">
     				<span class="text-red text-bold absolute-top-left q-px-sm" style="z-index: 1111;" >Comming Soon</span>
@@ -49,17 +52,18 @@
   					<span class="cb-text-blue-8 cb-font-12 text-weight-bolder ">{{ service3.name }}</span>
   				</div>
   			</q-btn>
-  		</div>
-  		<!-- <div class="col-6 q-pa-sm" v-if="service3" >
+  		</div> -->
+  		<div class="col-6 q-pa-sm" v-if="service3" >
     		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm" id="service3" @click="services_menu(service3,3)">
     			<div class="fit">
   					<q-img :src="service3.service_image" style="width:100px;height:70px"></q-img><br>
   					<span class="cb-text-blue-8 cb-font-12 text-weight-bolder ">{{ service3.name }}</span>
   				</div>
   			</q-btn>
-  		</div> -->
+  		</div>
     </div>
 
+  <!-- categories -->
     <div class="row" v-if="service_details">
     	<div class="col-12 text-center text-weight-bolder cb-text-blue-8 q-py-md cb-font-14">{{ service_details.description }}</div>
 			<div class="col-3 text-center cb-text-grey-4 q-mb-md" v-for="item in service_details.all_categories" :key="item">
@@ -77,6 +81,7 @@
 			</div>
     </div>
 
+  <!-- upcomming offers -->
     <div class="row q-mt-sm">
     	<div class="col-12 cb-text-grey-4 text-weight-bolder" v-if="upcomming_offers.length != 0">Upcoming Offers</div>
     	<div class="col-12" v-if="upcomming_offers.length != 0">
@@ -91,6 +96,7 @@
     	</div>
     </div>
 
+  <!-- call back request  -->
     <div class="call_request rounded-borders q-mx-sm q-my-md flex flex-center">
     	<q-img src="https://chotabeta.app/dev/testenv/public/uploads/assets/support_girl_we_care.png" width="50px"></q-img>
     	<span class="text-brown text-bold">Need Help?</span>
@@ -191,6 +197,7 @@ export default ({
       maximizedToggle: ref(true),
       user_search_input: ref(null),
       global_search_data: ref([]),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -203,17 +210,20 @@ export default ({
   methods:{
   	getAccessToken(){
   		var ps = this;
-  		ps.access_token = ps.$store.state.token;
-  		if(ps.access_token == null ||  !ps.access_token){
-  			ps.$router.push('');
-  		}
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+  		else{	ps.access_token = ps.$store.state.token_cb;	}
+
+  		if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+  		else{ps.xid = ps.$store.state.xid_cb;}
+
+  		if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/');	}
   	},
   	getDashboarddata(){
   		var ps = this;
   		if(ps.$store.state.latlongs){
 	  		let formData = new FormData();
 	      	formData.append('current_app_version', 1);
-	      	formData.append('pincode', '500072');
+	      	formData.append('pincode', ps.$store.state.pincode);
 	      	formData.append('base_pincode', 0);
 	      	formData.append('base_location', ps.$store.state.latlongs);
 	      	formData.append('lat_lng', ps.$store.state.latlongs);
@@ -310,9 +320,9 @@ export default ({
   			}
   		}else if(item.main_service_id == 1){
   			console.log(item);
-  			if(item.id == 30){
+  			if(item.id == 30 && item.service_id == '1' ){
   				ps.PAD_others_Dailog = true;
-  			}else if(item.service_id == 3) {
+  			}else if(item.service_id == 3 && item.id== 30) {
 				  ps.$router.push('Services?id='+item.service_id);				
 				}else{
   				ps.$router.push('/PickAndDrop_s1');
@@ -349,7 +359,7 @@ export default ({
   	},
   	screen_redirection_sliders(item){
   		var ps =  this;
-  		console.log(item,'item');
+  		// console.log(item,'item');
   		// if(item.redirection_enabled == 0){
   		// 	var ps = this;
   		// 	var category = JSON.parse(localStorage.getItem('category'));
@@ -370,32 +380,33 @@ export default ({
   	search_products(){
 			var ps = this;
   		if(ps.$store.state.latlongs){
-  		if(ps.user_search_input.length > 1){
-			  var pincode = localStorage.getItem('pincode');
-			  var loader = document.getElementById('loader2');
-	      	loader.style.display="block";
-	  		let formData = new FormData();
-	      	formData.append('item_name', ps.user_search_input);
-	      	formData.append('page_no', 1);
-	      	formData.append('pincode', pincode);
-	      	formData.append('lat_lng', ps.$store.state.latlongs);
-	  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-				ps.$api.post('/api/global-search',formData,config).then(function (response) {
-					loader.style.display="none";
-					if(response.data.status_code ==200){
-						ps.global_search_data = response.data.products;
-
-					 
-					}else{
-						ps.global_search_data = '';
-					 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
-					}
-				}).catch(function (error) {
-					// ps.$q.notify({ message:error, type: 'warning',progress: true, });
-				});
-		  }
+	  		if(ps.user_search_input.length > 1){
+				  var pincode = localStorage.getItem('pincode');
+				  var loader = document.getElementById('loader2');
+		      	loader.style.display="block";
+		  		let formData = new FormData();
+		      	formData.append('item_name', ps.user_search_input);
+		      	formData.append('page_no', 1);
+		      	formData.append('pincode', pincode);
+		      	formData.append('lat_lng', ps.$store.state.latlongs);
+		  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
+					ps.$api.post('/api/global-search',formData,config).then(function (response) {
+						loader.style.display="none";
+						if(response.data.status_code ==200){
+							ps.global_search_data = response.data.products;				 
+						}else{
+							ps.global_search_data = '';
+						 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
+						}
+					}).catch(function (error) {
+						console.log(error);
+						// ps.$q.notify({ message:error, type: 'warning',progress: true, });
+					});
+			  }else{
+				  ps.global_search_data = '';
+			  }
   		}else{
-					ps.$q.notify({ message:"Please Refresh", type: 'warning',progress: true, });
+				ps.$q.notify({ message:"Please Refresh", type: 'warning',progress: true, });
   		}
 		},
 		go_to_product_page(product_data){
@@ -408,7 +419,6 @@ export default ({
 		},
 		my_function(){
 			this.global_search_dialog = true; 
-			document.getElementById('input_id').focus();
 			document.getElementById('input_id').focus();
 		}
   }

@@ -5,7 +5,7 @@
       <!-- <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/> -->
       <q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
       <q-space></q-space>
-      <q-btn round dense icon="notifications" flat @click="$router.push('Notification')">
+      <q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')">
         <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
       </q-btn>
       <q-btn round dense icon="shopping_cart" flat>
@@ -100,6 +100,7 @@ export default ({
       delivery_address_array:ref([]),
       picked_address_array:ref([]),
       territory_checkup_dialog:ref(false),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -111,8 +112,11 @@ export default ({
   methods:{
   	getToken(){
   		var ps = this ;
-  		ps.access_token = ps.$store.state.token;
-  		if(ps.access_token == null){	ps.$router.push('');	}
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
   	},
   	pickanddrop_sliders(){
   		var ps = this;
@@ -133,7 +137,7 @@ export default ({
       if(ps.$route.query.address == null ){
         var loader = document.getElementById('loader2');
         loader.style.display="block";
-        ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.$store.state.xid,config).then(function (response){
+        ps.$api.get('/api/check-territory2?lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&xid='+ps.xid,config).then(function (response){
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
               ps.picked_address_array = { flat_no: null,
@@ -158,7 +162,7 @@ export default ({
           var loader = document.getElementById('loader2');
           loader.style.display="block";
         var picked_address_array =  JSON.parse(localStorage.getItem('rentment_address'));
-        ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.$store.state.xid,config).then(function (response) {
+        ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
               ps.picked_address_array = {   drop_flat:      picked_address_array.drop_flat,

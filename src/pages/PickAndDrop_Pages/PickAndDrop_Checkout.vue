@@ -3,10 +3,10 @@
 
     <q-header>
       <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-        <q-btn flat dense icon="arrow_back" @click="$router.push('/home/dashboard')"/>
-        <q-btn icon="place" class="q-pa-none" size="sm" flat label="HUDA Techno Enclave, HITEC City"></q-btn>
+        <!-- <q-btn flat dense icon="arrow_back" @click="$router.push('/home/dashboard')"/> -->
+        <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
         <q-space></q-space>
-        <q-btn dense icon="notifications" flat @click="$router.push('Notification')">
+        <q-btn dense icon="notifications" flat @click="$router.push('/home/Notification')">
           <q-badge color="red" rounded floating style="margin-top: 8px; margin-right: 8px"></q-badge>
         </q-btn>
         <q-btn round dense icon="shopping_cart" flat>
@@ -37,8 +37,8 @@
                 <span class="cb-text-blue-8 text-bold">{{ user_data.name }}-{{ user_data.mobile }}</span>
               </div>
               <div class="col-12 q-py-sm">
-                <q-icon name="location_on" class="cb-text-orange-8" size="sm" @click="$router.push('Search_location?address=c2')"></q-icon>
-                <span class="q-px-sm text-weight-bolder">Drop location</span>
+                <q-icon name="location_on" class="cb-text-orange-8" size="sm"></q-icon>
+                <span class="q-px-sm text-weight-bolder" @click="$router.push('Search_location?address=c2')">Drop location</span>
                 <q-icon name="edit" size="xs">
                 </q-icon>
               </div>
@@ -77,7 +77,7 @@
           </q-card-section>
         </q-card>
     
-        <div class="flex q-py-md" v-if="discount == null">
+        <div class="flex q-py-md" v-if="coupon_code == null ">
           <div class="cb-shadow-1 cb-round-borders-10 bg-white q-px-sm" style="width:75%">
             <q-input dense placeholder="ENTER COUPON CODE" borderless @click="screenredirection()">
               <template v-slot:prepend>
@@ -88,7 +88,7 @@
           <q-btn label="apply" class="cb-bg-orange-8 cb-round-borders-10 text-white q-ml-sm" style="width:22%"></q-btn>
         </div>
 
-        <div class="flex q-py-md" v-if="discount != null">
+        <div class="flex q-py-md" v-if="coupon_code != null">
           <div class="cb-shadow-1 cb-round-borders-10 bg-white q-px-sm" style="width:75%">
             <q-input dense :placeholder="coupon_code" borderless @click="screenredirection()">
               <template v-slot:prepend>
@@ -99,27 +99,36 @@
           <q-btn label="remove" class="cb-bg-orange-8 cb-round-borders-10 text-white q-ml-sm" style="width:22%" @click="couponremove_function()"></q-btn>
         </div>
         
-        <q-card class="cb-round-borders-10 q-mb-md cb-shadow-2" v-if="pickanddrop_fare_data.fare != 0">
-          <q-card-section class="cb-bg-grey-2 cb-text-blue-8 text-weight-bolder cb-font-16 q-pa-sm">
-            <span>Payment Method</span>
-          </q-card-section>
-          <q-card-section class="cb-font-16 q-pa-sm">
-            <!-- <q-option-group :options="options" v-model="payment" color="orange"  class="full-width"></q-option-group> -->
-            <div v-for="method in payment_methods" :key="method">
-              <div class="row  items-center" v-if="method.payment_mode_status == 1">
-              <q-img :src="method.images" width="25px"></q-img>
-              <span class="q-px-sm">{{method.payment_modes}}</span>
-              <q-space></q-space>
-                <q-radio v-model="payment" :val="method.payment_modes" color="orange" />
+        <span v-if="xid != 2">
+          <q-card class="cb-round-borders-10 q-mb-md cb-shadow-2" v-if="pickanddrop_fare_data.fare != 0">
+            <q-card-section class="cb-bg-grey-2 cb-text-blue-8 text-weight-bolder cb-font-16 q-pa-sm">
+              <span>Payment Method</span>
+            </q-card-section>
+            <q-card-section class="cb-font-16 q-pa-sm">
+              <!-- <q-option-group :options="options" v-model="payment" color="orange"  class="full-width"></q-option-group> -->
+              <div v-for="method in payment_methods" :key="method">
+                <div class="row  items-center" v-if="method.payment_mode_status == 1">
+                <q-img :src="method.images" width="25px"></q-img>
+                <span class="q-px-sm">{{method.payment_modes}}</span>
+                <q-space></q-space>
+                  <q-radio v-model="payment" :val="method.payment_modes" color="orange" />
+                </div>
               </div>
-            </div>
-          </q-card-section>
-        </q-card>
+            </q-card-section>
+          </q-card>
 
-        <div class="row justify-center">
-          <q-btn label="Pay now"  class="cb-bg-orange-8 text-white q-px-xl" @click="placeorder"  v-if="pickanddrop_fare_data.fare != 0"></q-btn>
-          <q-btn label="Place Order"  class="cb-bg-orange-8 text-white q-px-xl" @click="placeorder"  v-if="pickanddrop_fare_data.fare == 0"></q-btn>
-        </div>
+          <div class="row justify-center">
+            <q-btn label="Pay now"  class="cb-bg-orange-8 text-white q-px-xl" @click="placeorder"  v-if="pickanddrop_fare_data.fare != 0"></q-btn>
+            <q-btn label="Place Order"  class="cb-bg-orange-8 text-white q-px-xl" @click="placeorder"  v-if="pickanddrop_fare_data.fare == 0"></q-btn>
+          </div>
+        </span>
+        
+        <span v-if="xid == 2">
+          <div class="row justify-center">
+            <q-btn label="Sign In" class="cb-bg-green-8 text-white q-px-xl" @click="$router.push('sign-in?service=PAD')"></q-btn>
+          </div>
+        </span>
+
 
         <q-dialog v-model="calander_dailog">
           <q-card class="q-dialog-plugin">
@@ -154,40 +163,62 @@
           </q-card>
         </q-dialog>
 
-      <q-dialog v-model="coupon_dailog_error">
-        <q-card class="cb-round-borders-10" @click="coupon_dailog_error= false">
-          <q-card-section class="text-center q-pa-lg">
-            <q-avatar color="red" text-color="white" size="60px" class=
-            'q-pa-none' icon="sentiment_dissatisfied" font-size="60px"/><br>
-            <div class="text-h5 q-py-sm "><b>Oops!</b></div>
-            <div>Not applied</div>
-            <q-btn label="add another coupon" @click="coupon_dailog_error= false" flat class="text-red-8 text-bold"></q-btn>
-          </q-card-section>  
-        </q-card>
-      </q-dialog>
+        <q-dialog v-model="coupon_dailog_error">
+          <q-card class="cb-round-borders-10" @click="coupon_dailog_error= false">
+            <q-card-section class="text-center q-pa-lg">
+              <q-avatar color="red" text-color="white" size="60px" class=
+              'q-pa-none' icon="sentiment_dissatisfied" font-size="60px"/><br>
+              <div class="text-h5 q-py-sm "><b>Oops!</b></div>
+              <div>Not applied</div>
+              <q-btn label="add another coupon" @click="coupon_dailog_error= false" flat class="text-red-8 text-bold"></q-btn>
+            </q-card-section>  
+          </q-card>
+        </q-dialog>
 
-      <q-dialog v-model="coupon_dailog_applied">
-        <q-card class="cb-round-borders-10" @click="coupon_dailog_applied =  false">
-          <q-card-section class="text-center q-pa-lg">
-            <q-avatar color="green" text-color="white" size="60px" class='q-pa-none' icon="sentiment_satisfied" font-size="60px"/><br>
-            <div class="text-h5 q-py-sm "><b>HoHoo!</b></div>
-            <div>Coupon Code <span class="text-weight-bolder">{{ $route.query.coupon }}</span> Applied</div>
-            <div class="text-green text-bold cb-font-16"><q-icon name="currency_rupee"></q-icon> Saved</div>
-          </q-card-section>  
-        </q-card>
-      </q-dialog>
+        <q-dialog v-model="coupon_dailog_applied">
+          <q-card class="cb-round-borders-10" @click="coupon_dailog_applied =  false">
+            <q-card-section class="text-center q-pa-lg">
+              <q-avatar color="green" text-color="white" size="60px" class='q-pa-none' icon="sentiment_satisfied" font-size="60px"/><br>
+              <div class="text-h5 q-py-sm "><b>HoHoo!</b></div>
+              <div>Coupon Code <span class="text-weight-bolder">{{ coupon_code }}</span> Applied</div>
+              <div class="text-green text-bold cb-font-16"><q-icon name="currency_rupee"></q-icon>{{ discount }} Saved</div>
+            </q-card-section>  
+          </q-card>
+        </q-dialog>
 
-      <q-dialog v-model="coupon_dailog_remove">
-        <q-card class="cb-round-borders-10" @click="coupon_dailog_remove= false">
-          <q-card-section class="text-center q-pa-lg">
-            <q-avatar color="green" text-color="white" size="60px" class='q-pa-none' icon="sentiment_satisfied" font-size="60px"/><br>
-            <div class="text-h5 q-py-sm "><b>Oops!</b></div>
-            <div>Coupon Removed!</div>
-            <q-btn label="add another coupon" @click="coupon_dailog_remove= false" flat class="text-red-8 text-weight-bolder"></q-btn>
-          </q-card-section>  
-        </q-card>
-      </q-dialog>
+        <q-dialog v-model="coupon_dailog_remove">
+          <q-card class="cb-round-borders-10" @click="coupon_dailog_remove= false">
+            <q-card-section class="text-center q-pa-lg">
+              <q-avatar color="green" text-color="white" size="60px" class='q-pa-none' icon="sentiment_satisfied" font-size="60px"/><br>
+              <div class="text-h5 q-py-sm "><b>Oops!</b></div>
+              <div>Coupon Removed!</div>
+              <q-btn label="add another coupon" @click="coupon_dailog_remove= false" flat class="text-red-8 text-weight-bolder"></q-btn>
+            </q-card-section>  
+          </q-card>
+        </q-dialog>
 
+        <q-dialog  v-model="territory_checkup_dialog" persistent>
+          <q-card class="cb-round-borders-20">
+            <q-card-section class="text-center">
+              <q-avatar color="red" text-color="white" size="60px" icon="sentiment_dissatisfied" font-size="60px"/><br>
+              <q-icon name="location_on" size="sm" class="cb-text-grey-5 q-py-sm"></q-icon>
+              {{ territory_data.custom_text }}<br>
+              {{ territory_data.pick_and_drop_too_far_away }}<br>
+              <q-btn label="change the location" class="text-red text-bold" flat @click="$router.push('PickAndDrop_s1')"></q-btn>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
+
+        <q-dialog  v-model="fare_location_error" persistent>
+          <q-card class="cb-round-borders-20">
+            <q-card-section class="text-center">
+              <q-avatar color="red" text-color="white" size="60px" icon="sentiment_dissatisfied" font-size="60px"/><br>
+              <q-icon name="location_on" size="sm" class="cb-text-grey-5 q-py-sm"></q-icon>
+               {{ pickanddrop_fare_data.message }}<br>
+              <q-btn label="change the location" class="text-red text-bold" flat @click="$router.push('PickAndDrop_s1')"></q-btn>
+            </q-card-section>
+          </q-card>
+        </q-dialog>
 
       </q-page>
     </q-page-container>
@@ -229,7 +260,10 @@ export default ({
       date_change:ref(null),
       payment_methods:ref([]),
       transaction_id:ref(null),
-
+      territory_checkup_dialog:ref(false),
+      fare_location_error:ref(false),
+      territory_data:ref(null),
+      xid:ref(null),
     }
   },
    mounted () {
@@ -241,19 +275,20 @@ export default ({
   methods:{
     getToken(){
       var ps = this ;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null){ ps.$router.push(''); }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     Subscription_function(){
       var ps = this;
-      if ( ps.toggle == true){
-        ps.calander_dailog = true;
-      }
+      if ( ps.toggle == true){ ps.calander_dailog = true; }
     },
     get_payment_images(){
       var ps = this;
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/get-payment-images',config).then(function (response) {
         loader.style.display="none";
@@ -274,22 +309,94 @@ export default ({
         }).catch(function (error) {
           console.log(error);
         });
-      
     },
+
     location_address(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
+      var loader = document.getElementById('loader2');
+      loader.style.display="block";
+        var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
+        ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
+          loader.style.display="none";
+            if(response.data.full_screen_error_status == 0){
+              ps.territory_data = response.data;
+              ps.picked_address_array = {   drop_flat:      picked_address_array.drop_flat,
+                                            flat_no:        picked_address_array.flat_no,
+                                            id:             picked_address_array.id,
+                                            location:       picked_address_array.location,
+                                            location_type:  picked_address_array.location_type,
+                                            name:           picked_address_array.name,
+                                            nick_name:      picked_address_array.nick_name,
+                                            pick_flat:      picked_address_array.pick_flat,
+                                            postal_code:    picked_address_array.postal_code,
+                                            updated_at:     picked_address_array.updated_at,
+                                            user_id:        picked_address_array.user_id,
+                                            territory_id:   response.data.zone_id,
+                                        }
+                localStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
+                ps.location_address_drop();
+                }
+              else{
+                ps.territory_checkup_dialog =  true;
+              }
+            }).catch(function (error) {
+              console.log(error);
+              // ps.$q.notify({ message: error, type: "negative",});
+            });
+    },
+    location_address_drop(){
+      var ps = this;
+      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+      var loader = document.getElementById('loader2');
+        loader.style.display="block";
+      var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
+      ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
+        alert('hai');
+        loader.style.display="none";
+        if(response.data.full_screen_error_status ==0){
+          ps.delivery_address_array = {   drop_flat:      delivery_address_array.drop_flat,
+                                          flat_no:        delivery_address_array.flat_no,
+                                          id:             delivery_address_array.id,
+                                          location:       delivery_address_array.location,
+                                          location_type:  delivery_address_array.location_type,
+                                          name:           delivery_address_array.name,
+                                          nick_name:      delivery_address_array.nick_name,
+                                          pick_flat:      delivery_address_array.pick_flat,
+                                          postal_code:    delivery_address_array.postal_code,
+                                          updated_at:     delivery_address_array.updated_at,
+                                          user_id:        delivery_address_array.user_id,
+                                          territory_id:   response.data.zone_id,
+                                        }
+                localStorage.setItem('delivery_address',JSON.stringify(ps.delivery_address_array));
+                ps.location_address_2();
+              }
+              else{
+                ps.territory_checkup_dialog =  true;
+              }
+            }).catch(function (error) {
+              console.log(error,"sddfdfgfggfffffffffffffffffffffffffff");
+              // ps.$q.notify({ message: error, type: "negative",});
+            });
+     
+    },
+
+    location_address_2(){
+      var ps = this;
+      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+      ps.pickuplocation_array =JSON.parse(localStorage.getItem('pickup_address'));
       ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
       ps.category = JSON.parse(localStorage.getItem('category'));
       ps.service = JSON.parse(localStorage.getItem('service'));
-      var user_data = JSON.parse(ps.$store.state.userdetails);
       ps.coupon_code = localStorage.getItem('coupon1');
-      ps.user_data = user_data.deatils;
+      if(ps.$store.state.userdetails){
+        var user_data = JSON.parse(ps.$store.state.userdetails);
+        ps.user_data = user_data.deatils;
+      }
         
       // console.log(ps.coupon_code,"couponsssss");
-      // console.log(ps.pickuplocation_array,"pickuplocation_array");
-      // console.log(ps.delivery_address_array,"delivery_address_array");
+      console.log(ps.pickuplocation_array,"pickuplocation_array");
+      console.log(ps.delivery_address_array,"delivery_address_array");
       // console.log(ps.category,"category");
       // console.log(ps.service,"service");
       // console.log(ps.user_data,"user_data");
@@ -308,10 +415,15 @@ export default ({
       formData.append("plan", null);
       formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+      loader.style.display="block";
       ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
         loader.style.display="none";
           ps.pickanddrop_fare_data =  response.data; 
+          if(response.data.status_code == 209){
+            ps.fare_location_error = true;
+          }
+          // console.log(ps.territory_data.vicinity_range,"ps.territory_data.vicinity_range ",(response.data.distance_in_km)*1000,"(response.data.distance_in_km)*1000")
+          if(ps.territory_data.vicinity_range >= (response.data.distance_in_km)*1000){
             if(ps.coupon_code){
               if(response.data.coupon == "Rs. 0"){
                 ps.coupon_dailog_error = true;
@@ -320,6 +432,10 @@ export default ({
                 ps.coupon_dailog_applied = true;
               }
             }
+            ps.discount = response.data.coupon;
+          }else{
+            ps.territory_checkup_dialog = true;
+          }
         }).catch(function (error) {
           console.log(error);
           // ps.$q.notify({ message: error, type: "negative",});
@@ -355,13 +471,14 @@ export default ({
       }
       if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
       else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
-      else if(ps.payment == 'Pay Now Online'){var payment = 'PO';}
-
+      else if(ps.payment == 'Pay Now Online'){var payment = 'PO';
+               ps.$q.notify({ message: "Pay Now Online is Not Available! Please Try Another Method", }); 
+               return false;
+      }
       let formData = new FormData();
-
       formData.append("base_location", ps.pickuplocation_array.location);
       formData.append("base_pincode", 0);
-      formData.append("xid", ps.$store.state.xid);
+      formData.append("xid", ps.xid);
       formData.append("category_id", ps.category.id);
       formData.append("service_id", ps.category.main_service_id);
       formData.append("plan", null);
@@ -374,7 +491,6 @@ export default ({
       formData.append("item_name", ps.category.name);
       formData.append("instruction", localStorage.getItem('instructions'));
       formData.append("week_end", null);      
-
       formData.append("pick_flat", ps.pickuplocation_array.flat_no);
       formData.append("from_lat_lng", ps.pickuplocation_array.location );
       formData.append("pick_date", ps.pick_date );
@@ -391,7 +507,7 @@ export default ({
       formData.append("to_lat_lng", ps.delivery_address_array.location);
       formData.append("drop_name", ps.user_data.name);
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+      loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/pay-pickdrop',formData,config).then(function (response) {
         loader.style.display="none";

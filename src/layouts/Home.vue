@@ -37,11 +37,11 @@
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="notifications"></q-icon></q-item-section>
         			<q-item-section>Notifications</q-item-section>
      			 </q-item> 
-     			 <q-item clickable v-ripple @click="$router.push('Orders')">
+     			 <q-item clickable v-ripple @click="$router.push('Orders')" v-if="xid != 2">
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="format_list_bulleted"></q-icon></q-item-section>
         			<q-item-section>My Orders</q-item-section>
      			 </q-item> 
-     			 <q-item clickable v-ripple @click="$router.push('FoodOrders')">
+     			 <q-item clickable v-ripple @click="$router.push('FoodOrders')" v-if="xid != 2">
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="food_bank"></q-icon></q-item-section>
         			<q-item-section>My Food Orders</q-item-section>
      			 </q-item> 
@@ -53,7 +53,7 @@
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="settings"></q-icon></q-item-section>
         			<q-item-section>Settings</q-item-section>
      			 </q-item> 
-     			 <q-item clickable v-ripple @click="$router.push('ReferAndEarn')">
+     			 <q-item clickable v-ripple @click="$router.push('ReferAndEarn')" v-if="xid != 2">
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="monetization_on"></q-icon></q-item-section>
         			<q-item-section>Refer & Earn</q-item-section>
      			 </q-item>
@@ -85,10 +85,10 @@
 	</q-layout>
 </template>
 <script>
- 	let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-  if (!isMobile){
-         window.location="https://chotabeta.com/pwa";
-    }
+ 	// let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+  // if (!isMobile){
+  //        window.location="https://chotabeta.com/pwa";
+  //   }
 import axios from 'boot/axios'
 import {ref } from 'vue'
 export default ({
@@ -96,25 +96,31 @@ export default ({
     return {
       leftDrawerOpen :ref(false),
       latlongs:ref(null),
-      name:ref(null),
+      name:ref('User'),
       Address:ref('Unnamed Road HUDA Techno'),
       profile_pic:ref(null),
       location_check:ref(false),
       pick_not_in_territory:ref(null),
       cartlength:ref(0),
       mycart_items:ref([]),
-
+      access_token:ref(null),
+      xid:ref(null)
     }
   },
   mounted () {
   	this.getToken();
-  	this.userdetails();
+  	if(this.$store.state.token){ 	this.userdetails();	}
   	this.territory_checkup();
   },
   methods:{
   	getToken(){
   		var ps = this ;
-  		ps.access_token = ps.$store.state.token;
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+  		else{	ps.access_token = ps.$store.state.token_cb;	}
+
+  		if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+  		else{ps.xid = ps.$store.state.xid_cb;}
+
   		if(ps.access_token == null){
   			ps.$router.push('/');
   		} 
@@ -149,7 +155,7 @@ export default ({
     	var loader = document.getElementById('loader2');
 	      	loader.style.display="block";
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-    	ps.$api.get('/api/check-territory2?base_location='+ps.$store.state.latlongs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
+    	ps.$api.get('/api/check-territory2?base_location='+ps.$store.state.latlongs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&playstore_version_name=&xid='+ps.xid,config).then(function (response) {
     		loader.style.display="none";
       	// console.log(response,'territory');
       	if(response.data.change_location_button_status == 1){

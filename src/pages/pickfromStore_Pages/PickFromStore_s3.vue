@@ -5,7 +5,7 @@
 				<!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('')"/> -->
 				<q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
 				<q-space></q-space>
-				<q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> 
+				<q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')"> 
 	    			<q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
 	  			</q-btn>
 	  			<div style="background: transparent;">
@@ -44,7 +44,7 @@
 								</div>
 								<div class="flex">
 									<span class="text-bold" v-for="(variation,index ) in item.variations"> 
-										<span v-if="index  ==0 ">MRP 
+										<span v-if="variation.id == item.selected_id">MRP 
 											<q-icon name="currency_rupee"></q-icon>{{ variation.selling_price }}
 											<br>
 											{{ variation.description }}
@@ -134,8 +134,8 @@
 	</q-layout>
 </template>
 <script>
-let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-if (!isMobile){ window.location="https://chotabeta.com/pwa"; }
+// let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+// if (!isMobile){ window.location="https://chotabeta.com/pwa"; }
 import axios from 'boot/axios'
 import {ref } from 'vue'
 export default ({
@@ -151,6 +151,7 @@ export default ({
 			mycart_api_data:ref([]),
 			response_data:ref(null),
 			total_qty_retriction_dialog:ref(false),
+			xid:ref(null),
     }
   },
   mounted () {
@@ -162,10 +163,11 @@ export default ({
   methods:{
   	getToken(){
   		var ps = this ;
-  		ps.access_token = ps.$store.state.token;
-  		if(ps.access_token == null){
-  			ps.$router.push('');
-  		}  
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+  		else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); } 
   	},	
 
   	mycart_count_and_length(){
@@ -176,8 +178,7 @@ export default ({
   			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
   			ps.cartlength =  ps.mycart_items.length;
   			ps.mycart_items.forEach( cart =>{
-  				cart.item_disabled = 1;
-  				ps.cart_price = ps.cart_price+(cart.mycart * parseInt(cart.selected_variation.selling_price));
+  				ps.cart_price = ps.cart_price+(cart.no_of_quantity* parseInt(cart.selected_price));
   			});
   		}
   		else{ localStorage.setItem('mycart','');	}
@@ -190,16 +191,15 @@ export default ({
   			ps.mycart_items.forEach(cart =>{
   				var data ={ 
   										"sku":cart.sku,
-  										"qty":cart.mycart,
-  										"item_id":cart.selected_variation.mycart,
+  										"qty":cart.no_of_quantity,
+  										"item_id":cart.selected_id,
   									}
   				data_sku.push(data);
   			});
   			let formData = new FormData();
-  			formData.append('xid', ps.$store.state.xid);
+  			formData.append('xid', ps.xid);
         formData.append('data_sku', JSON.stringify(data_sku));
-        
-  		var loader = document.getElementById('loader2');
+      	var loader = document.getElementById('loader2');
 	      loader.style.display="block";
         let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
   			ps.$api.post('/api/update-cart-items',formData,config).then(function (response) {
@@ -218,14 +218,17 @@ export default ({
   	AddMoreToCartFunction(item){
   		var ps = this;
   		ps.mycart_items.forEach(cart =>{
-  			if(cart.sku == item.sku){
-  				if(item.no_of_quantity < ps.response_data.qty_retriction_count){
-  					cart.mycart = cart.mycart + 1;
-  					cart.selected_variation.mycart = cart.selected_variation.mycart + 1;
-  					item.no_of_quantity = cart.mycart;
-  				}else{
-  					ps.$q.notify({ message: ps.response_data.qty_restriction_msg, type: "negative",});
-  				}
+  			if(item.frequency != "C"){
+	  			if(cart.sku == item.sku){
+	  				if(item.no_of_quantity < ps.response_data.qty_retriction_count){
+	  					cart.no_of_quantity = cart.no_of_quantity + 1;
+	  					item.no_of_quantity = cart.no_of_quantity;
+	  				}else{
+	  					ps.$q.notify({ message: ps.response_data.qty_restriction_msg, color:'light-blue-10', icon:'close'});
+	  				}
+	  			}  				
+  			}else{
+  				ps.$q.notify({ message: ps.response_data.qty_restriction_msg,color:'light-blue-10', icon:'close'});
   			}
   		});
   		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
@@ -236,13 +239,12 @@ export default ({
   		// console.log(item,"item");
   		ps.mycart_items.forEach( (cart,index )=>{
   			if(cart.sku == item.sku){
-  				if(cart.mycart == 1){
+  				if(cart.no_of_quantity == 1){
   					ps.splice_index  = index;
   					ps.clear_cart_item_dialog = true;
   				}else{
-  					cart.mycart = cart.mycart - 1;
-	  				cart.selected_variation.mycart = cart.selected_variation.mycart - 1;
-	  				item.no_of_quantity = cart.mycart;
+  					cart.no_of_quantity = cart.no_of_quantity - 1;
+	  				item.no_of_quantity = cart.no_of_quantity;
   				}
   			}
   		})
@@ -263,6 +265,7 @@ export default ({
   		var ps = this;
   		localStorage.removeItem('mycart');
   		ps.mycart_items = [];
+		  ps.cartlength = 0;
   		ps.clear_confirm_dialog =  false;
   		ps.mycart_count_and_length_update();
   	},

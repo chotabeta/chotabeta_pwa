@@ -3,6 +3,10 @@ import { RouteRecordRaw } from 'vue-router';
 const routes: RouteRecordRaw[] = [
   {
     path: '',
+    component: () => import('pages/cb_user_set.vue'),
+  },
+  {
+    path: '/sign-in',
     component: () => import('pages/signin.vue'),
   },
   {
@@ -45,7 +49,7 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/Dashboard/OrderDetails.vue'),
   },
 
-  //pick From Store Pages
+//pick From Store Pages
   {
     path: '/PickFromStore_layouts_s1',
     component: () => import('pages/pickfromStore_Pages/PickFromStore_s1.vue'),
@@ -89,7 +93,7 @@ const routes: RouteRecordRaw[] = [
 
 
 
-  // Rent Me
+// Rent Me
   {
     path: '/rent_me1',
     component: () => import('pages/Rent_me/rent_me1.vue'),
@@ -104,7 +108,7 @@ const routes: RouteRecordRaw[] = [
   },
 
 
-  // Pick And Drop
+// Pick And Drop
   {
     path: '/PickAndDrop_s1',
     component: () => import('pages/PickAndDrop_Pages/PickAndDrop_s1.vue'),
@@ -137,10 +141,22 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/PickAndDrop_Pages/DriveMe_Summary.vue')
   },
 
-  // food pages
+// food pages
   {
     path:'/food',
     component:()=>import('pages/food/food_home.vue')
+  },
+  {
+    path:'/food-restarent',
+    component:()=>import('pages/food/food_restarent.vue')
+  },
+  {
+    path:'/all-restarents',
+    component:()=>import('pages/food/food_all_restarents.vue')
+  },
+  {
+    path:'/food-cart',
+    component:()=>import('pages/food/food_cart.vue')
   },
 
   // Always leave this as last one,

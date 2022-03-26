@@ -1,11 +1,13 @@
 <template>
 <q-layout view="lHh lpr lFf">
+
   <q-header>
     <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
       <!-- <q-btn flat dense round icon="arrow_back"  @click="screen_back_redirection()"></q-btn> -->
       <span class="cb-font-16 text-weight-bolder q-px-sm">Search For Your Location</span>
     </q-toolbar>
   </q-header>
+
   <q-page-container>
     <q-page class="q-px-md q-py-xs">
       <div id="loader2" class="pre-loader" style="display:none"></div>
@@ -52,7 +54,7 @@
         <div class="col-12"><span class="cb-text-blue-8 cb-font text-bold">Saved Locations</span></div>
         <div class="col-12" style="max-height: 200px;overflow: scroll;">
           <q-list  separator>
-          <q-item clickable v-ripple v-for="i in saved_locations" :key="i"  class="q-px-xs" @click="saved_location_add(i)"> 
+          <q-item clickable v-ripple v-for="i in saved_locations" :key="i" class="q-px-xs" @click="saved_location_add(i)"> 
             <q-item-section avatar  class="q-px-xs">
               <q-icon name="home" v-if="i.location_type == 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font " style="border-radius: 100%;"></q-icon>
                   <q-icon name="location_on" v-if="i.location_type != 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font" style="border-radius: 100%;"></q-icon>
@@ -99,6 +101,7 @@ export default ({
       selected_location:ref(null),
       territory_checkup_dialog:ref(false),
       territory_data:ref([]),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -108,8 +111,11 @@ export default ({
   methods:{
     getToken(){
       var ps = this ;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null){ ps.$router.push(''); }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     pickanddrop_locationsearch(){
       var ps = this;
@@ -125,25 +131,25 @@ export default ({
         })
     },
     initAutocomplete(){
-        var ps = this;
-        var input_data = document.getElementById('toLocation1');
-        const options = {
-         fields: ["formatted_address", "geometry.location"],
-        };
-        var autocomplete = new google.maps.places.Autocomplete(input_data,options);
-        // console.log(autocomplete,'autocomplete');
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {
-              var place = autocomplete.getPlace();
-              // console.log(place,"place",place.formatted_address);
-              var aaa=place.geometry.location.lat();
-              var bbb = place.geometry.location.lng();
-              var x = aaa+ ',' +bbb;
-              // console.log(x,"jygsdyu");
-              ps.location_search = place.formatted_address;
-              ps.searched_latlong  = x;
-              // console.log(place);
-              ps.territory_checkup();
-            });
+      var ps = this;
+      var input_data = document.getElementById('toLocation1');
+      const options = {
+       fields: ["formatted_address", "geometry.location"],
+      };
+      var autocomplete = new google.maps.places.Autocomplete(input_data,options);
+      // console.log(autocomplete,'autocomplete');
+      google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        var place = autocomplete.getPlace();
+        // console.log(place,"place",place.formatted_address);
+        var aaa=place.geometry.location.lat();
+        var bbb = place.geometry.location.lng();
+        var x = aaa+ ',' +bbb;
+        // console.log(x,"jygsdyu");
+        ps.location_search = place.formatted_address;
+        ps.searched_latlong  = x;
+        // console.log(place);
+        ps.territory_checkup();
+      });
     },
     territory_checkup(){
       var ps = this;
@@ -163,7 +169,7 @@ export default ({
             var loader = document.getElementById('loader2');
           loader.style.display="block";
           let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-          ps.$api.get('/api/check-territory2?lat_lng='+ps.searched_latlong+'&pincode='+pincode+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          ps.$api.get('/api/check-territory2?lat_lng='+ps.searched_latlong+'&pincode='+pincode+'&xid='+ps.xid,config).then(function (response) {
             loader.style.display="none";
               console.log(response);
               if( response.data.full_screen_error_status == 0 ){
@@ -201,6 +207,10 @@ export default ({
           var address = (results[0]);
           var length = address.address_components.length;
           ps.selected_location.postal_code = address.address_components[length-1].long_name;
+
+          var length = (address.address_components).length;
+              // console.log(address.address_components[length-1].long_name, 'jjjjjjjjjjjjj');
+          ps.update_user_details(address.address_components[length-1].long_name);
 
           if(ps.$route.query.address =="1"){          
             localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
@@ -246,6 +256,20 @@ export default ({
       if(ps.$route.query.address =="1"){ ps.$router.push('PickAndDrop_s1?address=1'); }
       else if(ps.$route.query.address =="2"){ ps.$router.push('PickAndDrop_s1?address=2'); }
     },
+    update_user_details(pincode){
+      var ps = this;
+      var loader = document.getElementById('loader2');
+      loader.style.display="block";
+      let formData  = new FormData();
+      formData.append('pincode',pincode)
+      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
+        ps.$api.post('/api/update-user-details',formData,config).then(function (response) {
+          console.log('response');
+        }).catch(function (error) {
+          console.log(error);
+        })
+        loader.style.display="none";
+    }
   }
 })
 </script>

@@ -18,10 +18,10 @@
 	</q-layout>
 </template>
 <script>
-let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-if (!isMobile){
- window.location="https://chotabeta.com/pwa";
-}
+// let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+// if (!isMobile){
+//  window.location="https://chotabeta.com/pwa";
+// }
 import axios from 'boot/axios'
 import {ref } from 'vue'
 export default ({
@@ -33,7 +33,9 @@ export default ({
       Address:ref(''),
       profile_pic:ref(null),
       location_check:ref(false),
-      pick_not_in_territory:ref(null)
+      pick_not_in_territory:ref(null),
+      access_token:ref(null),
+      xid:ref(null)
     }
   },
   mounted () {
@@ -43,10 +45,13 @@ export default ({
   methods:{
   	getToken(){
   		var ps = this ;
-  		ps.access_token = ps.$store.state.token;
-  		if(ps.access_token == null){
-  			ps.$router.push('/');
-  		}  
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+  		else{	ps.access_token = ps.$store.state.token_cb;	}
+
+  		if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+  		else{ps.xid = ps.$store.state.xid_cb;}
+
+  		if(ps.access_token == null){	ps.$router.push('/');	}  
   	},
   	getLocation() {
   		var ss =  this;
@@ -87,7 +92,7 @@ export default ({
     	var loader = document.getElementById('loader2');
 	      	loader.style.display="block";
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-    	ps.$api.get('/api/check-territory2?base_location='+ps.$store.state.latlongs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&playstore_version_name=&xid='+ps.$store.state.xid,config).then(function (response) {
+    	ps.$api.get('/api/check-territory2?base_location='+ps.$store.state.latlongs+'&base_pincode=0&cache_hash=&l_number=&lat_lng='+ps.$store.state.latlongs+'&pincode='+ps.$store.state.pincode+'&playstore_version_name=&xid='+ps.xid,config).then(function (response) {
     		loader.style.display="none";
       	console.log(response,'territory');
       	if(response.data.change_location_button_status == 1){

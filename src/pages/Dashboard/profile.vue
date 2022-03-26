@@ -1,15 +1,16 @@
 <template>
-<q-page>
-	<div id="loader2" class="pre-loader" style="display:none"></div>
-	<div class=" flex cb-bg-white-2">
-		<q-space></q-space>
-		<q-space></q-space>
-		<span class="cb-text-orange-8 text-subtitle2">Profile</span>
-		<q-space></q-space>
-		<q-btn label="logout" class="cb-text-orange-8" flat size="sm" icon-right="logout" @click="logout"></q-btn>
-	</div>
+	<q-page>
 
-	<q-card class="q-ma-md shadow-3">
+		<div id="loader2" class="pre-loader" style="display:none"></div>
+		<div class=" flex cb-bg-white-2">
+			<q-space></q-space>
+			<q-space></q-space>
+			<span class="cb-text-orange-8 text-subtitle2">Profile</span>
+			<q-space></q-space>
+			<q-btn label="logout" class="cb-text-orange-8" flat size="sm" icon-right="logout" @click="logout"></q-btn>
+		</div>
+
+		<q-card class="q-ma-md shadow-3">
 	  	<q-card-section class="flex flex-center">
 	  	  <q-avatar class="shadow-3" size="100px">	
 	     	<img :src="profile_pic" v-if="profile_pic">
@@ -31,9 +32,9 @@
 	  			</q-btn> 
 	  		</div>
 	  	</q-card-section>
-	</q-card>
+		</q-card>
 
-	<q-card class="q-mx-md shadow-3">
+		<q-card class="q-mx-md shadow-3">
 	  	<q-card-section class="cb-bg-white-2 cb-text-blue-8 text-weight-bolder">
 	  		SAVED ADDRESSES
 	  	</q-card-section>
@@ -53,24 +54,24 @@
 	  		<q-btn label="View More" flat dense size="sm" class="cb-text-orange-8" v-if="n==3" @click="address_count(n)"></q-btn>
 	  		<q-btn label="View less" flat dense size="sm" class="cb-text-orange-8" v-else @click="address_count(n)"></q-btn>
 	  	</q-card-actions>
-	</q-card>
-
-	<q-dialog v-model="edit_profile">
-		<q-card class=" full-width">
-			<q-card-section class="cb-text-blue-8 cb-bg-white-2">
-				Update Profile
-			</q-card-section>
-			<q-card-section class="q-pa-md">
-				<q-form @submit="update_email" class="text-center">
-					<q-input dense outlined class="q-mb-sm" placeholder="name" v-model="name"></q-input>
-					<q-input dense outlined class="q-mb-sm" placeholder="email" v-model="email" type="email"></q-input>
-					<q-select dense outlined class="q-mb-sm" placeholder="" v-model="address" :options="cities"></q-select>
-					<q-btn type="submit" label="Update" class="cb-bg-orange-8 text-white q-px-lg"></q-btn>
-				</q-form>
-			</q-card-section>
 		</q-card>
-	</q-dialog>
-</q-page>
+
+		<q-dialog v-model="edit_profile">
+			<q-card class=" full-width">
+				<q-card-section class="cb-text-blue-8 cb-bg-white-2">
+					Update Profile
+				</q-card-section>
+				<q-card-section class="q-pa-md">
+					<q-form @submit="update_email" class="text-center">
+						<q-input dense outlined class="q-mb-sm" placeholder="name" v-model="name"></q-input>
+						<q-input dense outlined class="q-mb-sm" placeholder="email" v-model="email" type="email"></q-input>
+						<q-select dense outlined class="q-mb-sm" placeholder="" v-model="address" :options="cities"></q-select>
+						<q-btn type="submit" label="Update" class="cb-bg-orange-8 text-white q-px-lg"></q-btn>
+					</q-form>
+				</q-card-section>
+			</q-card>
+		</q-dialog>
+	</q-page>
 </template>
 <script>
 import axios from 'boot/axios'
@@ -82,31 +83,37 @@ export default {
       access_token:ref(null),
       profile_pic:ref(null),
       name:ref(null),
-	  email:ref(null),
-	  mobile:ref(null),
-	  address:ref(null),
-	  n:ref(3),
-	  edit_profile:ref(false),
-	  cities:ref([]),
+		  email:ref(null),
+		  mobile:ref(null),
+		  address:ref(null),
+		  n:ref(3),
+		  edit_profile:ref(false),
+		  cities:ref([]),
+		  xid:ref(null),
     }
   },
 
   mounted(){
     this.getAccessToken();
-    this.userdetails();
+    if(this.$store.state.token){
+    	this.userdetails();
+    }
   },
   methods:{
     getAccessToken(){
       var ps = this;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null ||  !ps.access_token){
-        ps.$router.push('');
-      }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+  		else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     userdetails(){
       var ps = this;
       var loader = document.getElementById('loader2');
-	      	loader.style.display="block";
+	      loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/user',config).then(function (response) {
       	loader.style.display="none";
@@ -121,71 +128,64 @@ export default {
     },
     address_count(n){
     	var ps = this;
-    	if(n ==3){
-    		ps.n = 10;
-    	}else{
-    		ps.n = 3;
-    	}
+    	if(n ==3){ ps.n = 10; }
+    	else{	ps.n = 3; }
     },
     get_servicing_cities(){
-    	 var ps = this;
-    	 var loader = document.getElementById('loader2');
-	      	loader.style.display="block";
+    	var ps = this;
+    	var loader = document.getElementById('loader2');
+	     	loader.style.display="block";
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-        ps.$api.get("/api/get-serving-locations",config).then(function(response) {
-        	loader.style.display="none";
-                  if(response.data.status_code == 200){
-                   	ps.cities = response.data.locations;
-                  }else{
-                   	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
-                  }
-            }).catch(function(error){
-                console.log(error);
-            });  
+      ps.$api.get("/api/get-serving-locations",config).then(function(response) {
+       	loader.style.display="none";
+        if(response.data.status_code == 200){
+         	ps.cities = response.data.locations;
+        }else{
+         	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
+        }
+      }).catch(function(error){
+        console.log(error);
+      });  
     },
     update_email(){
     	var ps = this;
     	var loader = document.getElementById('loader2');
-	      	loader.style.display="block";
+	      loader.style.display="block";
     	let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-        ps.$api.post("/api/edit-profile",{
-        	name:ps.name,
-        	city:ps.address,
-        	email:ps.email
-        },config).then(function(response) {
-        	loader.style.display="none";
-                  if(response.data.status_code == 200){
-                  	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
-                  }else{
-                   	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
-                  }
-            }).catch(function(error){
-                console.log(error);
-            });   
+      ps.$api.post("/api/edit-profile",{
+     		name:ps.name,
+     		city:ps.address,
+      	email:ps.email
+      },config).then(function(response) {
+      	loader.style.display="none";
+        if(response.data.status_code == 200){
+         	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
+        }else{
+         	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
+        }
+      }).catch(function(error){
+        console.log(error);
+      });   
     },
     logout(){
-		var ps = this;
-		var loader = document.getElementById('loader2');
-	      	loader.style.display="block";
+			var ps = this;
+			var loader = document.getElementById('loader2');
+	    loader.style.display="block";
 	    let config = { headers: { Authorization: `Bearer ${ps.$store.state.token}` } };
 	    ps.$api.get("/api/logout",config).then(function(response) {
-	    	console.log(response);
+	    	// console.log(response);
 	    	loader.style.display="none";
-	            if(response.data.status_code == 200){
-	            	ps.$store.dispatch('logout').then(res => {
-								ps.$q.notify({ message: res , type: 'positive' ,progress: true, });
-								ps.$router.push('/');
-	  		 				}).catch(error => {
-	  		 					console.log(error);
-	        			// ps.$q.notify({ message: error , type: 'negative' ,progress: true, });  	
-	       				});
-	              
-	            }else{
-	              
-	            }
-	      }).catch(function(error){
-	           console.log(error);
-	      });
+	      if(response.data.status_code == 200){
+	       	ps.$store.dispatch('logout').then(res => {
+						ps.$q.notify({ message: res , type: 'positive' ,progress: true, });
+						ps.$router.push('/');
+	  		 	}).catch(error => {
+	  		 		console.log(error);
+	        			});
+	      }
+	    }).catch(function(error){
+	      console.log(error);
+	    });
 	   	ps.$router.push('');
 		},
   }

@@ -5,11 +5,11 @@
         <!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('')" /> -->
         <q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
         <q-space></q-space>
-        <q-btn round dense icon="notifications" flat @click="$router.push('Notification')">
+        <q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')">
           <q-badge color="red" rounded floating style="margin-top: 8px; margin-right: 8px"></q-badge>
         </q-btn>
         <div style="background: transparent">
-          <q-btn round dense icon="shopping_cart" flat style="background: transparent">
+          <q-btn round dense icon="shopping_cart" flat style="background: transparent" @click="$router.push('PickFromStore_layouts_s3')">
             <q-badge class="cb-bg-orange-8" rounded floating>0</q-badge>
           </q-btn>
         </div>
@@ -41,12 +41,17 @@
             </q-card>
           </div>
         </div>
-        <div class="row justify-center">
+        <div class="row justify-center"  v-if="xid != 2">
           <q-btn
             label="Pay Now"
             class="cb-bg-orange-8 text-white q-px-xl" @click="cam_order_placement()"
           ></q-btn>
         </div>
+        <span v-if="xid == 2">
+          <div class="row justify-center">
+            <q-btn label="Sign In" class="cb-bg-green-8 text-white q-px-xl" @click="$router.push('sign-in?service=CO')"></q-btn>
+          </div>
+        </span>
 
         <q-dialog v-model="order_success_dailog" persistent>
           <q-card class="cb-round-borders-10">
@@ -65,8 +70,8 @@
   </q-layout>
 </template>
 <script>
-let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
-if (!isMobile) { window.location = "https://chotabeta.com/pwa"; }
+// let isMobile = window.matchMedia("only screen and (max-width: 760px)").matches;
+// if (!isMobile) { window.location = "https://chotabeta.com/pwa"; }
 import axios from "boot/axios";
 import { ref } from "vue";
 export default {
@@ -80,6 +85,8 @@ export default {
       array: ref([]),
       order_success_dailog:ref(false),
       endPoint:ref(null),
+      access_token:ref(null),
+      xid:ref(null)
     }
   },
   mounted() {
@@ -89,10 +96,11 @@ export default {
   methods: {
     getToken() {
       var ps = this;
-      ps.access_token = ps.$store.state.token;
-      if (ps.access_token == null) {
-        ps.$router.push("");
-      }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     cam_order_placement(){
       var ps = this;
@@ -110,7 +118,7 @@ export default {
       formData.append('payment_status',"pending");
       formData.append('order_id', cam_uid);
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        loader.style.display="block";
       ps.$api.post('/api/place-cam-orders',formData,config).then(function (response) {
         loader.style.display="none";
         if(response.data.status_code == 200){
@@ -120,12 +128,11 @@ export default {
         console.log(error);
         // ps.$q.notify({ message: error, type: "negative",});
       });
-
     },
     get_payment_images(){
       var ps = this;
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.get('/api/get-payment-images',config).then(function (response) {
         loader.style.display="none";

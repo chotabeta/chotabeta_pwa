@@ -1,9 +1,10 @@
 <template>
   <q-layout view="lHh lpr lFf">
+
     <q-header>
       <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
         <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/>
-        <q-btn icon="place" class="q-pa-none" size="sm" flat label="HUDA Techno Enclave, HITEC City"></q-btn>
+        <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
         <q-space></q-space>
         <q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> 
             <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -16,8 +17,10 @@
         <span class="cb-text-orange-8">Rate & Review</span>
       </div>
     </q-header>
+
     <q-page-container> 
       <q-page class="flex flex-center q-px-lg">
+
       <div>
         <div class="cb-font-16 text-weight-bolder text-center">
           <q-avatar class="shadow-1" size="90px">
@@ -56,3 +59,31 @@
     </q-page-container>
   </q-layout>
 </template>
+<script>
+import axios from 'boot/axios'
+import { ref } from 'vue'
+
+export default {
+  setup () {
+    return {
+     access_token:ref(null),
+     xid:ref(null),
+    }
+  },
+  mounted () {
+    this.gettoken();
+  },
+  methods:{
+    gettoken(){
+      var ps = this;
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
+    },
+  }
+}
+</script>

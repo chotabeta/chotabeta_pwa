@@ -1,11 +1,13 @@
 <template>
 <q-layout view="lHh lpr lFf">
+
   <q-header>
     <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-      <q-btn flat dense round icon="arrow_back"  @click="$router.push('PickAndDrop_Checkout')"></q-btn>
+      <!-- <q-btn flat dense round icon="arrow_back"  @click="$router.push('PickAndDrop_Checkout')"></q-btn> -->
       <span class="cb-font-16 text-weight-bolder q-px-sm">Search For Your Location</span>
     </q-toolbar>
   </q-header>
+
   <q-page-container>
     <q-page class="q-px-md q-py-xs">
       <div id="loader2" class="pre-loader" style="display:none"></div>
@@ -99,6 +101,7 @@ export default ({
       selected_location:ref(null),
       territory_checkup_dialog:ref(false),
       territory_data:ref([]),
+      xid:ref(null),
     }
   },
   mounted () {
@@ -108,42 +111,43 @@ export default ({
   methods:{
     getToken(){
       var ps = this ;
-      ps.access_token = ps.$store.state.token;
-      if(ps.access_token == null){ ps.$router.push(''); }
+      if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+      else{ ps.access_token = ps.$store.state.token_cb; }
+      if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
+      else{ps.xid = ps.$store.state.xid_cb;}
+      if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
     pickanddrop_locationsearch(){
       var ps = this;
       var loader = document.getElementById('loader2');
-          loader.style.display="block";
+      loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-        ps.$api.get('/api/favourite-locations-get-two',config).then(function (response) {
-          loader.style.display="none";
-          // console.log('response');
-          ps.saved_locations =  response.data.favourite_locations;
-        }).catch(function (error) {
-          console.log(error);
-        })
+      ps.$api.get('/api/favourite-locations-get-two',config).then(function (response) {
+      loader.style.display="none";
+        // console.log('response');
+        ps.saved_locations =  response.data.favourite_locations;
+      }).catch(function (error) {
+        console.log(error);
+      })
     },
     initAutocomplete(){
-        var ps = this;
-        var input_data = document.getElementById('toLocation1');
-        const options = {
-         fields: ["formatted_address", "geometry.location"],
-        };
-        var autocomplete = new google.maps.places.Autocomplete(input_data,options);
-        // console.log(autocomplete,'autocomplete');
-        google.maps.event.addListener(autocomplete, 'place_changed', function () {
-              var place = autocomplete.getPlace();
-              // console.log(place,"place",place.formatted_address);
-              var aaa=place.geometry.location.lat();
-              var bbb = place.geometry.location.lng();
-              var x = aaa+ ',' +bbb;
-              // console.log(x,"jygsdyu");
-              ps.location_search = place.formatted_address;
-              ps.searched_latlong  = x;
-              // console.log(place);
-              ps.territory_checkup();
-            });
+      var ps = this;
+      var input_data = document.getElementById('toLocation1');
+      const options = { fields: ["formatted_address", "geometry.location"], };
+      var autocomplete = new google.maps.places.Autocomplete(input_data,options);
+      // console.log(autocomplete,'autocomplete');
+      google.maps.event.addListener(autocomplete, 'place_changed', function () {
+        var place = autocomplete.getPlace();
+        // console.log(place,"place",place.formatted_address);
+        var aaa=place.geometry.location.lat();
+        var bbb = place.geometry.location.lng();
+        var x = aaa+ ',' +bbb;
+        // console.log(x,"jygsdyu");
+        ps.location_search = place.formatted_address;
+        ps.searched_latlong  = x;
+        // console.log(place);
+        ps.territory_checkup();
+      });
     },
     territory_checkup(){
       var ps = this;
@@ -160,23 +164,23 @@ export default ({
           // console.log(address);
           var length = address.address_components.length;
           var pincode = address.address_components[length - 1].long_name;
-            var loader = document.getElementById('loader2');
+          var loader = document.getElementById('loader2');
           loader.style.display="block";
           let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-          ps.$api.get('/api/check-territory2?lat_lng='+ps.searched_latlong+'&pincode='+pincode+'&xid='+ps.$store.state.xid,config).then(function (response) {
+          ps.$api.get('/api/check-territory2?lat_lng='+ps.searched_latlong+'&pincode='+pincode+'&xid='+ps.xid,config).then(function (response) {
             loader.style.display="none";
-              console.log(response);
-              if( response.data.full_screen_error_status == 0 ){
-                ps.$router.push('/add_address_page?searchaddress='+ps.location_search+'&searched_latlong='+ps.searched_latlong+'&pincode='+pincode+'&address='+ps.$route.query.address);
-              }else{
-                ps.territory_data  = response.data;
-                ps.territory_checkup_dialog = true;
-              }
-            }).catch(function (error) {
-              console.log(error);
-            });
-      }
-    });
+            // console.log(response);
+            if( response.data.full_screen_error_status == 0 ){
+              ps.$router.push('/add_address_page?searchaddress='+ps.location_search+'&searched_latlong='+ps.searched_latlong+'&pincode='+pincode+'&address='+ps.$route.query.address);
+            }else{
+              ps.territory_data  = response.data;
+              ps.territory_checkup_dialog = true;
+            }
+          }).catch(function (error) {
+            console.log(error);
+          });
+        }
+      });
     },
     saved_location_add(location){
       var ps = this;
@@ -201,7 +205,6 @@ export default ({
           var address = (results[0]);
           var length = address.address_components.length;
           ps.selected_location.postal_code = address.address_components[length-1].long_name;
-
           if(ps.$route.query.address =="1"){          
             localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
             // console.log(localStorage.getItem('pickup_address'));

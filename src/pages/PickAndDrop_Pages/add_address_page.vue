@@ -201,16 +201,21 @@ export default {
       }else if(ps.$route.query.address =="rp"){
         localStorage.setItem('rentment_address',JSON.stringify(picked_address_select));
         ps.$router.push('/rent_me1?address=rp');
-      }else if(ps.$route.query.address =="p1"){
-        localStorage.setItem('pick_from_store_address',JSON.stringify(picked_address_select));
+      }else if(ps.$route.query.address =="p1" && ps.$route.query.fev == undefined){
         localStorage.setItem('pick_from_store_address',JSON.stringify(picked_address_select));
         ps.$router.push('/PickFromStore_Checkout?adding=1');
+      }else if(ps.$route.query.address =="p1" && ps.$route.query.fev == 'p1'){
+        localStorage.setItem('pick_from_store_fev_store',JSON.stringify(picked_address_select));
+        ps.$router.push('/PickFromStore_Checkout');
       }else if(ps.$route.query.address =="d1"){
         localStorage.setItem('pickup_address',JSON.stringify(picked_address_select));
         ps.$router.push('/DriveMe_Summary');
       }else if(ps.$route.query.address =="d2"){
         localStorage.setItem('delivery_address',JSON.stringify(picked_address_select));
         ps.$router.push('/DriveMe_Summary');
+      } else if(ps.$route.query.address =="f1"){
+        localStorage.setItem('food_delivery_address',JSON.stringify(picked_address_select));
+        ps.$router.push('/food-checkout?adding=1&plan='+ps.$route.query.plan+'&subscription='+ps.$route.query.subscription);
       }                           
     },
 

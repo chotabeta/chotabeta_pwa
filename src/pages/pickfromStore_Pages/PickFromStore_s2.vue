@@ -222,6 +222,7 @@ export default ({
 			user_search_input_s2: ref(null),
 			global_search_data_s2: ref([]),
 			xid:ref(null),
+			custom_items:ref([]),
     }
   },
   mounted () {
@@ -305,6 +306,10 @@ export default ({
   			});
   		}
   		else{ localStorage.setItem('mycart','');	}
+  		if(localStorage.getItem('custom_item')){
+  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  			ps.cartlength = ps.cartlength + ps.custom_items.length;
+  		}
   	},
 
   	gettabs_links(){
@@ -397,8 +402,8 @@ export default ({
   			}
   		var loader = document.getElementById('loader2');
 	      	loader.style.display="block";
-  		ps.$api.get('/api/auth/getitems?category_id='+category_id+'&service_id='+service_id+'&sub_category_id='+sub_category_id+'&item_name&update_fromcart=0&page='+ps.page,config).then(function (response) {
-  		// ps.$api.get('/swift/public/get-items5?category_id='+category_id+'&service_id='+service_id+'&sub_category_id='+sub_category_id+'&item_name&update_fromcart=0&page='+ps.page,config).then(function (response) {
+  		// ps.$api.get('/api/auth/getitems?category_id='+category_id+'&service_id='+service_id+'&sub_category_id='+sub_category_id+'&item_name&update_fromcart=0&page='+ps.page,config).then(function (response) {
+  		ps.$api.get('/swift/public/get-items5?category_id='+category_id+'&service_id='+service_id+'&sub_category_id='+sub_category_id+'&item_name&update_fromcart=0&page='+ps.page,config).then(function (response) {
 
   			loader.style.display="none";
   				if(response.data.status_code == 400){

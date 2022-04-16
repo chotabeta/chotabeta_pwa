@@ -35,26 +35,45 @@
   	  	  		</q-btn>
   	  	  	</div>
   	  	  	<div class="col-10 cb-round-borders-10 q-py-xs q-px-sm text-grey-7" style="border:1px solid orange">
-  	  	  	  <div class="flex">
+  	  	  	  <div class="row items-center">
   	  	  	    <span class="q-pb-sm cb-font-16">Delivery Address</span>
   	  	  	    <q-space></q-space>
   	  	  	    <q-icon name="check_circle" size="sm" color="orange"></q-icon>
   	  	  	  </div>
   	  	  	  <span class="cb-font-12">{{ delivery_address }}</span>
   	  	  	</div>
+          </div>
+          <div class="row" v-if="!feverate_store">
   	  	  	<div class="col-12 text-center q-pt-sm cb-text-blue-8" v-if="continue_pickstore_data">
-  	  	  		<u @click="$router.push('Search_location')">{{ continue_pickstore_data.fav_store_link_text }}</u>
+  	  	  		<u @click="$router.push('Search_location?address=p1&fev=p1')">{{ continue_pickstore_data.fav_store_link_text }}</u>
   	  	  		<q-icon name="location_on"></q-icon>
   	  	  		<q-icon name="info" class="float-right cb-text-grey-4 " size="sm" @click="fevourite_store_dailog = true"></q-icon>
   	  	  	</div>
   	  	  </div>
+
+          <div class="row q-my-sm" v-if="feverate_store">
+            <div class="col-2 q-pr-md">
+              <q-btn class="q-pa-none cb-text-grey-4 cb-round-borders-10 full-height fit" outline @click="$router.push('Search_location?address=p1')">
+                <q-icon name="storefront" class="text-bold cb-text-grey-4" size="xl"></q-icon>
+              </q-btn>
+            </div>
+            <div class="col-10 cb-round-borders-10 q-py-xs q-px-sm text-grey-7" style="border:1px solid orange">
+              <div class="row items-center">
+                <span class="q-pb-sm cb-font-16">Store Address</span>
+                <q-space></q-space>
+                <q-icon name="remove_circle" @click="delete_fev_store_dialog = true" size="sm" color="orange" ></q-icon>
+              </div>
+              <span class="cb-font-12">{{ feverate_store.name }}</span>
+            </div>
+          </div>
+
   	  	</q-card-section>
   	  </q-card>
 
-  	  <div @click="add_community_dialog = true" class="q-mt-sm q-pa-sm q-px-md cb-text-grey-4 cb-round-borders-10 cb-font-16 text-bold" style="border:1px solid grey" v-if="continue_pickstore_data"> 
+  	  <!-- <div @click="add_community_dialog = true" class="q-mt-sm q-pa-sm q-px-md cb-text-grey-4 cb-round-borders-10 cb-font-16 text-bold" style="border:1px solid grey" v-if="continue_pickstore_data"> 
   	  	<q-icon name="emoji_symbols" size="sm" class="q-px-md"></q-icon>
   	  	<span>{{ continue_pickstore_data.show_aparmtnet_button_text }}</span>
-  	  </div>
+  	  </div> -->
 
   	  <div class="cb-shadow-1 q-my-md q-px-md cb-round-borders-10">
   	  	<q-input borderless placeholder="Add instructions here" class="cb-round-borders-10" dense v-model="instructions"></q-input>
@@ -216,6 +235,36 @@
         </q-card>
       </q-dialog>
 
+      <q-dialog v-model="adding_fev_store_dialog" favstore_address>
+        <q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-9">
+          <q-card-section class="text-center">
+            <q-avatar size="80px" class="bg-orange-3">
+              <q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
+            </q-avatar><br>
+            <span class="text-weight-bolder text-h6">Adding Favorite Store !</span><br>
+            <span>Delivery Fee will be applicable based on the distance from store to delivery location.</span>
+            <br><br><br>
+            <q-btn label="confirm" class="q-px-lg cb-font-16 cb-bg-orange-8 text-white q-mb-sm" @click="adding_fev_store_function()"></q-btn><br>
+            <q-btn label="cancel" class="q-px-lg cb-font-16" flat @click="continue_pickstore_function(),adding_fev_store_dialog = false"></q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+      <q-dialog v-model="delete_fev_store_dialog">
+        <q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-9">
+          <q-card-section class="text-center">
+            <q-avatar size="80px" class="bg-orange-3">
+              <q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
+            </q-avatar><br>
+            <span class="text-weight-bolder text-h6">Delete Favorite Store !</span><br>
+            <span>You Want Delete Favourite Store this Order.</span>
+            <br><br><br>
+            <q-btn label="confirm" class="q-px-lg cb-font-16 cb-bg-orange-8 text-white q-mb-sm" @click="deletefevourite_store_function()"></q-btn><br>
+            <q-btn label="cancel" class="q-px-lg cb-font-16" flat @click="delete_fev_store_dialog = false"></q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
 
   	</q-page>
   </q-page-container>
@@ -265,6 +314,13 @@ export default ({
       pick_from_store_address:ref(null),
       access_token:ref(null),
       xid:ref(null),
+      custom_items:ref([]),
+      feverate_store:ref(null),
+      adding_fev_store_dialog:ref(false),
+      delete_fev_store_dialog:ref(false),
+      favstore_address:ref(""),   
+      store:ref(""),
+      favstore_location:ref(""),
     }
   },
   mounted () {
@@ -293,7 +349,7 @@ export default ({
         loader.style.display="none";
         if(response.data.status_code == 200){
           response.data.payment_modes.forEach((element, i)=> {
-            if( (i+1) == response.data.default_payment_mode){ ps.paymnet = element; }
+            if( (i+1) == response.data.default_payment_mode){ ps.payment = element; }
             var payment  = {
                           payment_modes:element,
                           images:(response.data.endPoint+response.data.images[i]),
@@ -307,8 +363,7 @@ export default ({
           }
         }).catch(function (error) {
           console.log(error);
-        });
-      
+        });     
     },
   	date_function(){
   		var ps = this;
@@ -327,7 +382,11 @@ export default ({
   			ps.cartlength =  ps.mycart_items.length;
   		}
   		else{ localStorage.setItem('mycart','');	}
-  	},
+      if(localStorage.getItem('custom_item')){
+        ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+        ps.cartlength = ps.cartlength + ps.custom_items.length;
+      }
+    },
 
   	deliveryaddress(){
   		var ps = this;
@@ -353,11 +412,29 @@ export default ({
         loader.style.display="none";
       	console.log(response,'territory');
       	ps.delivery_territory_id = response.data.zone_id;
-      	ps.continue_pickstore_function();
+      	ps.check_feverate_store();
       }).catch(function (error) {
         console.log(error);
       })
   	},
+
+    check_feverate_store(){
+      var ps = this;
+      if(localStorage.getItem('pick_from_store_fev_store')){
+        ps.adding_fev_store_dialog = true;
+      }else{
+        ps.continue_pickstore_function();
+      }
+    },
+    adding_fev_store_function(){
+      var ps = this;
+      ps.feverate_store = JSON.parse(localStorage.getItem('pick_from_store_fev_store'));
+      ps.favstore_address = ps.feverate_store.name;
+      ps.store = ps.feverate_store.nick_name;
+      ps.favstore_location =  ps.feverate_store.location;
+      ps.adding_fev_store_dialog = false;
+      ps.continue_pickstore_function();
+    },
 
   	continue_pickstore_function(){
   		var ps = this;
@@ -370,21 +447,29 @@ export default ({
 			  var userdetails = JSON.parse(localStorage.getItem('userdetails'));
 			  ps.userdetails = userdetails.deatils;
       }
-			ps.cart_items = JSON.parse(localStorage.getItem('mycart'));
+      ps.cart_items = JSON.parse(localStorage.getItem('mycart'));
 			ps.cart_items.forEach(cart=>{
 				ps.items.push({id:cart.selected_id,qty:cart.no_of_quantity});
 			});
+
+      if(localStorage.getItem('custom_item')){
+        ps.custom_items = JSON.parse(localStorage.getItem('custom_item'));
+          ps.custom_items.forEach(cart=>{
+          ps.items.push({id:0,qty:cart.no_of_quantity});
+        });
+      }
+      
 			ps.coupon_code = localStorage.getItem('coupon_pick');
   		let formData = new FormData();
   		formData.append('store_id', '');
   		formData.append('pincode', ps.delivery_pincode);
   		formData.append('delivery', ps.delivery_address);
   		formData.append('coupon', ps.coupon_code);
-  		formData.append('favstore_address', '');
-  		formData.append('store', '');
+  		formData.append('favstore_address', ps.favstore_address);
+  		formData.append('store', ps.store);
   		formData.append('delivery_location', ps.delivery_latlngs);
-  		formData.append('favstore_location', '');
-  		formData.append('personalized_meesage', '');
+  		formData.append('favstore_location', ps.favstore_location);
+  		formData.append('personalized_meesage', null);
   		formData.append('selected_apt', '');
   		formData.append('xid', ps.xid);
   		formData.append('service_id', ps.category.service_id);
@@ -435,11 +520,11 @@ export default ({
   		var formData = {
 										base_location: ps.$store.state.baselatlongs,
 										pick_flat: '',
-										favstore_address: null,
+										favstore_address: ps.favstore_address,
 										type: null,
 										delivery_location: ps.delivery_latlngs,
 										base_pincode: "0",
-										favstore_location: null,
+										favstore_location: ps.favstore_location,
 										xid: ps.xid,
 										to_location: ps.delivery_latlngs,
 										category_id: ps.category.id,
@@ -462,7 +547,7 @@ export default ({
 										pick_phone: ps.userdetails.mobile,
 										custom_item: "[]",
 										to_address: ps.delivery_address,
-										store: null,
+										store: ps.store,
 										personalized_meesage: null,
 										pick_name: ps.userdetails.name,
 										selected_apt: null,
@@ -494,7 +579,14 @@ export default ({
   	screenredirection(){
   		var ps = this;
   		ps.$router.push('Coupons?service_id='+ps.category.service_id);
-  	}
+  	},
+    deletefevourite_store_function(){
+      var ps = this;
+      ps.delete_fev_store_dialog = false;
+      localStorage.removeItem('pick_from_store_fev_store');
+      ps.feverate_store = null;
+      ps.continue_pickstore_function();
+    },
   }
 })
 </script>

@@ -88,9 +88,9 @@ export default store(function (/* { ssrContext } */) {
     actions: {
       login(context,data){
         return new Promise((resolve, reject) => {
-          axios.post('https://chotabeta.app/dev/testenv/api/auth/sign-up', {'mobile':data.mobile,'otp':data.password}).then(function (response) {
+          axios.post('https://stackroger.com/api/auth/sign-up', {'mobile':data.mobile,'otp':data.password}).then(function (response) {
             if(response.data.status_code == 409){
-              axios.post("https://chotabeta.app/dev/testenv/api/auth/login",{'mobile':data.mobile,'password':data.password}).then(function(response) {
+              axios.post("https://stackroger.com/api/auth/login",{'mobile':data.mobile,'password':data.password}).then(function(response) {
                     if(response.data.status_code == 200){
                       context.commit('setToken',response.data.access_token);
                       context.commit('setxid',response.data.xid);

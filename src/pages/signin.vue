@@ -100,18 +100,16 @@ export default {
     }
   },
   mounted () {
-  	this.gettoken();
+  	// this.gettoken();
   },
   methods:{
   	gettoken(){
   		var ps = this;
-  		localStorage.setItem('token_cb',"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6ImQ3ZmUzNGY3ZWI4ZTZhYzhmZWQ0MTYwNzIwNWE4NmM5N2E4MzE4ZDdkNGY0YmZmZjRlYjg0MzlkN2Y0MDYzNTU0NWNlODgxNmZiMjRiZDE4In0.eyJhdWQiOiIzIiwianRpIjoiZDdmZTM0ZjdlYjhlNmFjOGZlZDQxNjA3MjA1YTg2Yzk3YTgzMThkN2Q0ZjRiZmZmNGViODQzOWQ3ZjQwNjM1NTQ1Y2U4ODE2ZmIyNGJkMTgiLCJpYXQiOjE2NDgxOTQwMjcsIm5iZiI6MTY0ODE5NDAyNywiZXhwIjoxNjc5NzMwMDI3LCJzdWIiOiIyIiwic2NvcGVzIjpbXX0.optryn2q2isU9OkbwWYfnasv4t8qHii6kzAkt3odl3OGPrxPMiYa_1Caz-G8NRC4qFAU3979KEh64qdkfKw_jq0qQ0Syd7bbx5wbyxaQR1OqXuOI_Nie8DL-U8nVuMvjP6JaRke3SHykuq7WSaNzKQ2VJcIfZy8e-B-Wh9W4deJ--UyoaeVwj3TvCZHQ_lW3HDDB_Avyf3UEWbXqiEsP5DqnVpeHGhunfdwGA2En5bHKM41XmnsFU-4fT1hH2yoXCCPhPGFD3odwFegsXh_tY83tUFZy06h8L_i_VkivpGxIlsZuyLWB_weGw-vi26uzaqGRBO3swdBhN2uQpzveJofMwuITic55NlmKaf0pzGHRdXYOBGuX03OTYb6ES3ASdlga5q-IRydlDJwxkw7bGP0xxiNG_yeUVyDNCWQgQL1Jb4tcP27bc_9eRULj2LQ2St6nF342v2jQegtONzRWXFS_TkbrCekqebgZ-KSNIpFlVG50AtNKMDabtLE_c2DHpFGJEOoFhNVHLb1kFbggbSzHAr74YGVxI9HcK_W37ljsz48UgNEhG3bPwpR3s65BqZmSVJWdpKFhLB7MnBzkkfdHkw9f0zRj_gnW3W9q8z3O3EDRYxhI-pKPOAkAPUtmROQBjxm3S6O9i7Sq7FEYEe2mEZs_063MGPzwsgVm9kU");
-  		localStorage.setItem('xid_cb',"2");
-  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
+  		// if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
   		// else{	ps.access_token = ps.$store.state.token_cb;	}
-  		if(ps.access_token != null || ps.access_token){	
-  			ps.$router.push('CheckLocation');
-  		}
+  		// if(ps.access_token != null || ps.access_token){	
+  			// ps.$router.push('CheckLocation');
+  		// }
   	},
   	otp(){
   		var ps = this;
@@ -137,7 +135,7 @@ export default {
     				 	ps.$q.notify({ message:response.data.message, type: 'negative' });
     				}
   				}).catch(function (error) {
-    				 ps.$q.notify({ message:error, type: 'warning',progress: true, });
+    				 // ps.$q.notify({ message:error, type: 'warning',progress: true, });
    				});	
     		}else if(response.data.status_code == 200){
     				ps.$q.notify({ message:response.data.message, type: 'positive' });
@@ -178,8 +176,9 @@ export default {
 	      	loader.style.display="block";
   		ps.$store.dispatch('login',{'mobile':ps.mobile_number, 'password':OTP }).then(res => {
   		 	if(res.status_code == 200){
-	  		 	ps.$q.notify({ message:res.message, type: 'positive' ,progress: true,});
-	  		 	ps.$router.push('CheckLocation');
+	  		 	// ps.$q.notify({ message:res.message, type: 'positive' ,progress: true,});
+	  		 	// ps.$router.push('CheckLocation');
+	  		 	ps.screen_redirection();
 	  		}else if(res == 'new'){
 	  			ps.mobile = ps.mobile_number;
 	  			document.getElementById('sign_in_page').style.display = 'none';
@@ -216,6 +215,7 @@ export default {
 									}
 			ps.$api.post('/api/auth/self-details',formdata).then(function (response) {
   			ps.$store.dispatch('set_access_token',{'access_token':response.data.access_token, 'xid':response.data.sh }).then(res => {
+  				ps.screen_redirection();
   				ps.$router.push('CheckLocation');
 				 }).catch(error => {
         	ps.$q.notify({ message:error, type: 'negative',progress: true, });
@@ -225,7 +225,41 @@ export default {
     		// ps.$q.notify({ message:error, type: 'warning' });
   		});
 
-  	}
+  	},
+  	screen_redirection(){
+  		var ps = this;
+  		ps.userdetails();
+  		if(ps.$route.query.service=="PFS"){
+  			ps.$router.push('/PickFromStore_Checkout');
+  		}else if(ps.$route.query.service=="CO"){
+  			ps.$router.push('/camorder_checkout');
+  		}else if(ps.$route.query.service=="PAD"){
+  			ps.$router.push('/PickAndDrop_Checkout');
+  		}else if(ps.$route.query.service=="DM"){
+  			ps.$router.push('/DriveMe_Summary');
+  		}else if(ps.$route.query.service=="RM"){
+  			ps.$router.push('/rent_me3');
+  		}else if(ps.$route.query.service=="DP"){
+  			ps.$router.push('/home/profile');
+  		}else if(ps.$route.query.service=="Food"){
+  			ps.$router.push('/food-checkout?plan='+ps.$route.query.plan+'&subscription='+ps.$route.query.subscription);
+  		}
+  	},
+  	userdetails(){
+      var ps = this;
+      var loader = document.getElementById('loader2');
+	      	loader.style.display="block";
+      let config = { headers: { "Authorization": `Bearer ${ps.$store.state.token}`,}}
+      ps.$api.get('/api/user',config).then(function (response) {
+      	loader.style.display="none";
+      	ps.$store.dispatch('userdetails',{'deatils':response.data }).then(res => {
+  		 	}).catch(error => {	ps.$q.notify({ message:error.message, type: 'negative',progress: true, });  });
+      	ps.profile_pic =  response.data.profile_pic;
+        ps.name = response.data.name;
+      }).catch(function (error) {
+        console.log(error);
+      })
+    },
   }
 }
 </script>

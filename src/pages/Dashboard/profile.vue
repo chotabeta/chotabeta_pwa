@@ -1,11 +1,12 @@
 <template>
-	<q-page>
+	<q-page v-if="xid != 2">
 
 		<div id="loader2" class="pre-loader" style="display:none"></div>
-		<div class=" flex cb-bg-white-2">
+
+		<div class=" flex cb-bg-white-2 cb-font-16">
 			<q-space></q-space>
 			<q-space></q-space>
-			<span class="cb-text-orange-8 text-subtitle2">Profile</span>
+			<span class="cb-text-orange-8">Profile</span>
 			<q-space></q-space>
 			<q-btn label="logout" class="cb-text-orange-8" flat size="sm" icon-right="logout" @click="logout"></q-btn>
 		</div>
@@ -34,27 +35,28 @@
 	  	</q-card-section>
 		</q-card>
 
-		<q-card class="q-mx-md shadow-3">
-	  	<q-card-section class="cb-bg-white-2 cb-text-blue-8 text-weight-bolder">
-	  		SAVED ADDRESSES
-	  	</q-card-section>
-	  	<q-card-section class="q-pa-sm">
-	  		<div class="flex q-py-sm" style="border-bottom:1px solid #D9D9D9;" v-for="i in n" :key="i">
-		  		<div style="width:10%">
-		  			<q-btn icon="house" round class="cb-bg-orange-8 text-white" size="sm"></q-btn> 
-		  		</div>
-	  			<div class="q-px-sm"  style="width:90%">
-	  				<div class="text-subtitle2 cb-text-blue-8 text-weight-bolder"> Home <q-btn icon-right="delete" label="Delete" class="cb-text-orange-8 float-right" dense size="sm" flat></q-btn> 
-	  				</div>
-	  				<div style="font-size: 11px">  Province or State as appropriate; mail code as appropriate; and country. Sample 1. Sample 2. Sample 3 </div>
-	  			</div>
-	  		</div>
-	  	</q-card-section>
-	  	<q-card-actions>
-	  		<q-btn label="View More" flat dense size="sm" class="cb-text-orange-8" v-if="n==3" @click="address_count(n)"></q-btn>
-	  		<q-btn label="View less" flat dense size="sm" class="cb-text-orange-8" v-else @click="address_count(n)"></q-btn>
-	  	</q-card-actions>
-		</q-card>
+		<q-card class="q-ma-md shadow-3">
+			<q-card-section>
+				<div class="row">
+		       <div class="col-12"><span class="cb-text-blue-8 cb-font text-bold">Saved Locations</span></div>
+		        <div class="col-12" style="max-height: 200px;overflow: scroll;">
+		        	<q-list  separator>
+		  		      <q-item clickable v-ripple v-for="i in saved_locations" :key="i"  class="q-px-xs" @click="saved_location_add(i)"> 
+		  		        <q-item-section avatar  class="q-px-xs">
+		  		        	<q-icon name="home" v-if="i.location_type == 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font " style="border-radius: 100%;"></q-icon>
+		                		<q-icon name="location_on" v-if="i.location_type != 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font" style="border-radius: 100%;"></q-icon>
+		  		        </q-item-section>
+		  		        <q-item-section>
+		  		        	<q-item-label>{{ i.location_type }}</q-item-label>
+		            		<q-item-label caption lines="2">{{ i.name }}</q-item-label>
+		  		        </q-item-section>
+		  		      </q-item>
+		  		  	</q-list>
+		        </div>
+		        <!-- <div class="col-12 text-right cb-text-grey-4 q-py-sm">View More</div> -->
+		      </div>
+		    </q-card-section>
+		  </q-card>
 
 		<q-dialog v-model="edit_profile">
 			<q-card class=" full-width">
@@ -71,6 +73,14 @@
 				</q-card-section>
 			</q-card>
 		</q-dialog>
+	</q-page>
+	<q-page v-if="xid == 2" class="flex flex-center bg_style text-white">
+		<div class="text-center full-width q-px-xl">
+			<img src="https://chotabeta.com/images/images/white-logo.svg" style="width:70%">
+			<br>
+			<p class="text-weight-bolder">Something text about ChotaBeta</p>
+			<q-btn label="Sign In" class="cb-bg-green-8 cb-font-16 cb-round-borders-20 text-white q-px-xl" @click="$router.push('/sign-in?service=DP')"></q-btn>
+		</div>
 	</q-page>
 </template>
 <script>
@@ -90,6 +100,7 @@ export default {
 		  edit_profile:ref(false),
 		  cities:ref([]),
 		  xid:ref(null),
+		  saved_locations:ref(null)
     }
   },
 
@@ -122,6 +133,7 @@ export default {
         ps.email = response.data.email;
         ps.mobile = response.data.mobile;
         ps.address = response.data.address;
+        ps.saved_locations_function();
       }).catch(function (error) {
         console.log(error);
       })
@@ -188,6 +200,22 @@ export default {
 	    });
 	   	ps.$router.push('');
 		},
+		saved_locations_function(){
+      var ps = this;
+      var loader = document.getElementById('loader2');
+      loader.style.display="block";
+      let config = { headers: { "Authorization": `Bearer ${ps.$store.state.token}`,}}
+      ps.$api.get('/api/favourite-locations-get-two',config).then(function (response) {
+        // console.log('response');
+        loader.style.display="none";
+        ps.saved_locations =  response.data.favourite_locations;
+      }).catch(function (error) {
+        console.log(error);
+      });
+    },
   }
 }
 </script>
+<style>
+	.bg_style{background-image: linear-gradient(to bottom, #FD9A55 50%, #F8766C 100%);}
+</style>

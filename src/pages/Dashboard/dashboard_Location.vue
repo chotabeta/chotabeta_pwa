@@ -51,17 +51,17 @@
         <div class="col-12"><span class="cb-text-blue-8 cb-font text-bold">Saved Locations</span></div>
         <div class="col-12" style="max-height: 200px;overflow: scroll;">
         	<q-list  separator>
-		      <q-item clickable v-ripple v-for="i in saved_locations" :key="i"  class="q-px-xs" @click="saved_location_add(i)"> 
-		        <q-item-section avatar  class="q-px-xs">
-		        	<q-icon name="home" v-if="i.location_type == 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font " style="border-radius: 100%;"></q-icon>
-              		<q-icon name="location_on" v-if="i.location_type != 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font" style="border-radius: 100%;"></q-icon>
-		        </q-item-section>
-		        <q-item-section>
-		        	<q-item-label>{{ i.location_type }}</q-item-label>
-          		<q-item-label caption lines="2">{{ i.name }}</q-item-label>
-		        </q-item-section>
-		      </q-item>
-		  	</q-list>
+  		      <q-item clickable v-ripple v-for="i in saved_locations" :key="i"  class="q-px-xs" @click="saved_location_add(i)"> 
+  		        <q-item-section avatar  class="q-px-xs">
+  		        	<q-icon name="home" v-if="i.location_type == 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font " style="border-radius: 100%;"></q-icon>
+                		<q-icon name="location_on" v-if="i.location_type != 'Home'" size="xs" class="cb-bg-orange-8 q-pa-xs text-white cb-font" style="border-radius: 100%;"></q-icon>
+  		        </q-item-section>
+  		        <q-item-section>
+  		        	<q-item-label>{{ i.location_type }}</q-item-label>
+            		<q-item-label caption lines="2">{{ i.name }}</q-item-label>
+  		        </q-item-section>
+  		      </q-item>
+  		  	</q-list>
         </div>
         <!-- <div class="col-12 text-right cb-text-grey-4 q-py-sm">View More</div> -->
       </div>

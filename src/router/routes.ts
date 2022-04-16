@@ -24,6 +24,7 @@ const routes: RouteRecordRaw[] = [
         { path: 'Dashboard', component: () => import('pages/Dashboard/Index.vue') },
         { path: 'Notification', component: () => import('pages/Dashboard/Notification.vue') },
         { path: 'Orders', component: () => import('pages/Dashboard/Orders.vue') },
+        { path: 'mydrives', component: () => import('pages/Dashboard/Mydrives.vue') },
         { path: 'Offers', component: () => import('pages/Dashboard/Offers.vue') },
         { path: 'Settings', component: () => import('pages/Dashboard/Settings.vue') },
         { path: 'ReferAndEarn', component: () => import('pages/Dashboard/ReferAndEarn.vue') },
@@ -45,8 +46,16 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/Dashboard/FoodOrders.vue')
   },
   {
+    path: '/Home/food-order-summery',
+    component: () => import('pages/Dashboard/FoodOrder_summery.vue')
+  },
+  {
     path: '/Home/OrderDetails',
     component: () => import('pages/Dashboard/OrderDetails.vue'),
+  }, 
+  {
+    path: '/Home/food-order-rating',
+    component: () => import('pages/Dashboard/food_order_rating.vue'),
   },
 
 //pick From Store Pages
@@ -157,6 +166,18 @@ const routes: RouteRecordRaw[] = [
   {
     path:'/food-cart',
     component:()=>import('pages/food/food_cart.vue')
+  },
+  {
+    path:'/food-checkout',
+    component:()=>import('pages/food/food_checkout.vue')
+  },
+  {
+    path:'/food-coupons',
+    component:()=>import('pages/food/food_coupons.vue')
+  },
+  {
+    path:'/food-subscription',
+    component:()=>import('pages/food/subscription_Item.vue')
   },
 
   // Always leave this as last one,

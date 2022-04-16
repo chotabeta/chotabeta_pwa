@@ -21,7 +21,7 @@
 		</q-header>
 		<q-page-container>
 			<div id="loader2" class="pre-loader" style="display:none"></div>
-			<q-page class="q-mb-xl q-pb-sm" v-if="mycart_items.length != 0">
+			<q-page class="q-mb-xl q-pb-sm" v-if="mycart_items.length != 0 || custom_items != 0">
 				<div class="row" v-for="cart in mycart_api_data" :key="cart">
 					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
 						<span>{{ cart.category_name }}</span>
@@ -58,8 +58,49 @@
 									</span>
 									<span v-else class="text-red text-weight-bolder">
 									Out of Stock
-									<q-icon name="delete_sweep" color="red" @click="RemoveFromCartfunction(item)"></q-icon>
+									<q-icon name="delete_sweep" size="md" color="red" @click="RemoveFromCartfunction(item)" class="q-pl-sm"></q-icon>
 								</span>
+								</div>
+							</div>
+						</div>
+						<q-separator></q-separator>
+					</div>
+				</div>
+
+				<div class="row">
+					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
+						<span>Other Items</span>
+						<q-space></q-space>
+						<span>{{ custom_items.length }} Items</span>
+					</div>
+					<div class="col-12 cb-text-grey-5 q-px-sm" v-for="(item,index) in custom_items">
+						<div class="row q-pa-xs">
+							<div class="col-2" style="border-right: 2px solid grey;">
+								<q-img src="~assets/images/logo.png"></q-img>
+							</div>
+							<div class="col-10 q-pl-md" style="font-size: 12px;">
+								<div class="flex">
+									<span>
+										<span style="font-size:11px">{{ item.brands }}</span><br>
+										<span class="text-weight-bolder">{{ item.name }}</span>
+									</span>
+									<q-space></q-space>
+									<!-- <q-icon name="info" size="sm" class="cb-text-grey-4 q-pr-sm" ></q-icon> -->
+								</div>
+								<div class="flex">
+									<span class="text-bold" v-for="(variation,index ) in item.variations"> 
+										<span v-if="variation.id == item.selected_id">MRP 
+											<q-icon name="currency_rupee"></q-icon>{{ variation.selling_price }}
+											<br>
+											{{ variation.description }}
+										</span>
+									</span>
+									<q-space></q-space>
+									<span class="cb-text-orange-8" >
+										<q-btn icon="remove" flat dense @click="RemoveFrom_custom_Cartfunction(item,index)"></q-btn>
+										<span class="q-px-sm text-weight-bolder cb-font-16">{{ item.no_of_quantity}}</span>
+										<q-btn icon="add" flat dense @click="AddMoreTo_custom_CartFunction(item,index)"></q-btn>
+									</span>
 								</div>
 							</div>
 						</div>
@@ -74,6 +115,7 @@
 					<div class="col cb-bg-orange-8 text-center q-py-sm">
 						<q-btn label="checkout" flat icon-right="chevron_right" @click="check_cart_items_count()"></q-btn>
 					</div>
+					
 				</div>
 
 				<q-dialog v-model="clear_confirm_dialog">
@@ -99,6 +141,34 @@
     						<br><br><br>
     						<q-btn label="confirm" class="q-px-lg cb-font-16 cb-bg-orange-8 text-white q-mb-sm" @click="clear_cart_item_function()"></q-btn><br>
     						<q-btn label="cancel" class="q-px-lg cb-font-16" flat @click="clear_cart_item_dialog = false, splice_index = null"></q-btn>
+    					</q-card-section>
+				    </q-card>
+				</q-dialog>
+
+				<q-dialog v-model="clear_custom_item_dialog">
+    				<q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-9">
+    					<q-card-section class="text-center">
+    						<q-avatar size="80px" class="bg-orange-3">
+    							<q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
+    						</q-avatar><br>
+    						<span class="text-weight-bolder text-h6">Are You Sure?</span><br>
+    						<span>You Want Delete This Item From Cart.</span>
+    						<br><br><br>
+    						<q-btn label="confirm" class="q-px-lg cb-font-16 cb-bg-orange-8 text-white q-mb-sm" @click="clear_custom_item_function()"></q-btn><br>
+    						<q-btn label="cancel" class="q-px-lg cb-font-16" flat @click="clear_custom_item_dialog = false, splice_index = null"></q-btn>
+    					</q-card-section>
+				    </q-card>
+				</q-dialog>
+
+				<q-dialog v-model="clear_unavailable_item_dialog">
+    				<q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-8">
+    					<q-card-section class="text-center">
+    						<q-avatar size="80px" class="bg-orange-3">
+    							<q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="55px" icon="question_mark"></q-avatar>
+    						</q-avatar><br>
+    						<span class="text-weight-bolder text-h6">{{response_data.item_disabled_message}}.</span>
+    						<br>
+    						<q-btn label="cancel" class="q-px-lg cb-font-16 q-mt-md" color="orange" dense  @click="clear_unavailable_item_dialog = false"></q-btn>
     					</q-card-section>
 				    </q-card>
 				</q-dialog>
@@ -152,6 +222,11 @@ export default ({
 			response_data:ref(null),
 			total_qty_retriction_dialog:ref(false),
 			xid:ref(null),
+			clear_unavailable_item_dialog:ref(false),
+			disabled_items:ref(0),
+			custom_items:ref([]),
+			clear_custom_item_dialog:ref(false),
+			custom_item_index:ref(null),
     }
   },
   mounted () {
@@ -177,25 +252,45 @@ export default ({
   		if(localStorage.getItem('mycart')){
   			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
   			ps.cartlength =  ps.mycart_items.length;
-  			ps.mycart_items.forEach( cart =>{
-  				ps.cart_price = ps.cart_price+(cart.no_of_quantity* parseInt(cart.selected_price));
-  			});
+  			// console.log(ps.mycart_api_dat,"ps.mycart_api_dat");
+  			ps.mycart_items.forEach(item=>{
+	  				ps.cart_price = ps.cart_price + (item.no_of_quantity*parseInt(item.selected_price));
+	  			});
+	  		
   		}
   		else{ localStorage.setItem('mycart','');	}
+  		if(localStorage.getItem('custom_item')){
+  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  			ps.cartlength = ps.cartlength + ps.custom_items.length;
+  		}
   	},
   	mycart_count_and_length_update(){
   		var ps = this;
   		if(localStorage.getItem('mycart')){
   			var data_sku = [];
-  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
-  			ps.mycart_items.forEach(cart =>{
-  				var data ={ 
-  										"sku":cart.sku,
-  										"qty":cart.no_of_quantity,
-  										"item_id":cart.selected_id,
-  									}
-  				data_sku.push(data);
-  			});
+  			if(localStorage.getItem('mycart')){
+	  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+	  			ps.mycart_items.forEach(cart =>{
+	  				var data ={ 
+	  										"sku":cart.sku,
+	  										"qty":cart.no_of_quantity,
+	  										"item_id":cart.selected_id,
+	  									}
+	  				data_sku.push(data);
+	  			});
+	  		}
+	  		if(localStorage.getItem('custom_item')){
+	  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+	  			ps.custom_items.forEach(cart =>{
+	  				var data ={ 
+	  										"sku":cart.sku,
+	  										"qty":cart.no_of_quantity,
+	  										"item_id":cart.selected_id,
+	  									}
+	  				data_sku.push(data);
+	  			});
+	  		}
+
   			let formData = new FormData();
   			formData.append('xid', ps.xid);
         formData.append('data_sku', JSON.stringify(data_sku));
@@ -272,6 +367,16 @@ export default ({
 		
 		check_cart_items_count(){
 			var ps= this;
+			ps.mycart_api_data.forEach(cart=>{
+	  			cart.category_data.forEach(item=>{
+	  				// ps.cart_price = ps.cart_price + (item.no_of_quantity*parseInt(cart.selected_price));
+	  				if( item.item_disabled == 1){	ps.disabled_items = ps.disabled_items +1;	}
+	  			});
+	  		});
+			if(ps.disabled_items != 0){
+  			ps.clear_unavailable_item_dialog =true;
+  			return false;
+  		}
 			if(ps.mycart_items.length <= ps.response_data.total_qty_retriction_count){
 				ps.$router.push('PickFromStore_Checkout');
 			}else{
@@ -281,7 +386,40 @@ export default ({
 		screenredirection_item(i){
 			var ps = this;
 			ps.$router.push('PickFromStore_Item?sku='+i.sku);
-		}
+		},
+		AddMoreTo_custom_CartFunction(item,index){
+			var ps = this;
+			ps.custom_items.forEach((cart,i)=>{
+					if(i == index){
+						if(item.no_of_quantity < ps.response_data.qty_retriction_count){
+	  					cart.no_of_quantity = parseInt(cart.no_of_quantity) + 1;
+	  				}else{
+	  					ps.$q.notify({ message: ps.response_data.qty_restriction_msg, color:'light-blue-10', icon:'close'});
+	  				}
+					}
+			});
+			localStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
+		},
+		RemoveFrom_custom_Cartfunction(item,index){
+			var ps = this;
+			ps.custom_items.forEach((cart,i)=>{
+					if(i == index){
+						if(item.no_of_quantity == 1 ){
+							ps.custom_item_index = index;
+								ps.clear_custom_item_dialog= true;
+							// ps.custom_items.splice(index,1);
+	  				}else{
+	  					cart.no_of_quantity = parseInt(cart.no_of_quantity) - 1;
+	  				}
+					}
+			});
+			localStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
+		},
+		clear_custom_item_function(){
+				var ps = this;
+				ps.custom_items.splice(ps.custom_item_index ,1);
+				ps.clear_custom_item_dialog = false;
+		},
   }
 })
 </script>

@@ -183,6 +183,7 @@
         mycart_length_restriction:ref(false),
         restrictions:ref(null),
         xid:ref(null),
+        custom_items:ref([]),
       }
     },
     mounted() {
@@ -216,6 +217,10 @@
           });
         }
         else{ localStorage.setItem('mycart','');  }
+        if(localStorage.getItem('custom_item')){
+          ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+          ps.cartlength = ps.cartlength + ps.custom_items.length;
+        }
       },
 
       cart_key_function(){
@@ -226,7 +231,7 @@
         formData.append('category_id', ps.category.id);
         formData.append('service_id', ps.category.service_id);
         var loader = document.getElementById('loader2');
-          loader.style.display="block";
+        loader.style.display="block";
         ps.$api.post('/api/cart-key',formData,config).then(function (response) {
           loader.style.display="none";
           console.log(response,'response');
@@ -240,13 +245,25 @@
 
       details_individualitem() {
         var ps = this;
+        var data_sku = [];
         var loader = document.getElementById('loader2');
           loader.style.display="block";
         let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
+        if(localStorage.getItem('mycart')){
+          ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+          ps.mycart_items.forEach(cart =>{
+          var data ={ 
+                      "sku":cart.sku,
+                      "qty":cart.no_of_quantity,
+                      "item_id":cart.selected_id,
+                    }
+          data_sku.push(data);
+          });
+        }
         ps.$api.post("/api/get-product-details",{
             xid: ps.xid,
             sku: ps.$route.query.sku,
-            items: "[]",
+            items: data_sku,
           },config).then(function (response) {
             loader.style.display="none";
             // console.log(response.data,"response.data");

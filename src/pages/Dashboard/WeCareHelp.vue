@@ -60,7 +60,7 @@ export default {
       var loader = document.getElementById('loader2');
         loader.style.display="block";
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,} }
-      ps.$api.get('https://chotabeta.app/dev/testenv/api/we-care',config).then(function (response) {
+      ps.$api.get('/api/we-care',config).then(function (response) {
         loader.style.display="none";
         ps.data = response.data.data;
       }).catch(function (error) {

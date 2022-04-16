@@ -122,7 +122,7 @@
             <q-btn label="Place Order"  class="cb-bg-orange-8 text-white q-px-xl" @click="placeorder"  v-if="pickanddrop_fare_data.fare == 0"></q-btn>
           </div>
         </span>
-        
+
         <span v-if="xid == 2">
           <div class="row justify-center">
             <q-btn label="Sign In" class="cb-bg-green-8 text-white q-px-xl" @click="$router.push('sign-in?service=PAD')"></q-btn>
@@ -310,7 +310,6 @@ export default ({
           console.log(error);
         });
     },
-
     location_address(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
@@ -352,7 +351,6 @@ export default ({
         loader.style.display="block";
       var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
       ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
-        alert('hai');
         loader.style.display="none";
         if(response.data.full_screen_error_status ==0){
           ps.delivery_address_array = {   drop_flat:      delivery_address_array.drop_flat,
@@ -377,10 +375,8 @@ export default ({
             }).catch(function (error) {
               console.log(error,"sddfdfgfggfffffffffffffffffffffffffff");
               // ps.$q.notify({ message: error, type: "negative",});
-            });
-     
+            });   
     },
-
     location_address_2(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}

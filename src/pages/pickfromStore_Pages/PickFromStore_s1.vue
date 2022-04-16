@@ -233,6 +233,7 @@ export default ({
 			user_search_input_s1: ref(null),
 			global_search_data_s1: ref([]),
 			xid:ref(null),
+			custom_items:ref([]),
     }
   },
   mounted () {
@@ -266,6 +267,10 @@ export default ({
   			});
   		}
   		else{ localStorage.setItem('mycart','');	}
+  		if(localStorage.getItem('custom_item')){
+  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  			ps.cartlength = ps.cartlength + ps.custom_items.length;
+  		}
   	},
 
   	cart_key_function(){

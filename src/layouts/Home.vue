@@ -45,6 +45,10 @@
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="food_bank"></q-icon></q-item-section>
         			<q-item-section>My Food Orders</q-item-section>
      			 </q-item> 
+     			 <q-item clickable v-ripple @click="$router.push('mydrives')" v-if="xid != 2">
+        			<q-item-section avatar><q-icon class="cb-text-orange-8" name="electric_bike"></q-icon></q-item-section>
+        			<q-item-section>My Drives</q-item-section>
+     			 </q-item> 
      			 <q-item clickable v-ripple @click="$router.push('Offers')">
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="local_offer"></q-icon></q-item-section>
         			<q-item-section>Offers</q-item-section>
@@ -104,7 +108,8 @@ export default ({
       cartlength:ref(0),
       mycart_items:ref([]),
       access_token:ref(null),
-      xid:ref(null)
+      xid:ref(null),
+      custom_items:ref([])
     }
   },
   mounted () {
@@ -129,6 +134,10 @@ export default ({
   			ps.cartlength = ps.mycart_items.length;
   		}else{
   			localStorage.setItem('mycart','');
+  		}
+  		if(localStorage.getItem('custom_item')){
+  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  			ps.cartlength = ps.cartlength + ps.custom_items.length;
   		}
   	},
   	profile_settings(){

@@ -171,7 +171,7 @@
               <div class="text-h5 q-py-sm "><b>{{ order.message}}</b></div>
               <div>You can track the delivery in the Orders section</div>
               <q-btn label="continue shopping" color="orange" @click="$router.push('/home/dashboard')" class="q-my-sm cb-round-borders-10"></q-btn><br>
-              <q-btn label="go to orders" @click="$router.push('/home/orders')" flat class="text-grey-7"></q-btn>
+              <q-btn label="go to orders" @click="$router.push('/home/mydrives')" flat class="text-grey-7"></q-btn>
             </q-card-section>  
           </q-card>
         </q-dialog>
@@ -356,8 +356,7 @@ export default ({
       }else{
         ps.pick_date = localStorage.getItem('pick_date');
         ps.pick_time = localStorage.getItem('pick_time');
-      }
-     
+      }     
     },
     screenredirection(){
       var ps = this;
@@ -466,9 +465,11 @@ export default ({
           ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));      
           ps.category = JSON.parse(localStorage.getItem('category'));
           ps.service = JSON.parse(localStorage.getItem('service'));
-          var user_data = JSON.parse(ps.$store.state.userdetails);
+          if(ps.$store.state.userdetails){
+            var user_data = JSON.parse(ps.$store.state.userdetails);
+            ps.user_data = user_data.deatils;
+          }
           ps.coupon_code = localStorage.getItem('coupon1');
-          ps.user_data = user_data.deatils;
           if(!ps.payment){
             ps.$q.notify({ message: "Please Select Payment Method", type: "negative",}); 
             return false;    
@@ -530,9 +531,12 @@ export default ({
         ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
         ps.category = JSON.parse(localStorage.getItem('category'));
         ps.service = JSON.parse(localStorage.getItem('service'));
-        var user_data = JSON.parse(ps.$store.state.userdetails);
-        ps.coupon_code = localStorage.getItem('coupon1');
-        ps.user_data = user_data.deatils;
+        if(ps.$store.state.userdetails){
+          var user_data = JSON.parse(ps.$store.state.userdetails);
+          ps.coupon_code = localStorage.getItem('coupon1');
+          ps.user_data = user_data.deatils;
+
+        }
         if(!ps.payment){
           ps.$q.notify({ message: "Please Select Payment Method", type: "negative",}); 
           return false;    
@@ -588,7 +592,6 @@ export default ({
         });
       }
     },
-
 
     hr_incr(inc_dec){
       var ps = this;

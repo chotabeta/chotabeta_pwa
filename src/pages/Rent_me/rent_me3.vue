@@ -104,10 +104,10 @@
           </div>
         </span>
         <span v-if="xid == 2">
-        <div class="row justify-center">
-          <q-btn label="Sign In" class="cb-bg-green-8 text-white q-px-xl" @click="$router.push('sign-in?service=RM')"></q-btn>
-        </div>
-      </span>
+          <div class="row justify-center">
+            <q-btn label="Sign In" class="cb-bg-green-8 text-white q-px-xl" @click="$router.push('sign-in?service=RM')"></q-btn>
+          </div>
+        </span>
 
         <q-dialog v-model="calander_dailog">
           <q-card class="q-dialog-plugin">
@@ -242,40 +242,6 @@ export default ({
         ps.calander_dailog = true;
       }
     },
-    // location_address(){
-    //   var ps = this;
-    //   let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-
-    //   ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
-    //   ps.category = JSON.parse(localStorage.getItem('category'));
-    //   ps.service = JSON.parse(localStorage.getItem('service'));
-    //   var user_data = JSON.parse(ps.$store.state.userdetails);
-    //   // console.log(user_data)
-    //   ps.user_data = user_data.deatils;
-      
-    //   console.log(ps.pickuplocation_array,"pickuplocation_array");
-     
-    //   const d = new Date();
-    //   let formData = new FormData();
-    //   // formData.append("to_location", ps.pickuplocation_array.location);
-    //   formData.append("coupon", null);
-    //   formData.append("pick_time", (d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds()) );
-    //   formData.append("weight", null);
-    //   formData.append("pick_date", d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate()));
-    //   formData.append("schedule_timestamp",null );
-    //   formData.append("wseek_end", null);
-    //   formData.append("plan", null);
-    //   // formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
-    //   var loader = document.getElementById('loader2');
-    //       loader.style.display="block";
-    //   ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
-    //     loader.style.display="none";
-    //       // console.log(response);
-    //       ps.pickanddrop_fare_data =  response.data;
-    //     }).catch(function (error) {
-    //       console.log(error);
-    //     });
-    // },
     addZero(i) {
       if (i < 10) {i = "0" + i}
       return i;
@@ -288,7 +254,6 @@ export default ({
     },
     screenredirection(){
       var ps = this;
-      // ps.$router.push('Coupons?service_id='+ps.category.main_service_id);
       ps.$router.push('Coupons_rentme?service_id='+ps.service.id);
     },
     couponremove_function(){
@@ -299,64 +264,6 @@ export default ({
       ps.coupon_dailog_remove = true;
       // ps.location_address();
       ps.rent_me_summery_data();
-    },
-    placeorder(){
-      var ps = this;
-      if(!ps.payment){
-        ps.$q.notify({ message: "Please Select Payment Method", type: "negative",});
-        return false;
-      }
-      let formData = new FormData();
-      // formData.append("base_location", ps.pickuplocation_array.location);
-      formData.append("base_pincode", 0);
-      formData.append("xid", ps.xid);
-      formData.append("category_id", ps.category.id);
-      formData.append("service_id", ps.category.main_service_id);
-      formData.append("plan", null);
-      formData.append("transaction_id", null);
-      formData.append("payment_mode", ps.payment);
-      formData.append("coupon", ps.coupon_code);
-      formData.append("payment_status", "pending");
-      formData.append("schedule_timestamp", (new Date()));
-      formData.append("weight", null);
-      formData.append("item_name", ps.category.name);
-      formData.append("instruction", null);
-      formData.append("week_end", null);
-
-      formData.append("pick_flat", ps.pickuplocation_array.flat_no);
-      formData.append("from_lat_lng", ps.pickuplocation_array.location );
-      formData.append("pick_date", ps.pick_date );
-      formData.append("from_location", ps.pickuplocation_array.name );
-      formData.append("pick_phone", ps.user_data.mobile );
-      // formData.append("pick_territory_id", ps.pickuplocation_array.territory_id );
-      formData.append("pick_name", ps.user_data.name );
-      formData.append("pick_time", ps.pick_time );
-
-      formData.append("to_location", ps.delivery_address_array.name);
-      formData.append("drop_flat", ps.delivery_address_arrayflat_no);
-      formData.append("drop_phone", ps.user_data.mobile);
-      // formData.append("drop_territory_id", ps.delivery_address_array.territory_id);
-      formData.append("to_lat_lng", ps.delivery_address_array.location);
-      formData.append("drop_name", ps.user_data.name);
-      var loader = document.getElementById('loader2');
-          loader.style.display="block";
-      let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      ps.$api.post('/api/pay-pickdrop',formData,config).then(function (response) {
-        loader.style.display="none";
-          if(response.data.status_code == 204){
-            ps.$q.notify({ message: response.data.message, });
-          } else if(response.data.status_code == 200){
-            localStorage.removeItem('pickup_address');
-            localStorage.removeItem('delivery_address');
-            localStorage.removeItem('category');
-            localStorage.removeItem('service');
-            ps.order = response.data;
-            ps.order_success_dailog = true;
-
-          }
-        }).catch(function (error) {
-          console.log(error);
-        });
     },
     rent_me_summery_data(){
       var ps = this;
@@ -369,9 +276,7 @@ export default ({
           console.log(user_data)
           ps.user_data = user_data.deatils;
       }
-
       let formData = new FormData();
-
       formData.append("hours", 1);
       formData.append("trip_type", 0);
       formData.append("to_location", ps.pickuplocation_array.location);
@@ -497,7 +402,6 @@ export default ({
         }
       }
     },
-
     rm_pay_now(){
       var ps = this;
       if(!ps.payment){

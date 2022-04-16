@@ -232,6 +232,7 @@ export default ({
 	      	loader.style.display="block";
 	  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
 				ps.$api.post('/api/v4/dashboard-eight',formData,config).then(function (response) {
+
 					loader.style.display="none";
 					if(response.data.status_code ==200){
 					 	ps.sliders = response.data.sliders;
@@ -239,10 +240,11 @@ export default ({
 					 	ps.service1 = response.data.all_services[1];
 					 	ps.service2 = response.data.all_services[2];
 					 	ps.service3 = response.data.all_services[3];
-					 	ps.upcomming_offers  = response.data.top_offers;
-					 	ps.top_offers_one  = response.data.top_offers_one[0];
-					 	ps.search_box_text = response.data.search_box_text;
 					 	ps.services_menu(ps.service0,0);
+					 	ps.upcomming_offers  = response.data.top_offers;
+					 	// ps.top_offers_one  = response.data.top_offers_one[0];
+					 	ps.top_offers_one  = response.data.top_offers_one;
+					 	ps.search_box_text = response.data.search_box_text;
 					}else{
 					 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
 					}
@@ -319,7 +321,7 @@ export default ({
   				ps.$router.push('/PickFromStore_layouts_s2');
   			}
   		}else if(item.main_service_id == 1){
-  			console.log(item);
+  			// console.log(item);
   			if(item.id == 30 && item.service_id == '1' ){
   				ps.PAD_others_Dailog = true;
   			}else if(item.service_id == 3 && item.id== 30) {
@@ -327,6 +329,8 @@ export default ({
 				}else{
   				ps.$router.push('/PickAndDrop_s1');
   			}
+  		}else if(item.main_service_id == 3){
+  			ps.$router.push('/PickAndDrop_s1?s_id=3');
   		}
 
   	},
@@ -340,22 +344,27 @@ export default ({
   	},
   	GetCallBackRequestFunction(){
   		var ps = this;
-  		var loader = document.getElementById('loader2');
-	    loader.style.display="block";
-  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-			ps.$api.get('/api/get-call?current_location='+ps.$store.state.latlongs,config).then(function (response) {
-				loader.style.display="none";
-				if(response.data.status_code ==200){
-				 	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
-				 }
-				 else{
-				 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
-				}
-			 	ps.CallBackRequestDialog = false;
-			}).catch(function (error) {
-				console.log(error);
-				// ps.$q.notify({ message:error, type: 'warning',progress: true, });
-			});
+  		if(ps.xid != 2){
+	  		var loader = document.getElementById('loader2');
+		    loader.style.display="block";
+	  		let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
+				ps.$api.get('/api/get-call?current_location='+ps.$store.state.latlongs,config).then(function (response) {
+					loader.style.display="none";
+					if(response.data.status_code ==200){
+					 	ps.$q.notify({ message:response.data.message, type: 'positive',progress: true, });
+					 }
+					 else{
+					 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
+					}
+				 	ps.CallBackRequestDialog = false;
+				}).catch(function (error) {
+					console.log(error);
+					// ps.$q.notify({ message:error, type: 'warning',progress: true, });
+				});
+			}else{
+				ps.$q.notify({ message:"Please Sign In.", type: 'negative',progress: true, });
+				ps.$router.push('profile')
+			}
   	},
   	screen_redirection_sliders(item){
   		var ps =  this;

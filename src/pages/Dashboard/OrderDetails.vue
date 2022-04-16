@@ -3,7 +3,7 @@
 
   <q-header>
     <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-      <q-btn flat dense icon="arrow_back" @click="$router.push('/home/Orders')"/>
+      <!-- <q-btn flat dense icon="arrow_back" @click=""/> -->
       <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
       <q-space></q-space>
       <q-btn dense icon="notifications" flat @click="$router.push('Notification')">
@@ -44,11 +44,19 @@
       <div class="flex q-py-xs q-px-md" v-for=" i in payment_details">{{ i.key }}<q-space></q-space>{{ i.Value }}</div>
       <q-separator />
       <div class="flex q-py-sm q-px-md ">
-        <span class="text-weight-bolder">Pay Now</span><q-space></q-space>
-        <span class="text-weight-bolder">Total: </span>&nbsp; Rs. {{ order_data.total }}</div>
+        <span class="text-weight-bolder" v-if="order_data.payment_status == 'pending'">Pay Now</span>
+        <span class="text-weight-bolder text-green" v-else>{{ order_data.payment_status }}</span>
+
+        <q-space></q-space>
+        <span class="text-weight-bolder">Total: </span>&nbsp; Rs. {{ order_data.amount }}</div>
       <q-separator />
       
       <div class="row q-px-md q-py-sm">
+        <div class="col-12 flex q-py-sm" v-if="$route.query.service=='d'">
+          <q-icon name="location_on" size="sm" class="cb-text-orange-8"></q-icon>
+          <span class="q-px-md text-weight-bolder cb-font-14 cb-text-blue-8">Pick Location</span><br>
+          <span class="cb-text-grey-5">{{ order_data.from_location }}</span>
+        </div>
         <div class="col-12 flex">
           <q-icon name="location_on" size="sm" class="cb-text-orange-8"></q-icon>
           <span class="q-px-md text-weight-bolder cb-font-14 cb-text-blue-8">Delivered To</span><br>
@@ -56,12 +64,12 @@
         </div>
       </div>
 
-      <div class="row q-px-md cb-bg-grey-2 q-py-xs">
+      <div class="row q-px-md cb-bg-grey-2 q-py-xs" v-if="$route.query.service=='a'">
         <span class="cb-text-orange-8 cb-font-14 text-bold">Item Details</span>
       </div>
 
 
-      <q-list bordered separator>
+      <q-list bordered separator >
         <q-item  class="q-py-xs" clickable v-ripple v-for="s in order.items">
           <q-item-section>
             <q-item-label>{{ s.name }}</q-item-label>
@@ -118,6 +126,7 @@ export default {
         loader.style.display="block";
       let config = { headers: { Authorization: `Bearer ${ps.access_token}`, },};
       ps.$api.get('/api/v2/my-order-details?order_id='+this.$route.query.order_id, config).then(function (response) {
+        console.log(response,"order_data");
         loader.style.display="none";
         ps.order = response.data;
         ps.order_data = response.data.orders_details_two;

@@ -1,9 +1,9 @@
 <template>
-  <q-layout  view="lHh lpr lFf">
+  <q-layout  view="lHh lpr lFf" >
 
     <q-header class="bg-white q-pb-xs">
       <q-toolbar>
-        <q-btn icon="chevron_left" flat class="cb-text-grey-4 q-px-none" @click="$router.push('/home/dashboard')"></q-btn>
+        <q-btn icon="chevron_left" flat class="cb-text-grey-4 q-px-none" @click="Screen_Back_Redirection()"></q-btn>
         <q-space></q-space>
         <span class="cb-text-grey-4">My Order Details</span>
         <q-space></q-space>
@@ -19,7 +19,7 @@
       </q-tabs>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="animate__animated animate__slideInRight">
       <div id="loader2" class="pre-loader" style="display:none"></div>
       <q-page>
         
@@ -84,9 +84,9 @@
                 </q-card-section>
                 <q-card-actions>
                   <q-space></q-space>
-                  <!-- <button class="bg-white cb-round-borders-20 q-py-xs q-px-md  text-green" style="border:2px solid #81c784" @click="viewordersummery_screen(order)"> -->
-                    <!-- Track Your Order <q-icon name="location_on" size="xs" ></q-icon>  -->
-                  <!-- </button> -->
+                  <button class="bg-white cb-round-borders-20 q-py-xs q-px-md  text-green" style="border:2px solid #81c784" @click="trackorderdata(order.uid)">
+                    Track Your Order <q-icon name="location_on" size="xs" ></q-icon> 
+                  </button>
                   <q-space></q-space>
                   <q-space></q-space>
                   <button class="bg-white cb-round-borders-20 q-py-xs q-px-md text-green" style="border:2px solid #81c784" @click="viewordersummery_screen(order)">
@@ -216,6 +216,7 @@ export default ({
   mounted () {
     localStorage.removeItem('food_summery');
     this.getToken();
+    this.mypath();
     //uncomment this on into live
       this.getfoodorders();
 
@@ -618,6 +619,37 @@ export default ({
       var ps = this;
       ps.$router.push('food-order-rating?order_id='+uid);
     },
+    trackorderdata(uid){
+      var ps = this;
+      ps.$router.push("/LocationTrack?uid="+uid);
+    },
+    mypath(){
+      var ps=  this;
+      var myallpaths = ['/home/dashboard'];
+      // var i = 0;
+      // if(localStorage.getItem('mypath')){
+      //   myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      // }
+      // myallpaths.forEach(( path,index ) => {
+      //   if(ps.$route.fullPath == path){
+      //     if(i == 0){ i = index; }
+      //   }
+      // });
+      // if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      // }else{
+      //   for(var j=1;j<= myallpaths.length;++j){
+      //     if(j<=i){ }else{ myallpaths.splice(j,1); }
+      //   }
+      // }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   }
 })
 </script>

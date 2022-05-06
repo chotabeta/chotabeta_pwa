@@ -1,11 +1,9 @@
 <template>
-	<q-layout  view="lHh lpr lFf">
+	<q-layout  view="lHh lpr lFf" >
 		<q-header  class="cb-bg-white-2">
 			<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-				<!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('/PickFromStore_layouts_s1')" v-if="category.screen_redirection == 2"></q-btn> -->
-				<!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('/home/dashboard')" v-if="category.screen_redirection == 0"></q-btn> -->
-				<!-- <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn> -->
-				<q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
+				<q-btn flat dense round icon="arrow_back" @click="Screen_Back_Redirection()"></q-btn>
+				<q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress"></q-btn>
 				<q-space></q-space>
 				<q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')">
 	    			<q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -34,15 +32,17 @@
         	<q-btn dense label="Add Item"  class="cb-bg-orange-8 q-px-xs" size="sm" icon-right="add" @click="$router.push('Custom_items')"></q-btn>
         </div>
 		</q-header>
-		<q-page-container>
-			<q-page class="q-pa-sm">
+		<q-page-container class="animate__animated animate__slideInRight">
+			<q-page class="q-pa-sm ">
 				<div id="loader2" class="pre-loader" style="display:none"></div>
 				<div class="row" style="padding-bottom: 50px;">
 
 					<div class="col-6  q-pa-xs" v-for="i in data">
 						<q-card class="q-px-sm q-pt-xs cb-text-grey-5 cb-font-14">
 							<q-card-section  @click="get_item_screen(i)" class="q-pa-none">
-								<q-img :src="i.image" @click="" height="200px"></q-img>
+								<div style="width:100%;height:180px;border:none" class="column justify-center items-center">
+									<img :src="i.image" @click="" style="height:160px;width:100%;border:none;">
+								</div>
 							</q-card-section>
 							<q-card-section class="row items-center q-pa-none flex">
 								<span style="width:80%;overflow:hidden;white-space: nowrap;">{{ i.brands }}</span>
@@ -74,12 +74,7 @@
 					<div class="col-12 q-py-xs js-scroll"><!-- sandeep --></div>
 				</div>
 
-				<div class="cb-bg-orange-8 fixed-bottom row items-center q-px-md q-py-sm text-white text-weight-bolder cb-font-16" v-if="cartlength != 0">
-					<span>{{ cartlength }} Items <span class="q-px-xs">|</span> <q-icon name="currency_rupee"></q-icon>{{ cart_price }}.0</span>
-					<q-space></q-space>
-					<q-btn label="view cart" icon-right="shopping_cart" flat  @click="cart_page_redirection()"></q-btn>
-				</div>
-
+				
 				<q-dialog v-model="cart_key_dailog">
 	        <q-card class="cb-round-borders-20" style="max-width: 300px;">
 	          <q-card-section class="text-center text-grey-9">
@@ -162,13 +157,25 @@
 								<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
 							</q-input>
 	        	</q-card-section>
+	        	<q-card-section v-if="!user_search_input_s2">
+							<div class="row">
+							<span class="text-subtitle1 text-justify">	<b>{{heading_text}}</b></span>
+							</div>
+							<div class="row" >
+								<div class="col-4 text-center q-pa-xs" v-for="tr in trending_searches">
+									<q-card dense class="bg-orange-1 q-py-xs no-shadow text-orange-8 full-width border" @click = "user_search_input_s2 = tr.name,search_products_s2()" style="border:1px solid #ffe0b2">
+										{{tr.name}}
+									</q-card>
+								</div>
+							</div>
+						</q-card-section>
 		        <q-card-section class="q-pt-none">
 							<div v-for="products in global_search_data_s2" :key="products" @click="go_to_product_page(products)">
 	        			<div class="row">
-				 					<div class="col-3">
+				 					<div class="col-2">
 					 					<img :src="products.image" style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;" >
 					 				</div>
-				 					<div class="col-9">
+				 					<div class="col-10">
 										<span v-html="products.name"></span>
 					 				</div>
 				 				</div>
@@ -177,9 +184,13 @@
 					  </q-card-section>
 	      	</q-card>
 	    	</q-dialog>
-
 			</q-page>
 		</q-page-container>
+		<div class="cb-bg-orange-8 fixed-bottom row items-center q-px-md q-py-sm text-white text-weight-bolder cb-font-16" v-if="cartlength != 0">
+			<span>{{ cartlength }} Items <span class="q-px-xs">|</span> <q-icon name="currency_rupee"></q-icon>{{ cart_price }}.0</span>
+			<q-space></q-space>
+			<q-btn label="view cart" icon-right="shopping_cart" flat  @click="cart_page_redirection()"></q-btn>
+		</div>
 	</q-layout>
 </template>
 <script>
@@ -223,39 +234,35 @@ export default ({
 			global_search_data_s2: ref([]),
 			xid:ref(null),
 			custom_items:ref([]),
+			trending_searches:ref([]),
+      heading_text:ref(null),
     }
   },
   mounted () {
   	this.getToken();
+  	this.mypath();
   	this.gettabs_links();
   	this.mycart_count_and_length();
   	this.cart_key_function();
 
-  	const scrollElements = document.querySelectorAll(".js-scroll");
-    window.addEventListener("scroll", () => { handleScrollAnimation(); });
-    const handleScrollAnimation = () => {
-      scrollElements.forEach((el) => {
-        if (elementInView(el)) { displayScrollElement(el); }
-        else if (elementOutofView(el)) { hideScrollElement(el);}
-      })
-    }
-    const elementInView = (el) => {
-    	const elementTop = el.getBoundingClientRect().top;
-    	// console.log(elementTop,"elementTop",(window.innerHeight-52),"innerHeight");
-    	return ( elementTop <= (window.innerHeight-20) );
-    };
-    const elementOutofView = (el) => {
-      const elementTop = el.getBoundingClientRect().top;
-      return ( elementTop >= (window.innerHeight-20) );
-    };
-    const displayScrollElement = (element) => {
-      element.classList.add("scrolled");
-      if(this.successpage == this.page){ this.page = 1 + this.page;this.getItems(); }
-    };
-    const hideScrollElement = (element) => { element.classList.remove("scrolled"); };
-
+  	window.addEventListener("scroll", () => { this.handleScrollAnimation(); });
   },
   methods:{
+  	handleScrollAnimation(){
+  		const scrollElements = document.querySelectorAll(".js-scroll");
+      scrollElements.forEach((el) => {
+        if (this.elementInView(el)) { this.displayScrollElement(el); }
+      })   
+		},
+		elementInView(el){
+    	const elementTop = el.getBoundingClientRect().top;
+    	return ( elementTop <= (window.innerHeight-20) );
+    },
+    displayScrollElement(element){
+      element.classList.add("scrolled");
+      if(this.successpage == this.page){ this.page = 1 + this.page;this.getItems(); }
+    },
+
   	getToken(){
   		var ps = this ;
   		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
@@ -582,10 +589,35 @@ export default ({
   	},
   	search_focusout_s2(){
 			var ps = this;
+			ps.user_search_input_s2  = '';
+			ps.global_search_data_s2  = '';
 			ps.global_search_dialog_s2 = false;
 		},
 		my_function(){
+			var ps = this;
 			this.global_search_dialog_s2 = true; 
+				  		let formData = new FormData();
+		      	formData.append('page_no', 1);
+		      	formData.append('service_id', 0);
+		      	formData.append('category_id', 0);
+		      	formData.append('sub_category_id', "Mango");
+
+				let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
+				ps.$api.get('/api/get-popular-searches', formData,config).then(function (response) {
+				
+					if(response.data.status_code ==200){
+					ps.heading_text = response.data.heading_text;
+					ps.trending_searches = response.data.trending_searches;
+					 }
+					 else{
+					 	
+					}
+				}).catch(function (error) {
+					console.log(error);
+					// ps.$q.notify({ message:error, type: 'warning',progress: true, });
+				});
+
+
 		},
 		search_products_s2(){
 			var ps = this;
@@ -625,6 +657,33 @@ export default ({
   		var ps = this;
   		ps.$router.push('/PickFromStore_Item?sku='+product_data.sku);  
 		},
+		mypath(){
+			var ps=  this;
+			var myallpaths = [];
+			var i = 0;
+			if(localStorage.getItem('mypath')){
+				myallpaths = JSON.parse(localStorage.getItem('mypath'));
+			}
+			myallpaths.forEach(( path,index ) => {
+				if(ps.$route.fullPath == path){
+					if(i == 0){ i = index; }
+				}
+			});
+			if(i == 0){
+				myallpaths.push(ps.$route.fullPath);
+			}else{
+				for(var j=1;j<= myallpaths.length;++j){
+					if(j<=i){ }else{ myallpaths.splice(j,1); }
+				}
+			}
+			localStorage.setItem('mypath',JSON.stringify(myallpaths));
+		},
+		Screen_Back_Redirection(){
+			var ps = this;
+			var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+			var previous = myallpaths.length;
+			ps.$router.push(myallpaths[previous-2]);
+		}
   }
 })
 </script>

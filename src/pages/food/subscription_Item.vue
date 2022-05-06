@@ -2,10 +2,10 @@
   <q-layout view="lHh lpr lFf">
 	<q-header class="bg-orange-8">
 	  <q-toolbar>
-	  	<q-btn flat icon="arrow_back_ios"></q-btn>
+	  	<q-btn flat icon="arrow_back_ios" @click="Screen_Back_Redirection()"></q-btn>
 	  </q-toolbar>
 	</q-header>	
-	<q-page-container class="bg-orange-8">
+	<q-page-container class="bg-orange-8 animate__animated animate__slideInRight">
 		<div id="loader2" class="pre-loader" style="display:none"></div>
 		
 	  <q-page style="border-radius: 30px 30px 0px 0px;box-shadow:0px -0px 3px 0px grey;" class="q-pt-sm q-px-md bg-orange-1">
@@ -72,8 +72,7 @@
 	  		<q-card> 
 	  			<q-card-section class="text-center">
 	  				<p class="text-weight-bolder text-blue-8">Alert</p>
-	  				Please Select Meal Type
-
+	  				Please Select Available Slot
 	  			</q-card-section>
 	  			<q-separator />
 	        <q-card-actions align="center">
@@ -116,6 +115,7 @@ export default {
   	var d = new Date();
   	this.events = [d.getFullYear()+'/'+(d.getMonth() + 1)+'/'+d.getDate()]
   	this.getToken();
+  	this.mypath();
   	// comment this two functions when you move to live
   	this.getsubscription();
   	
@@ -148,10 +148,15 @@ export default {
 							category_id: 1,
 							sub_category_id: 0,
 							serving_times: [
+															{
+																end: "12:00",
+																name: "Lunch",
+																start: "10:00"
+															},
 							                {
-										        name: "Breakfast",
-										        start: "08:00",
-										        end: "11:00"
+										        		end: "22:00",
+																name: "Dinner",
+																start: "19:00"	
 							                }
 							            ]
 				          }
@@ -226,12 +231,18 @@ export default {
   	  		// ps.slot_time =  time.start;
   	  		var start_time_hr = time.start.slice(0,2);
   	  		var start_time_min = time.start.slice(3,5);
-  	  		if(start_time_hr >= 12){ time.start_time = (start_time_hr-12)+':00 PM'; }
+  	  		if(start_time_hr >= 12){ 
+  	  			if(start_time_hr == 12){time.start_time = (start_time_hr)+':00 PM'; }
+  	  			else{ time.start_time = (start_time_hr-12)+':00 PM';}
+  	  		}
   	  		else{ time.start_time = start_time_hr+':00 AM'; }
 
   	  		var end_time_hr = time.end.slice(0,2);
   	  		var end_time_min = time.end.slice(3,5);
-  	  		if( end_time_hr >= 12){ time.end_time = (end_time_hr-12)+':00 PM'; }
+  	  		if( end_time_hr >= 12){ 
+  	  			if( end_time_hr == 12 ){ time.end_time = (end_time_hr)+':00 PM'; }
+  	  			else { time.end_time = (end_time_hr-12)+':00 PM'; }
+  	  		}
   	  		else{ time.end_time = end_time_hr+':00 AM' }
 
   	  		time.label = time.name+'('+ time.start_time+'-'+ time.end_time+')';
@@ -282,7 +293,7 @@ export default {
   			var end_time_min = ps.slot.end.slice(3,5);
   			// if( end_time_min == '00' ){
   				for( var i=start_time_hr;i<end_time_hr;i++ ){
-  					if(i < 10){ i++; i--;  }
+  					if(i < end_time_hr){ i++; i--;  }
   					ps.hourOptionsTime1.push(i);
   				}
   				for( var i=0;i<59;i++ ){
@@ -306,6 +317,33 @@ export default {
   		var ps= this;
   		console.log(ps.slot_time)
   	},
+  	mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   }
 };
 </script>

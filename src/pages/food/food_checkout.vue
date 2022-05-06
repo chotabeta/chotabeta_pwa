@@ -2,14 +2,14 @@
 <q-layout view="lHh lpr lFf">
 	<q-header class="bg-orange-1 q-pt-xs">
 	  <q-toolbar class="text-grey-8 text-h6">
-	 		<q-btn icon="arrow_back_ios" flat></q-btn>
+	 		<q-btn icon="arrow_back_ios" flat @click="Screen_Back_Redirection()"></q-btn>
 	    <q-space></q-space>
 	    Checkout
 	    <q-space></q-space>
 	    <q-space></q-space>
 	  </q-toolbar>
 	</q-header>
-	<q-page-container>
+	<q-page-container class="animate__animated animate__slideInRight">
 		<div id="loader2" class="pre-loader" style="display:none"></div>
 		<q-page class="bg-orange-1 q-px-sm text-grey-8">
 			<div class="row">
@@ -86,7 +86,7 @@
           </div>
 				</div>
 
-				<div class="col-12 q-py-md" v-if="xid != 2">
+				<div class="col-12 q-py-md" v-if="xid != 2 && checkout_buton_status == 0">
 					<q-btn color="green-4" label="checkout" @click="food_checkout()" class="full-width cb-round-borders-10 cb-font-16"></q-btn>
 				</div>
 
@@ -144,6 +144,21 @@
         	</q-card-section>
         </q-card>
       </q-dialog>
+
+      <q-dialog v-model="payment_decline_method">
+        <q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-9">
+          <q-card-section class="text-center">
+            <q-avatar size="80px" class="bg-orange-3">
+              <q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="60px" icon="close"></q-avatar>
+            </q-avatar><br>
+            <span class="text-weight-bolder text-h6">Your Payment Has Been Declined!</span>
+            <br>
+            <q-btn label="Ok" class="q-px-xl cb-font-16 cb-bg-orange-8 text-white q-mb-sm q-mt-lg" @click="refresh_page_without_response()"></q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
+
 		</q-page>
 	</q-page-container>
 </q-layout>
@@ -181,10 +196,13 @@ export default {
 		  data:[],
 		  week_end:ref(null),
 		  pick_date:ref(null),
+		  checkout_buton_status:ref(0),
+		  payment_decline_method:ref(false),
    	}
   },
   mounted() {
   	this.getToken();
+  	this.mypath();
   	// uncomment this  functions when you move to live
   	this.get_payment_images_function();
 	  this.deliveryaddress();  	
@@ -336,6 +354,7 @@ export default {
   	  }
 
   	  if( ps.$route.query.subscription == 0 ){
+  	  	alert('hai');
   	  	ps.plan = ps.$route.query.plan;
   	  	ps.schedule_time = localStorage.getItem('schedule_time');
   	  	ps.MyFoodCart = JSON.parse(localStorage.getItem('MyFoodCart'));
@@ -359,6 +378,7 @@ export default {
   	  let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}};
   	  var loader = document.getElementById('loader2');
 		  let formData = new FormData;
+		  formData.append('service_path',ps.$route.fullPath);
 		  formData.append("plan", ps.plan);
 		  formData.append("schedule_time", ps.schedule_time);
 		  formData.append("items", JSON.stringify(ps.data) );
@@ -377,34 +397,63 @@ export default {
       	console.log(response,"continue-food-one");
       	loader.style.display="none";
       	if(response.data.status_code == 200){
+      		ps.checkout_buton_status = 0;
       		ps.continue_data = response.data;
       		if(localStorage.getItem('food_coupon')){
 	  				if(response.data.coupon_discount == 0){
 	              ps.coupon_dailog_error = true;
+	              localStorage.removeItem('food_coupon');
+	              ps.coupon_code = null;
 	            }else{
 	              ps.discount = response.data.coupon_discount;
 	              ps.coupon_dailog_applied = true;
 	            }	
 	  			}
 	  			ps.discount = response.data.coupon_discount;
+	  			if(ps.$route.query.response == "pass"){
+	          ps.food_checkout_function();
+	        }else if(ps.$route.query.response == "fail"){
+	          // alert('faile to payment');
+	          ps.payment_decline_method = true;
+	        }
         }else{
-          ps.$q.notify({ message: response.data.message, type: "negative",});
+        	ps.$q.notify({ message: response.data.message, type: "negative",});
+        	ps.checkout_buton_status = 1;
         }
       }).catch(function (error) {
       	console.log(error);
       });
   	},
   	food_checkout(){
-  	  var ps= this;
-  	  if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
-      else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
-      else if(ps.payment == 'Pay Now Online'){
-      	var payment = 'PO';
-        ps.$q.notify({ message: "Pay Now Online is Not Available! Please Try Another Method", }); 
-        return false; 
+  		var ps = this;
+  		if(!ps.payment){
+        ps.$q.notify({ message: "Please Select Payment Method", type: "negative",});
+        return false;
       }
+      if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
+      else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
+      else if(ps.payment == 'Pay Now Online'){var payment = 'Online'; }
+      var url = "https://pay.easebuzz.in/pay/"+ps.continue_data.payment_access_token;
+      if(payment == "Online"){
+        window.location = url; 
+      }else{
+        ps.food_checkout_function();
+      }
+  	},
+  	food_checkout_function(){
+  	  var ps= this;
+
+  	  if(ps.$route.query.response == "pass"){
+        var payment_status  = "paid";
+        var payment = "Online";
+      }else{
+        var payment_status = "pending";
+        if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
+        else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
+      }
+
   	  let formData = new FormData;
-      formData.append("payment_status", "Pending");
+      formData.append("payment_status", payment_status);
 		  formData.append("transaction_id", ps.delivery_territory_id);
 		  formData.append("code", ps.coupon_code);
 		  formData.append("schedule_time", ps.schedule_time);
@@ -443,8 +492,41 @@ export default {
   	},
   	signinscreen(){
   		var ps = this;
-  		$router.push('sign-in?service=Food&plan='+ps.$route.query.plan+'&subscription='+ps.$route.query.subscription);
+  		ps.$router.push('sign-in?service=Food&plan='+ps.$route.query.plan+'&subscription='+ps.$route.query.subscription);
   	},
+  	refresh_page_without_response(){
+  		var ps = this;
+      ps.payment_decline_method = false;
+      var url = ps.$route.path+'?plan='+ps.$route.query.plan+'&subscription='+ps.$route.query.subscription;
+      ps.$router.push(url);
+    },
+  	mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.path == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.path);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   },
 };
 </script>

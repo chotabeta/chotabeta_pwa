@@ -3,8 +3,8 @@
 
     <q-header>
       <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-        <!-- <q-btn flat dense icon="arrow_back" @click="$router.push('/home/dashboard')"/> -->
-        <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
+        <q-btn flat dense icon="arrow_back" @click="Screen_Back_Redirection()"/>
+        <q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress"></q-btn>
         <q-space></q-space>
         <q-btn dense icon="notifications" flat @click="$router.push('/home/Notification')">
           <q-badge color="red" rounded floating style="margin-top: 8px; margin-right: 8px"></q-badge>
@@ -16,7 +16,7 @@
       <div class="text-center cb-bg-white-2 text-weight-bolder cb-font-16 q-pb-xs cb-text-orange-8">Summary</div>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="animate__animated animate__slideInRight">
       <q-page class="q-px-md q-py-sm">
         <div id="loader2" class="pre-loader" style="display:none"></div>
         <q-card class="cb-round-borders-10 cb-shadow-2">
@@ -220,6 +220,19 @@
           </q-card>
         </q-dialog>
 
+        <q-dialog v-model="payment_decline_method">
+        <q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-9">
+          <q-card-section class="text-center">
+            <q-avatar size="80px" class="bg-orange-3">
+              <q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="60px" icon="close"></q-avatar>
+            </q-avatar><br>
+            <span class="text-weight-bolder text-h6">Your Payment Has Been Declined!</span>
+            <br>
+            <q-btn label="Ok" class="q-px-xl cb-font-16 cb-bg-orange-8 text-white q-mb-sm q-mt-lg" @click="refresh_page_without_response()"></q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
       </q-page>
     </q-page-container>
   </q-layout>
@@ -264,10 +277,12 @@ export default ({
       fare_location_error:ref(false),
       territory_data:ref(null),
       xid:ref(null),
+      payment_decline_method:ref(false),
     }
   },
    mounted () {
     this.getToken();
+    this.mypath();
     this.get_payment_images();
     this.pickdate_selection();
     this.location_address();
@@ -412,7 +427,7 @@ export default ({
       formData.append("pick_territory_id", ps.pickuplocation_array.territory_id);
       var loader = document.getElementById('loader2');
       loader.style.display="block";
-      ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
+      ps.$api.post('/api/fare-pickdrop-new',formData,config).then(function (response) {
         loader.style.display="none";
           ps.pickanddrop_fare_data =  response.data; 
           if(response.data.status_code == 209){
@@ -431,6 +446,12 @@ export default ({
             ps.discount = response.data.coupon;
           }else{
             ps.territory_checkup_dialog = true;
+          }
+          if(ps.$route.query.response == "pass"){
+            ps.placeorder_function();
+          }else if(ps.$route.query.response == "fail"){
+            // alert('faile to payment');
+            ps.payment_decline_method =true;
           }
         }).catch(function (error) {
           console.log(error);
@@ -465,12 +486,29 @@ export default ({
         ps.$q.notify({ message: "Please Select Payment Method", type: "negative",}); 
         return false;    
       }
+      
       if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
       else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
-      else if(ps.payment == 'Pay Now Online'){var payment = 'PO';
-               ps.$q.notify({ message: "Pay Now Online is Not Available! Please Try Another Method", }); 
-               return false;
+      else if(ps.payment == 'Pay Now Online'){var payment = 'Online'; }
+      var url = "https://pay.easebuzz.in/pay/"+ps.pickanddrop_fare_data.payment_access_token;
+      if(payment == "Online"){
+        window.location = url; 
+      }else{
+        ps.placeorder_function();
       }
+    },
+    placeorder_function(){
+      var ps = this;
+
+      if(ps.$route.query.response == "pass"){
+        var payment_status  = "paid";
+        var payment = "Online";
+      }else{
+        var payment_status = "pending";
+        if(ps.payment == 'Cash On Delivery'){var payment = 'COD'; }
+        else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD'; }
+      }
+
       let formData = new FormData();
       formData.append("base_location", ps.pickuplocation_array.location);
       formData.append("base_pincode", 0);
@@ -481,7 +519,7 @@ export default ({
       formData.append("transaction_id", ps.transaction_id);
       formData.append("payment_mode", payment);
       formData.append("coupon", ps.coupon_code);
-      formData.append("payment_status", "pending");
+      formData.append("payment_status", payment_status);
       formData.append("schedule_timestamp", (new Date()));
       formData.append("weight", null);
       formData.append("item_name", ps.category.name);
@@ -530,6 +568,38 @@ export default ({
     select(){
       var ps = this;
       ps.date_change = 1;
+    },
+    refresh_page_without_response(){
+      var ps = this;
+      ps.payment_decline_method = false;
+      ps.$router.push(ps.$route.path);
+    },
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.path == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.path);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
     }
   }
 })

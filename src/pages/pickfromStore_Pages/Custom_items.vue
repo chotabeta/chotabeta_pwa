@@ -1,8 +1,8 @@
 <template>
-  <q-layout view="lHh lpr lFf">
+  <q-layout view="lHh lpr lFf" class="animate__animated animate__slideInRight">
     <q-header>
       <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-        <q-btn  flat dense round icon="arrow_back" @click="$router.push('/PickFromStore_layouts_s2')"/>
+        <q-btn  flat dense round icon="arrow_back" @click="Screen_Back_Redirection()"/>
         <q-space></q-space>
         <span class="cb-text-blue-4 text-subtitle2 text-weight-bolder">{{ custom_item.length }} Item Added</span>
         <q-space></q-space>
@@ -89,6 +89,7 @@ export default ({
   },
   mounted () {
   	this.getToken(); 
+    this.mypath();
     this.get_custom_items_data(); 		
   },
   methods:{
@@ -126,7 +127,7 @@ export default ({
                   units: "",
                   variations:[
                               {
-                                description: "discription",
+                                description: ps.discription,
                                 id: 0,
                                 item_disabled: "0",
                                 item_id: "",
@@ -167,7 +168,34 @@ export default ({
   		var ps = this;
   		console.log(item);
   		ps.$router.push('/PickFromStore_layouts_s2?combinations='+item);
-  	}
+  	},
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   }
 })
 </script>

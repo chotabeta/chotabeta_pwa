@@ -1,5 +1,5 @@
 <template>
-	<q-layout>
+	<q-layout class="animate__animated animate__slideInRight">
 		<q-page-container>
 			<q-page class="flex flex-center q-mt-xl q-py-xl" id="sign_in_page" style="display:block">
 				<div id="loader2" class="pre-loader" style="display:none"></div>

@@ -1,5 +1,5 @@
 <template>
-	<q-layout  view="lHh lpr lFf">
+	<q-layout  view="lHh lpr lFf" class="animate__animated animate__slideInRight">
 		<q-page-container>
 			<div id="loader2" class="pre-loader" style="display:none"></div>
 			<q-dialog v-model="location_check" persistent>

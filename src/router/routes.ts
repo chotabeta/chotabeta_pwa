@@ -10,6 +10,10 @@ const routes: RouteRecordRaw[] = [
     component: () => import('pages/signin.vue'),
   },
   {
+    path: '/LocationTrack',
+    component: () => import('pages/LocationTrack.vue'),
+  },
+  {
     path: '/CheckLocation',
     component: () => import('pages/CheckLocation.vue'),
   },

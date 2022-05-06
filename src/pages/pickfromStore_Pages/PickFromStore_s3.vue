@@ -2,8 +2,8 @@
 	<q-layout view="lHh lpr lFf">
 		<q-header>
 			<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-				<!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('')"/> -->
-				<q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
+				<q-btn flat dense round icon="arrow_back" @click="Screen_Back_Redirection()"/>
+				<q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress"></q-btn>
 				<q-space></q-space>
 				<q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')"> 
 	    			<q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -19,9 +19,9 @@
 				<q-btn label="clear" icon-right="delete_sweep" dense flat @click="clear_confirm_dialog = true"></q-btn>
 			</div>
 		</q-header>
-		<q-page-container>
+		<q-page-container  class="animate__animated animate__slideInRight">
 			<div id="loader2" class="pre-loader" style="display:none"></div>
-			<q-page class="q-mb-xl q-pb-sm" v-if="mycart_items.length != 0 || custom_items != 0">
+			<q-page class="q-mb-xl q-pb-sm " v-if="mycart_items.length != 0 || custom_items != 0">
 				<div class="row" v-for="cart in mycart_api_data" :key="cart">
 					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
 						<span>{{ cart.category_name }}</span>
@@ -30,8 +30,8 @@
 					</div>
 					<div class="col-12 cb-text-grey-5 q-px-sm" v-for="item in cart.category_data">
 						<div class="row q-pa-xs">
-							<div class="col-2" style="border-right: 2px solid grey;" @click="screenredirection_item(item)">
-								<q-img :src="item.image"></q-img>
+							<div class="col-2 column justify-center items-center" style="border-right: 2px solid grey;" @click="screenredirection_item(item)">
+								<img :src="item.image" style="width:100%;">
 							</div>
 							<div class="col-10 q-pl-md" style="font-size: 12px;">
 								<div class="flex">
@@ -67,7 +67,7 @@
 					</div>
 				</div>
 
-				<div class="row">
+				<div class="row" v-if="custom_items != 0">
 					<div class="col-12 flex cb-bg-grey-3 q-px-md cb-font q-pa-xs text-white">
 						<span>Other Items</span>
 						<q-space></q-space>
@@ -108,16 +108,6 @@
 					</div>
 				</div>
 			
-				<div class="row text-white fixed-bottom ">
-					<div class="col cb-bg-grey-3 q-pl-md  row items-center text-bold flex">
-						{{ cartlength }} Items| <q-icon name="currency_rupee"></q-icon>{{ cart_price }}
-					</div>
-					<div class="col cb-bg-orange-8 text-center q-py-sm">
-						<q-btn label="checkout" flat icon-right="chevron_right" @click="check_cart_items_count()"></q-btn>
-					</div>
-					
-				</div>
-
 				<q-dialog v-model="clear_confirm_dialog">
     				<q-card class="q-dialog-plugin cb-round-borders-20 cb-text-grey-4">
     					<q-card-section class="text-center">
@@ -201,6 +191,14 @@
       		</q-page>
 
 		</q-page-container>
+		<div class="row text-white fixed-bottom ">
+					<div class="col cb-bg-grey-3 q-pl-md  row items-center text-bold flex">
+						{{ cartlength }} Items| <q-icon name="currency_rupee"></q-icon>{{ cart_price }}
+					</div>
+					<div class="col cb-bg-orange-8 text-center q-py-sm">
+						<q-btn label="checkout" flat icon-right="chevron_right" @click="check_cart_items_count()"></q-btn>
+					</div>
+				</div>
 	</q-layout>
 </template>
 <script>
@@ -231,6 +229,7 @@ export default ({
   },
   mounted () {
   	this.getToken();
+  	this.mypath();
   	this.mycart_count_and_length_update();
   	localStorage.removeItem('coupon_pick');
   	this.mycart_count_and_length();	
@@ -418,8 +417,36 @@ export default ({
 		clear_custom_item_function(){
 				var ps = this;
 				ps.custom_items.splice(ps.custom_item_index ,1);
+				localStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
 				ps.clear_custom_item_dialog = false;
 		},
+		mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   }
 })
 </script>

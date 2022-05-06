@@ -1,8 +1,8 @@
 <template>
-  <q-layout view="lHh lpr lFf">
+  <q-layout view="lHh lpr lFf" >
 	<q-header class="cb-bg-orange-8 q-pt-xs">
 	  <q-toolbar>
-	 		<q-btn icon="arrow_back_ios" flat></q-btn>
+	 		<q-btn icon="arrow_back_ios" flat @click="Screen_Back_Redirection()"></q-btn>
 	    <q-space></q-space>
 			<q-btn icon="shopping_cart" flat @click="$router.push('food-cart')">
 		    <q-badge rounded floating  class="bg-white text-black">0</q-badge>
@@ -28,7 +28,7 @@
 	  	</q-tabs>
 		</q-card>
 	</q-header>
-	<q-page-container>
+	<q-page-container class="animate__animated animate__slideInRight">
 	  <q-page class="bg-orange-1 q-px-md">
 	  	<div id="loader2" class="pre-loader" style="display:none"></div>
 			<div class="row q-py-xs">
@@ -90,6 +90,7 @@ export default {
   },
   mounted() {
   	this.getToken();
+  	this.mypath();
   	// uncomment this  functions when you move to live
   	this.get_all_restarent();
 
@@ -280,6 +281,33 @@ export default {
   		// localStorage.setItem('food_client_id',id);
   		ps.$router.push('food-restarent?rest_id='+id);
   	},
+  	mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   	// tab_place_set(selected_tab){
   	// 	var ps = this;
   	// 	var tab = document.getElementById(selected_tab);

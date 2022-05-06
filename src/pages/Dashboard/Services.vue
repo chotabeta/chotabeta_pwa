@@ -1,8 +1,9 @@
+
 <template>
-	<q-page>
+	<q-page class="animate__animated animate__slideInRight">
 		<div id="loader2" class="pre-loader" style="display:none"></div>
 
-		<div class="row cb-bg-white-2 text-h6 cb-text-orange-8 justify-center" >
+		<div class="row cb-bg-white-2 cb-font-16 text-weight-bold cb-text-orange-8 justify-center" >
 			<span v-if="$route.query.id == 2">Pick From Store</span>
 			<span v-if="$route.query.id == 1">Pick And Drop</span>
 		</div>
@@ -11,17 +12,16 @@
 			<q-card-section class="text-h6 q-pa-sm cb-bg-blue-8 cb-text-white-1">
 				Select Category
 			</q-card-section>
-			<q-card-section class="q-pa-sm" >
-				<div class="row" v-if="categories.length != 0" style="height:70vh;overflow: scroll;">
-					<div class="col-4 text-center cb-text-grey-4 q-mt-sm" v-for="item in categories" :key="item">
-							<q-avatar size="70px" class="shadow-2 " @click="services_page_redirection(item)">
-								<q-avatar size="40px" square>
+			<q-card-section  style="height: 70vh;overflow: scroll;" >
+				<div class="row" v-if="categories.length != 0" >
+					<div class="col-4 column justify-center items-center cb-text-grey-4" v-for="item in categories" :key="item" style="height:95px">
+							<q-avatar size="65px" class="shadow-1 cb-text-grey-4" @click="services_page_redirection(item)">
+								<q-avatar size="35px" square>
 									<img :src="item.category_image_for_mobile" >
-									<!-- <img src="https://chotabeta.app/dev/testenv/public/uploads/assets/fruits_vegges.png" class="fit"> -->
+									<img src="https://chotabeta.app/dev/testenv/public/uploads/assets/fruits_vegges.png" class="fit">
 								</q-avatar>
-							</q-avatar><br>
-						<span class="text-black">{{ item.name }}</span>
-					
+							</q-avatar>
+						<div class="cb-font-12 q-py-xs"	>{{ item.name }}</div>
 					</div>
 				</div> 
 			</q-card-section>

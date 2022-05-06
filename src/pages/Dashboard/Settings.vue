@@ -1,5 +1,5 @@
 <template>
-  <q-page >
+  <q-page class="animate__animated animate__slideInRight">
     <div class="row justify-center cb-font-16 text-weight-bolder cb-bg-white-2 q-pb-xs">
       <span class="cb-text-orange-8">Settings</span>
     </div>

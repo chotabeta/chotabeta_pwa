@@ -1,8 +1,8 @@
 <template>
-	<q-layout view="lHh lpr lFf">
+	<q-layout view="lHh lpr lFf" >
 		<q-header class="bg-orange-1 text-grey-8 text-bold">
 			<q-toolbar>
-				<q-btn icon="arrow_back_ios" flat></q-btn>
+				<q-btn icon="arrow_back_ios" flat @click="Screen_Back_Redirection()"></q-btn>
 				<q-space></q-space>
 				Mycart
 				<q-space></q-space>
@@ -14,7 +14,7 @@
 				<span class="cb-font-12">{{ NoOfItemsInCart }} items</span>
 			</q-toolbar>
 		</q-header>
-		<q-page-container>
+		<q-page-container class="animate__animated animate__slideInRight">
 			<div id="loader2" class="pre-loader" style="display:none"></div>
 			<q-page class="flex flex-center bg-orange-1 q-px-md" v-if="NoOfItemsInCart == 0">
 				<div class="text-center" >
@@ -170,7 +170,7 @@ export default {
   mounted() {
   	localStorage.removeItem('schedule_time');
   	this.getToken();
-
+  	this.mypath();
   	// comment this functions when you move to live
   	// this.loaddata();
 
@@ -362,18 +362,31 @@ export default {
   		var ps = this;
 
   		ps.start_time = ps.delivery_times[0].start.slice(0,2);
-	   	if(ps.start_time > 12){ ps.delivery_times[0].start_slice = (ps.start_time-12)+':00 PM'; }
+	   	if(ps.start_time >= 12){ 
+	   		if( ps.start_time == 12 ){
+	   			ps.delivery_times[0].start_slice = (ps.start_time)+':00 PM';
+	   		}else{
+	   			ps.delivery_times[0].start_slice = (ps.start_time-12)+':00 PM';
+	   		}
+	   	}
 	   	else{ ps.delivery_times[0].start_slice = ps.start_time+':00 AM'; }
 
 	   	ps.end_time = ps.delivery_times[0].end.slice(0,2);
-	   	if(ps.end_time > 12){ ps.delivery_times[0].end_slice = (ps.end_time-12)+':00 PM'; }
+	   	if(ps.end_time >= 12){ 
+
+	   		if( ps.end_time == 12 ){ ps.delivery_times[0].end_slice = (ps.end_time)+':00 PM'; }
+	   		else{ ps.delivery_times[0].end_slice = (ps.end_time-12)+':00 PM'; }
+	   	}
 	   	else{ ps.delivery_times[0].end_slice = ps.end_time+':00 AM'; }
 
   		const d = new Date();
 			var time_hr = d.getHours();
 			ps.scheduleTime = (ps.addzero(d.getHours())+':'+ps.addzero(d.getMinutes()));
 
-			if( time_hr >= 12){ ps.time_am_pm ="PM";ps.time_hr = (time_hr - 12);}
+			if( time_hr >= 12){ 
+				if( time_hr == 12){ps.time_am_pm ="PM";ps.time_hr = (time_hr);}
+				else{ ps.time_am_pm ="PM";ps.time_hr = (time_hr - 12);}
+			}
 			else{	ps.time_hr = time_hr;	}
 			ps.time_min = d.getMinutes();
 
@@ -397,7 +410,9 @@ export default {
   		// console.log(ps.scheduleTime,"scheduleTime");
   		var time_hr = ps.scheduleTime.slice(0,2);
 
-  		if(time_hr >= 12){	ps.time_am_pm ="PM";ps.time_hr = (time_hr - 12);
+  		if(time_hr >= 12){	
+  			if( time_hr == 12  ){ ps.time_am_pm ="PM";ps.time_hr = (time_hr); }
+  			else{ ps.time_am_pm ="PM";ps.time_hr = (time_hr - 12);}
   		}else{ ps.time_am_pm ="AM";	ps.time_hr = time_hr; }
 
   		ps.time_min= ps.scheduleTime.slice(3,5);
@@ -462,12 +477,40 @@ export default {
   	},
   	clear_cart_item_function(){
   		var ps = this;
-  		ps.mycart_items.splice(ps.splice_index,1);
+  		// alert(ps.splice_index);
+  		ps.MyFoodCart.splice(ps.splice_index,1);
   		ps.splice_index = null;
   		ps.clear_cart_item_dialog =  false;
   		localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   		ps.Mycartitems_function();
   	},
+  	mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   },
 };
 </script>

@@ -1,10 +1,10 @@
 <template>
-<q-layout view="lHh lpr lFf">
+<q-layout view="lHh lpr lFf" >
 
   <q-header>
 		<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-	    <!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('')"/> -->
-      <q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
+	    <q-btn flat dense round icon="arrow_back" @click="Screen_Back_Redirection()"/>
+      <q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress"></q-btn>
 			<q-space></q-space>
 			<q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')"> 
 		    <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -18,7 +18,7 @@
 		<div class="cb-text-orange-8 cb-bg-white-2 cb-font-16 text-weight-bolder q-pb-xs flex flex-center">Checkout</div>
   </q-header>
 
-  <q-page-container>
+  <q-page-container class="animate__animated animate__slideInRight">
   	<q-page class="q-pa-sm">
       <div id="loader2" class="pre-loader" style="display:none"></div>
   	  <q-card class="cb-round-borders-10 cb-shadow-1"> 
@@ -265,6 +265,19 @@
         </q-card>
       </q-dialog>
 
+      <q-dialog v-model="payment_decline_method">
+        <q-card class="q-px-md q-py-md cb-round-borders-20 text-grey-9">
+          <q-card-section class="text-center">
+            <q-avatar size="80px" class="bg-orange-3">
+              <q-avatar size="65px" class="bg-white cb-text-orange-8" font-size="60px" icon="close"></q-avatar>
+            </q-avatar><br>
+            <span class="text-weight-bolder text-h6">Your Payment Has Been Declined!</span>
+            <br>
+            <q-btn label="Ok" class="q-px-xl cb-font-16 cb-bg-orange-8 text-white q-mb-sm q-mt-lg" @click="refresh_page_without_response()"></q-btn>
+          </q-card-section>
+        </q-card>
+      </q-dialog>
+
 
   	</q-page>
   </q-page-container>
@@ -319,17 +332,18 @@ export default ({
       adding_fev_store_dialog:ref(false),
       delete_fev_store_dialog:ref(false),
       favstore_address:ref(""),   
-      store:ref(""),
+      store:ref(''),
       favstore_location:ref(""),
+      payment_decline_method:ref(false),
     }
   },
   mounted () {
   	this.getToken(); 
+    this.mypath();
     this.get_payment_images();
   	this.date_function();
   	this.mycart_count_and_length();
-  	this.deliveryaddress();
-  	
+  	this.deliveryaddress(); 
   },
   methods:{
   	getToken(){
@@ -368,7 +382,7 @@ export default ({
   	date_function(){
   		var ps = this;
   		var d = new Date();
-      ps.pick_date = d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate());
+      ps.pick_date = d.getFullYear()+'-'+(ps.addZero(d.getDay()+1))+'-'+ps.addZero(d.getUTCDate());
       ps.pick_time = ps.addZero(d.getUTCHours())+":"+ps.addZero(d.getUTCMinutes())+':'+ps.addZero(d.getUTCSeconds());
   	},
   	addZero(i) { if (i < 10) {i = "0" + i} return i; },
@@ -387,7 +401,6 @@ export default ({
         ps.cartlength = ps.cartlength + ps.custom_items.length;
       }
     },
-
   	deliveryaddress(){
   		var ps = this;
   		if(ps.$route.query.adding == '1'){
@@ -417,7 +430,6 @@ export default ({
         console.log(error);
       })
   	},
-
     check_feverate_store(){
       var ps = this;
       if(localStorage.getItem('pick_from_store_fev_store')){
@@ -430,12 +442,11 @@ export default ({
       var ps = this;
       ps.feverate_store = JSON.parse(localStorage.getItem('pick_from_store_fev_store'));
       ps.favstore_address = ps.feverate_store.name;
-      ps.store = ps.feverate_store.nick_name;
+      // ps.store = ps.feverate_store.nick_name;
       ps.favstore_location =  ps.feverate_store.location;
       ps.adding_fev_store_dialog = false;
       ps.continue_pickstore_function();
     },
-
   	continue_pickstore_function(){
   		var ps = this;
 			ps.items = [];
@@ -451,17 +462,19 @@ export default ({
 			ps.cart_items.forEach(cart=>{
 				ps.items.push({id:cart.selected_id,qty:cart.no_of_quantity});
 			});
-
+      var cus_items = [];
       if(localStorage.getItem('custom_item')){
         ps.custom_items = JSON.parse(localStorage.getItem('custom_item'));
           ps.custom_items.forEach(cart=>{
-          ps.items.push({id:0,qty:cart.no_of_quantity});
+          cus_items.push({cart});
         });
       }
-      
-			ps.coupon_code = localStorage.getItem('coupon_pick');
+      if(localStorage.getItem('coupon_pick')){
+			  ps.coupon_code = localStorage.getItem('coupon_pick');
+      }
   		let formData = new FormData();
-  		formData.append('store_id', '');
+  		formData.append('service_page', ps.$route.fullPath);
+      formData.append('store_id', '');
   		formData.append('pincode', ps.delivery_pincode);
   		formData.append('delivery', ps.delivery_address);
   		formData.append('coupon', ps.coupon_code);
@@ -469,8 +482,9 @@ export default ({
   		formData.append('store', ps.store);
   		formData.append('delivery_location', ps.delivery_latlngs);
   		formData.append('favstore_location', ps.favstore_location);
-  		formData.append('personalized_meesage', null);
+  		formData.append('personalized_meesage', '');
   		formData.append('selected_apt', '');
+      formData.append('custom_items', JSON.stringify(cus_items));
   		formData.append('xid', ps.xid);
   		formData.append('service_id', ps.category.service_id);
   		formData.append('is_gift_wrap', 0);
@@ -480,7 +494,7 @@ export default ({
       var loader = document.getElementById('loader2');
           loader.style.display="block";
   		let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-  		ps.$api.post('/api/continue-pickstore',formData,config).then(function (response) {
+  		ps.$api.post('/api/continue-pickstore-new',formData,config).then(function (response) {
         loader.style.display="none";
   			// console.log(response.data,"ref");
   			ps.continue_pickstore_data = response.data;
@@ -493,12 +507,17 @@ export default ({
             }	
   			}
         ps.discount = response.data.coupon;	
+        if(ps.$route.query.response == "pass"){
+          ps.pay_pickstore_function_payment_selection();
+        }else if(ps.$route.query.response == "fail"){
+          // alert('faile to payment');
+          ps.payment_decline_method =true;
+        }
 			}).catch(function (error) {
      		console.log(error,"error");
      		// ps.$q.notify({ message: error, type: "negative",});
-    	})
+    	});
   	},
-
   	couponremove_function(){
       var ps = this;
       ps.discount = '';
@@ -507,15 +526,59 @@ export default ({
       ps.coupon_dailog_remove = true;
       ps.continue_pickstore_function();
     },
-
-  	pay_pickstore_function(){
-  		var ps = this;
-  		console.log(ps.category,"category");
-  		console.log(ps.userdetails,"userdetails");
+    pay_pickstore_function(){
+      var ps = this;
+      if(!ps.payment){
+        ps.$q.notify({ message: "Please Select Payment Method", type: "negative",});
+        return false;
+      }
       if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
       else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
-      else if(ps.payment == 'Pay Now Online'){var payment = 'PO';
-               ps.$q.notify({ message: "Pay Now Online is Not Available! Please Try Another Method", }); return false; }
+      else if(ps.payment == 'Pay Now Online'){var payment = 'Online';
+               // ps.$q.notify({ message: "Pay Now Online is Not Available! Please Try Another Method", });
+               }
+      var url = "https://pay.easebuzz.in/pay/"+ps.continue_pickstore_data.payment_access_token;
+      // console.log(url, "url");
+      if(payment == "Online"){
+        window.location = url; 
+      }else{
+        ps.pay_pickstore_function_payment_selection();
+      }
+    },   
+  	pay_pickstore_function_payment_selection(){
+  		var ps = this;
+      ps.items = [];
+      ps.category = JSON.parse(localStorage.getItem('category'));
+      ps.service = JSON.parse(localStorage.getItem('service'));
+      // console.log(ps.service,"service");
+      // console.log(ps.category,'category')
+      if(localStorage.getItem('userdetails')){
+        var userdetails = JSON.parse(localStorage.getItem('userdetails'));
+        ps.userdetails = userdetails.deatils;
+      }
+      ps.cart_items = JSON.parse(localStorage.getItem('mycart'));
+      ps.cart_items.forEach(cart=>{
+        ps.items.push({id:cart.selected_id,qty:cart.no_of_quantity});
+      });
+      if(localStorage.getItem('coupon_pick')){
+        ps.coupon_code = localStorage.getItem('coupon_pick');
+      }
+      var cus_items = [];
+      if(localStorage.getItem('custom_item')){
+        ps.custom_items = JSON.parse(localStorage.getItem('custom_item'));
+          ps.custom_items.forEach(cart=>{
+          cus_items.push({cart});
+        });
+      }
+
+      if(ps.$route.query.response == "pass"){
+        var payment_status  = "paid";
+        var payment = "Online";
+      }else{
+        var payment_status = "pending";
+        if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
+        else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
+      }
 
   		var formData = {
 										base_location: ps.$store.state.baselatlongs,
@@ -539,16 +602,16 @@ export default ({
 										store_id: null,
 										pincode: ps.delivery_pincode,
 										delivery: ps.delivery_address,
-										payment_mode: ps.payment,
+										payment_mode: payment,
 										drop_phone: ps.userdetails.mobile,
 										coupon: localStorage.getItem('coupon_pick'),
-										payment_status: "pending",
+										payment_status: payment_status,
 										schedule_timestamp: new Date(),
 										pick_phone: ps.userdetails.mobile,
-										custom_item: "[]",
+										custom_item: JSON.stringify(cus_items),
 										to_address: ps.delivery_address,
 										store: ps.store,
-										personalized_meesage: null,
+										personalized_meesage: '',
 										pick_name: ps.userdetails.name,
 										selected_apt: null,
 										pick_time: ps.pick_time,
@@ -564,11 +627,13 @@ export default ({
   			// console.log(response.data,"ref");
         loader.style.display="none";
   			if(response.data.status_code == 200){
-  				localStorage.removeItem('category');
   				localStorage.removeItem('mycart');
+  				localStorage.removeItem('category');
   				localStorage.removeItem('service');
   				localStorage.removeItem('sub_category');
   				localStorage.removeItem('coupon_pick');
+          localStorage.removeItem('pick_from_store_fev_store');
+          localStorage.removeItem('custom_item')
   				ps.continue_to_stoping_dialog =  true;
   			}
 			}).catch(function (error) {
@@ -587,6 +652,38 @@ export default ({
       ps.feverate_store = null;
       ps.continue_pickstore_function();
     },
+    refresh_page_without_response(){
+      var ps = this;
+      ps.payment_decline_method = false;
+      ps.$router.push(ps.$route.path);
+    },
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.path == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.path);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   }
 })
 </script>

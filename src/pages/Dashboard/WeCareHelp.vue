@@ -1,5 +1,5 @@
 <template>
-<q-page>
+<q-page class="animate__animated animate__slideInRight">
   <div id="loader2" class="pre-loader" style="display:none"></div>
   <div class="row justify-center  cb-bg-white-2 text-weight-bolder cb-font-16 q0pb-xs">
     <span class="cb-text-orange-8">We Care | Help</span>

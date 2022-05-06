@@ -2,8 +2,8 @@
 <q-layout  view="lHh lpr lFf">
   <q-header>
     <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-      <!-- <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/> -->
-      <q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
+      <q-btn flat dense round icon="arrow_back"  @click="Screen_Back_Redirection()"/>
+      <q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress"></q-btn>
       <q-space></q-space>
       <q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')">
         <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -13,7 +13,7 @@
       </q-btn>
     </q-toolbar>
   </q-header>
-  <q-page-container>
+  <q-page-container class="animate__animated animate__slideInRight">
     <q-page class="q-pb-sm q-px-sm">
       <div id="loader2" class="pre-loader" style="display:none"></div>
 		  <q-carousel v-model="carousels" swipeable style="height:164px" class="cb-shadow-1 q-my-md cb-round-borders-10" navigation animated infinite control-color="primary">
@@ -106,6 +106,7 @@ export default ({
   mounted () {
     var ps = this;
   	ps.getToken();
+    ps.mypath();
     ps.pickanddrop_sliders();
     ps.pickupaddress_select();
   },
@@ -203,6 +204,33 @@ export default ({
     addZero(i) {
      if (i < 10) {i = "0" + i}
       return i;
+    },
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
     }
   }
 })

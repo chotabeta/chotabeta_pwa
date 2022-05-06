@@ -1,5 +1,5 @@
 <template>
-	<q-layout view="lHh lpr lFf">
+	<q-layout view="lHh lpr lFf" class="animate__animated animate__slideInRight">
 		<q-header class="bg-orange-1 text-grey-8 text-bold">
 			<q-toolbar>
 				<q-btn icon="arrow_back_ios" flat></q-btn>

@@ -1,7 +1,7 @@
 <template>
 <q-layout  view="lHh lpr lFf">
   
-  <q-page-container>
+  <q-page-container class="animate__animated animate__slideInRight">
     <div id="loader2" class="pre-loader" style="display:none"></div>
     <q-page class="q-px-sm">
       <div class="row q-py-sm" style="width:95vw;min-width:95vw;height:70vh; min-height:70vh !important">

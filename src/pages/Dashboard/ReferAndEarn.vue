@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="animate__animated animate__slideInRight">
 
     <div id="loader2" class="pre-loader" style="display:none"></div>
 

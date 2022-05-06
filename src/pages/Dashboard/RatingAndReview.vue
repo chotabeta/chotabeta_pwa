@@ -1,10 +1,10 @@
 <template>
-  <q-layout view="lHh lpr lFf">
+  <q-layout view="lHh lpr lFf" >
 
     <q-header>
       <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-        <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/>
-        <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
+        <q-btn flat dense round icon="arrow_back"  @click="Screen_Back_Redirection()"/>
+        <q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
         <q-space></q-space>
         <q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> 
             <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -18,7 +18,7 @@
       </div>
     </q-header>
 
-    <q-page-container> 
+    <q-page-container class="animate__animated animate__slideInRight">  
       <q-page class="flex flex-center q-px-lg">
 
       <div>
@@ -72,6 +72,7 @@ export default {
   },
   mounted () {
     this.gettoken();
+    this.mypath();
   },
   methods:{
     gettoken(){
@@ -84,6 +85,33 @@ export default {
 
       if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
     },
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   }
 }
 </script>

@@ -1,15 +1,16 @@
 <template>
-	<q-page padding>
+	<q-page padding class="animate__animated animate__slideInRight">
 		<div id="loader2" class="pre-loader" style="display:none"></div>
-
 		<q-input outlined :placeholder="search_box_text" dense @click="my_function()">
 			<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
 		</q-input>
 
 	<!-- sliders -->
     <div class="full-width">
-      <q-carousel animated autoplay infinite swipeable v-model="carousels" style="height:164px" class="cb-shadow-2 q-mt-sm cb-round-borders-10 q-mb-xs" >
-        <q-carousel-slide :name="index" :img-src="slide.image" v-for="(slide,index ) in sliders" @click="screen_redirection_sliders(slide)"/>
+      <q-carousel animated autoplay infinite swipeable v-model="carousels" style="height:164px;overflow:hidden" class=" q-mt-sm cb-round-borders-10 q-mb-xs" >
+        <q-carousel-slide :name="index" class="q-pa-none" style="height:164px;overflow:hidden" v-for="(slide,index ) in sliders" @click="screen_redirection_sliders(slide)">
+        	<img :src="slide.image" style="width:100%;height:100%">
+        </q-carousel-slide>
       </q-carousel>
     </div>
     <div class="row justify-center">
@@ -18,46 +19,66 @@
 
   <!-- services -->
     <div class="row">
-    	<div class="col-6 q-pa-sm" v-if="service0" >
-    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-blue-4 q-pt-sm" id="service0" @click="services_menu(service0,0)">
-    			<div class="fit">
-	    			<q-img :src="service0.service_image" style="width:100px;height:70px"></q-img><br>
-	  				<span class="cb-text-blue-8 cb-font-12 text-weight-bolder">{{ service0.name }}</span>
+    	<div class="col-6 q-pa-sm no-shadow" v-if="service0" >
+    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-blue-4 q-pt-sm no-shadow" id="service0" @click="services_menu(service0,0)" v-if="service0.screen_redirection == 0">
+    			<div class="full-width full-height column justify-end items-center">
+	    			<img :src="service0.service_image" style="width:100px;height:80px">
+	  				<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service0.name }}</span>
+	  			</div>
+  			</q-btn>
+  			<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-blue-4 q-pt-sm no-shadow" id="service0" disable v-if="service0.screen_redirection == 1">
+  				<span class="cb-font-12 q-px-sm absolute-top-left text-weight-bolder text-red">Comming Soon</span>
+    			<div class="full-width full-height column justify-end items-center">
+	    			<img :src="service0.service_image" style="width:100px;height:80px">
+	  				<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service0.name }}</span>
 	  			</div>
   			</q-btn>
   		</div>
+
   		<div class="col-6 q-pa-sm" v-if="service1">
-    		<q-btn class="fit cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm" id="service1" @click="services_menu(service1,1)">
-    			<div class="fit">
-	    			<q-img :src="service1.service_image" style="width:100px;height:70px"></q-img><br>
-	  				<span class="cb-text-blue-8 cb-font-12 text-weight-bolder">{{ service1.name }}</span>
+    		<q-btn class="fit cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm no-shadow" id="service1" @click="services_menu(service1,1)" v-if="service1.screen_redirection == 0">
+    			<div class="full-width full-height column justify-end items-center">
+	    			<img :src="service1.service_image" style="width:100px;height:80px">
+	  				<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service1.name }}</span>
+	  			</div>
+  			</q-btn>
+  			<q-btn class="fit cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm no-shadow" id="service1" disable v-if="service1.screen_redirection == 1">
+  				<span class="cb-font-12 q-px-sm absolute-top-left text-weight-bolder text-red">Comming Soon</span>
+    			<div class="full-width full-height column justify-end items-center">
+	    			<img :src="service1.service_image" style="width:100px;height:80px">
+	  				<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service1.name }}</span>
 	  			</div>
   			</q-btn>
   		</div>
 
   		<div class="col-6 q-pa-sm" v-if="service2" >
-    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm" id="service2" @click="services_menu(service2,2)">
-    			<div class="fit">
-	    			<q-img :src="service2.service_image" style="width:100px;height:70px"></q-img><br>
-	  				<span class="cb-text-blue-8 cb-font-12 text-weight-bolder">{{ service2.name }}</span>
+    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm no-shadow" id="service2" @click="services_menu(service2,2)" v-if="service2.screen_redirection == 0">
+    			<div class="full-width full-height column justify-end items-center">
+	    			<img :src="service2.service_image" style="width:100px;height:80px">
+	  				<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service2.name }}</span>
+	  			</div>
+  			</q-btn>
+  			<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm no-shadow" id="service2" disable v-if="service2.screen_redirection == 1">
+  				<span class="cb-font-12 q-px-sm absolute-top-left text-weight-bolder text-red">Comming Soon</span>
+    			<div class="full-width full-height column justify-end items-center">
+	    			<img :src="service2.service_image" style="width:100px;height:80px">
+	  				<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service2.name }}</span>
 	  			</div>
   			</q-btn>
   		</div>
 
-  		<!-- <div class="col-6 q-pa-sm" v-if="service3" >
-    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm" disable  id="service3" @click="services_menu(service3,3)">
-    			<div class="fit">
-    				<span class="text-red text-bold absolute-top-left q-px-sm" style="z-index: 1111;" >Comming Soon</span>
-  					<q-img :src="service3.service_image" style="width:100px;height:70px"></q-img><br>
-  					<span class="cb-text-blue-8 cb-font-12 text-weight-bolder ">{{ service3.name }}</span>
+  		<div class="col-6 q-pa-sm " v-if="service3" >
+    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm no-shadow" id="service3" @click="services_menu(service3,3)" v-if="service3.screen_redirection == 0"> 
+    			<div class="full-width full-height column justify-end items-center">
+  					<img :src="service3.service_image" style="width:100px;height:80px">
+  					<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service3.name }}</span>
   				</div>
   			</q-btn>
-  		</div> -->
-  		<div class="col-6 q-pa-sm" v-if="service3" >
-    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm" id="service3" @click="services_menu(service3,3)">
-    			<div class="fit">
-  					<q-img :src="service3.service_image" style="width:100px;height:70px"></q-img><br>
-  					<span class="cb-text-blue-8 cb-font-12 text-weight-bolder ">{{ service3.name }}</span>
+  			<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-orange-4 q-pt-sm no-shadow" id="service3" disable v-if="service3.screen_redirection == 1">
+  				<span class="cb-font-12 q-px-sm absolute-top-left text-weight-bolder text-red">Comming Soon</span>
+    			<div class="full-width full-height column justify-end items-center">
+  					<img :src="service3.service_image" style="width:100px;height:80px">
+  					<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service3.name }}</span>
   				</div>
   			</q-btn>
   		</div>
@@ -65,10 +86,10 @@
 
   <!-- categories -->
     <div class="row" v-if="service_details">
-    	<div class="col-12 text-center text-weight-bolder cb-text-blue-8 q-py-md cb-font-14">{{ service_details.description }}</div>
+    	<div class="col-12 text-center text-weight-bold cb-text-blue-8 q-py-md cb-font-14">{{ service_details.description }}</div>
 			<div class="col-3 text-center cb-text-grey-4 q-mb-md" v-for="item in service_details.all_categories" :key="item">
-				<q-avatar size="70px" class="shadow-1" @click="services_page_redirection(item)">
-					<q-avatar size="40px" square>
+				<q-avatar size="65px" class="shadow-1" @click="services_page_redirection(item)">
+					<q-avatar size="35px" square>
 						<img :src="item.category_image_for_mobile" class="fit">
 						<!-- <img src="https://chotabeta.app/dev/testenv/public/uploads/assets/fruits_vegges.png" class="fit"> -->
 					</q-avatar>
@@ -91,8 +112,10 @@
 		      </q-carousel-slide>
 		    </q-carousel>
     	</div>
-    	<div class="col-12" v-if="top_offers_one">
-    		<q-img class="fit rounded-borders"   :src="top_offers_one.image"/>
+    </div>
+    <div class="row coupon-wrap">
+    	<div class="col-12 q-px-sm" v-if="top_offers_one" v-for="top in top_offers_one">
+    		<img class="fit rounded-borders"   :src="top.image">
     	</div>
     </div>
 
@@ -153,13 +176,26 @@
 						<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
 					</q-input>
         </q-card-section>
+        <q-card-section v-if="!user_search_input">
+					<div class="row">
+					<span class="text-subtitle1 text-justify">	<b>{{heading_text}}</b></span>
+					</div>
+					<div class="row" >
+						<div class="col-4 text-center q-pa-xs" v-for="tr in trending_searches">
+									<q-card dense class="bg-orange-1 q-py-xs no-shadow text-orange-8 full-width border" @click = "user_search_input_s2 = tr.name,search_products_s2()" style="border:1px solid #ffe0b2">
+										{{tr.name}}
+									</q-card>
+								</div>
+					
+					</div>
+				</q-card-section>
         <q-card-section class="q-pt-none">
 					<div v-for="products in global_search_data" :key="products" @click="go_to_product_page(products)">
-         		<div class="row">
-			 				<div class="col-3">
+         		<div class="row q-py-xs">
+			 				<div class="col-2">
 				 				<img :src="products.image" style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;" >
 				 			</div>
-			 				<div class="col-9">
+			 				<div class="col-10">
 								<span v-html="products.name"></span>
 				 			</div>
 			 			</div>
@@ -198,11 +234,14 @@ export default ({
       user_search_input: ref(null),
       global_search_data: ref([]),
       xid:ref(null),
+      trending_searches:ref([]),
+      heading_text:ref(null),
     }
   },
   mounted () {
   	var ps = this;
   	ps.getAccessToken();
+  	ps.mypath();
   	setTimeout(function() {
   		ps.getDashboarddata();
   	}, 100);
@@ -235,16 +274,17 @@ export default ({
 
 					loader.style.display="none";
 					if(response.data.status_code ==200){
+					 	ps.search_box_text = response.data.search_box_text;
+					 	ps.top_offers_one  = response.data.top_offers_one;
+					 	console.log(ps.top_offers_one);
 					 	ps.sliders = response.data.sliders;
 					 	ps.service0 = response.data.all_services[0];
 					 	ps.service1 = response.data.all_services[1];
 					 	ps.service2 = response.data.all_services[2];
 					 	ps.service3 = response.data.all_services[3];
-					 	ps.services_menu(ps.service0,0);
 					 	ps.upcomming_offers  = response.data.top_offers;
+					 	ps.services_menu(ps.service0,0);
 					 	// ps.top_offers_one  = response.data.top_offers_one[0];
-					 	ps.top_offers_one  = response.data.top_offers_one;
-					 	ps.search_box_text = response.data.search_box_text;
 					}else{
 					 	ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
 					}
@@ -424,12 +464,48 @@ export default ({
 		},
 		search_focusout(){
 			var ps = this;
+			ps.user_search_input  = '';
+			ps.global_search_data  = '';
 			ps.global_search_dialog = false;
 		},
 		my_function(){
+			var ps = this;
 			this.global_search_dialog = true; 
-			document.getElementById('input_id').focus();
+				  		let formData = new FormData();
+		      	formData.append('page_no', 1);
+		      	formData.append('service_id', 0);
+		      	formData.append('category_id', 0);
+		      	formData.append('sub_category_id', "Mango");
+
+				let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
+				ps.$api.get('/api/get-popular-searches', formData,config).then(function (response) {
+				
+					if(response.data.status_code ==200){
+					ps.heading_text = response.data.heading_text;
+					ps.trending_searches = response.data.trending_searches;
+					 }
+					 else{
+					 	
+					}
+				}).catch(function (error) {
+					console.log(error);
+					// ps.$q.notify({ message:error, type: 'warning',progress: true, });
+				});
+
+
+		},
+		mypath(){
+			var ps=  this;
+			localStorage.setItem('mypath','');
+			var myallpaths = [];
+			myallpaths.push(ps.$route.fullPath);
+			localStorage.setItem('mypath',JSON.stringify(myallpaths));
 		}
   }
 })
 </script>
+<style scoped>
+.coupon-wrap{ flex-wrap: nowrap;overflow: scroll;overflow-y: hidden; }
+::-webkit-scrollbar { width: 0;background: transparent; }
+::-webkit-scrollbar-thumb {background: transparent;}
+</style>

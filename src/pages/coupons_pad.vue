@@ -1,10 +1,13 @@
 <template>
 	<q-layout view="lHh lpr lFf">
 		<q-header>
-			<q-toolbar class="cb-bg-white-2 cb-text-blue-8 row justify-center cb-text-blue-8 text-weight-bolder cb-font-16">Available Coupons
+			<q-toolbar class="cb-bg-white-2 cb-text-blue-8 row justify-center cb-text-blue-8 text-weight-bolder cb-font-16">
+				<q-btn flat dense round icon="arrow_back" @click="Screen_Back_Redirection()"/>
+				<q-space></q-space>
+				Available Coupons
 			</q-toolbar>
 		</q-header>
-		<q-page-container>
+		<q-page-container  class="animate__animated animate__slideInRight">
 			<q-page class="q-px-sm" v-if="coupons_available == 0">
 				<!-- {{coupons_available }} -->
 				<div id="loader2" class="pre-loader" style="display:none"></div>
@@ -50,7 +53,8 @@ export default ({
     }
   },
   mounted () {
-  	this.getToken();  		
+  	this.getToken();  
+  	this.mypath();		
   	if(this.$route.query.service_id){
   		this.getcoupons();
   	}
@@ -109,6 +113,33 @@ export default ({
   			ps.$router.push('DriveMe_Summary');
   		}
   	},
+  	mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   	
   }
 })

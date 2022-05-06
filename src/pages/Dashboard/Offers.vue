@@ -1,5 +1,5 @@
 <template>
-<q-page >
+<q-page class="animate__animated animate__slideInRight">
   <div id="loader2" class="pre-loader" style="display:none"></div>
   <div class="flex cb-bg-white-2 flex-center">
     <span class="cb-text-orange-8 cb-font-16 text-weight-bolder">Offers</span>

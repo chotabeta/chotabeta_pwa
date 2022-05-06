@@ -1,10 +1,9 @@
 <template>
-<q-layout  view="lHh lpr lFf">
-	<q-header  >
+<q-layout  view="lHh lpr lFf" >
+	<q-header>
 		<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-			<!-- <q-btn flat dense round icon="arrow_back"  @click="$router.push('/home/dashboard')"/> -->
-			<!-- <q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn> -->
-			<q-btn icon="place" size="md" class="q-pa-none q-ml-md" borderless flat :label="$store.state.showaddress"></q-btn>
+			<q-btn flat dense round icon="arrow_back"  @click="Screen_Back_Redirection()"/>
+			<q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress"></q-btn>
 			<q-space></q-space>
 			<q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')">
     			<q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
@@ -14,7 +13,7 @@
   			</q-btn>
 		</q-toolbar>
 	</q-header>
-<q-page-container>
+<q-page-container  class="animate__animated animate__slideInRight">
 	<q-page class="q-px-sm">
 		<div id="loader2" class="pre-loader" style="display:none"></div>
 		<div class="full-width q-py-sm">
@@ -130,11 +129,7 @@
 	    	</div>
 	    </div>
 
-	    <div class="cb-bg-orange-8 fixed-bottom row items-center q-px-md q-py-sm text-white text-weight-bolder cb-font-16" v-if="cartlength != 0">
-				<span>{{ cartlength }} Items <span class="q-px-xs">|</span> <q-icon name="currency_rupee"></q-icon>{{ cart_price }}.00</span>
-				<q-space></q-space>
-				<q-btn label="view cart" icon-right="shopping_cart" flat  @click="cart_page_redirection()"></q-btn>
-			</div>
+	    
 
 			<q-dialog v-model="cart_key_dailog">
         <q-card class="cb-round-borders-20" style="max-width: 300px;">
@@ -174,13 +169,26 @@
 							<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
 						</q-input>
         	</q-card-section>
+        	<q-card-section v-if="!user_search_input_s1">
+						<div class="row">
+						<span class="text-subtitle1 text-justify">	<b>{{heading_text}}</b></span>
+						</div>
+						<div class="row" >
+							<div class="col-4 text-center q-pa-xs" v-for="tr in trending_searches">
+									<q-card dense class="bg-orange-1 q-py-xs no-shadow text-orange-8 full-width border" @click = "user_search_input_s2 = tr.name,search_products_s2()" style="border:1px solid #ffe0b2">
+										{{tr.name}}
+									</q-card>
+								</div>
+						
+						</div>
+					</q-card-section>
         	<q-card-section class="q-pt-none">
 						<div v-for="products in global_search_data_s1" :key="products" @click="go_to_product_page(products)">
          			<div class="row">
-			 					<div class="col-3">
+			 					<div class="col-2">
 				 					<img :src="products.image" style="min-height:50px !important; min-width:50px !important; max-width:50 px !important; max-height:50px;">
 				 				</div>
-				 				<div class="col-9">
+				 				<div class="col-10">
 									<span v-html="products.name"></span>
 					 			</div>
 			 				</div>
@@ -190,7 +198,13 @@
       	</q-card>
     	</q-dialog>
 		</q-page>
+
 	</q-page-container>
+	<div class="cb-bg-orange-8 fixed-bottom row items-center q-px-md q-py-sm text-white text-weight-bolder cb-font-16" v-if="cartlength != 0">
+				<span>{{ cartlength }} Items <span class="q-px-xs">|</span> <q-icon name="currency_rupee"></q-icon>{{ cart_price }}.00</span>
+				<q-space></q-space>
+				<q-btn label="view cart" icon-right="shopping_cart" flat  @click="cart_page_redirection()"></q-btn>
+			</div>
 </q-layout>
 </template>
 <script>
@@ -234,10 +248,13 @@ export default ({
 			global_search_data_s1: ref([]),
 			xid:ref(null),
 			custom_items:ref([]),
+			trending_searches:ref([]),
+      heading_text:ref(null),
     }
   },
   mounted () {
   	this.getToken();
+  	this.mypath();
   	this.mycart_count_and_length();
   	if(localStorage.getItem('category')){
   		this.category_details();
@@ -564,13 +581,36 @@ export default ({
   	},
   	search_focusout_s1(){
 			var ps = this;
+			ps.user_search_input_s1  = '';
+			ps.global_search_data_s1  = '';
 			ps.global_search_dialog_s1 = false;
 		},
 
 		my_function(){
-			this.global_search_dialog_s1 = true; 
-				document.getElementById('input_id').focus();
-				document.getElementById('input_id').focus();
+			var ps = this;
+			this.global_search_dialog_s1 = true;  
+				  		let formData = new FormData();
+		      	formData.append('page_no', 1);
+		      	formData.append('service_id', 0);
+		      	formData.append('category_id', 0);
+		      	formData.append('sub_category_id', "Mango");
+
+				let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
+				ps.$api.get('/api/get-popular-searches', formData,config).then(function (response) {
+				
+					if(response.data.status_code ==200){
+					ps.heading_text = response.data.heading_text;
+					ps.trending_searches = response.data.trending_searches;
+					 }
+					 else{
+					 	
+					}
+				}).catch(function (error) {
+					console.log(error);
+					// ps.$q.notify({ message:error, type: 'warning',progress: true, });
+				});
+
+
 		},
 		search_products_s1(){
 			var ps = this;
@@ -610,6 +650,33 @@ export default ({
   		var ps = this;
   		ps.$router.push('/PickFromStore_Item?sku='+product_data.sku);
 		},
+		mypath(){
+			var ps=  this;
+			var myallpaths = [];
+			var i = 0;
+			if(localStorage.getItem('mypath')){
+				myallpaths = JSON.parse(localStorage.getItem('mypath'));
+			}
+			myallpaths.forEach(( path,index ) => {
+				if(ps.$route.fullPath == path){
+					if(i == 0){ i = index; }
+				}
+			});
+			if(i == 0){
+				myallpaths.push(ps.$route.fullPath);
+			}else{
+				for(var j=1;j<= myallpaths.length;++j){
+					if(j<=i){ }else{ myallpaths.splice(j,1); }
+				}
+			}
+			localStorage.setItem('mypath',JSON.stringify(myallpaths));
+		},
+		Screen_Back_Redirection(){
+			var ps = this;
+			var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+			var previous = myallpaths.length;
+			ps.$router.push(myallpaths[previous-2]);
+		}
   }
 })
 </script>

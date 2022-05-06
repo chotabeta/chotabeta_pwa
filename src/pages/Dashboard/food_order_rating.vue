@@ -1,14 +1,14 @@
 <template>
-  <q-layout  view="lHh lpr lFf">
+  <q-layout  view="lHh lpr lFf" >
     <q-header  style="background: transparent;">
       <q-toolbar>
-        <q-btn icon="chevron_left" flat class="cb-text-grey-4 q-px-none" @click="$router.push('FoodOrders')"></q-btn>
+        <q-btn icon="chevron_left" flat class="cb-text-grey-4 q-px-none" @click="Screen_Back_Redirection()"></q-btn>
         <q-space></q-space>
         <span class="cb-text-orange-8 text-bold cb-font-16">Rate & Review </span>
         <q-space></q-space>
       </q-toolbar>
     </q-header>
-	<q-page-container>
+	<q-page-container class="animate__animated animate__slideInRight">
 	  <q-page class="q-px-md">
 	  	<div class="row justify-center q-mt-xl">
   	  	  <q-avatar square size="80px" class="cb-round-borders-10 shadow-9">
@@ -53,6 +53,7 @@ export default ({
   },
   mounted () {
     this.getToken();
+    this.mypath();
   },
   methods:{
     getToken(){
@@ -90,7 +91,34 @@ export default ({
         console.log(error);
         // ps.$q.notify({ message:error, type: 'warning',progress: true, });
       });
-    },    
+    }, 
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }   
   }
 })
 </script>

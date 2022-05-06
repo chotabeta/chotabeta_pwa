@@ -1,9 +1,9 @@
 <template>
-    <q-layout view="lHh lpr lFf">
+    <q-layout view="lHh lpr lFf" >
       <q-header>
         <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-          <!-- <q-btn flat dense round icon="arrow_back" @click="$router.push('/PickFromStore_layouts_s2')"></q-btn> -->
-          <q-btn icon="place" class="q-pa-none q-ml-md" size="md" flat :label="$store.state.showaddress"></q-btn>
+          <q-btn flat dense round icon="arrow_back" @click="Screen_Back_Redirection()"></q-btn>
+          <q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress"></q-btn>
           <q-space></q-space>
           <q-btn round dense icon="notifications" flat @click="$router.push('/home/Notification')">
             <q-badge color="red" rounded floating style="margin-top: 8px; margin-right: 8px"></q-badge>
@@ -15,12 +15,14 @@
           </div>
         </q-toolbar>
       </q-header>
-      <q-page-container>
+      <q-page-container class="animate__animated animate__slideInRight">
         <q-page class="q-pb-xl q-mb-sm">
           <div id="loader2" class="pre-loader" style="display:none"></div>
           <div class="row justify-center q-pa-sm">
             <q-carousel animated infinite v-model="item_iamge" style="width:250px;height:250px" class="rounded-borders" control-class="cb-text-blue-8">
-              <q-carousel-slide :name="index" :img-src="i.url" v-for="(i,index) in images_array"/>
+              <q-carousel-slide :name="index" v-for="(i,index) in images_array">
+                <img :src="i.url" style="width:100%;height:100%">
+              </q-carousel-slide>
             </q-carousel>
           </div>
           <div class="row justify-center">
@@ -53,7 +55,7 @@
                 <q-icon name="currency_rupee"></q-icon>{{ sample_mrp }}
               </div>
               <q-card>
-                <q-card-section class="q-pa-sm q-my-sm">
+                <q-card-section class="q-pa-sm">
                   <span>{{ info }}</span>
                 </q-card-section>
                 <q-card-actions align="right" class="q-py-none q-pb-xs cb-text-orange-8">
@@ -74,7 +76,10 @@
                 <div class="col-6 q-pa-xs" v-for="i in similar_products">
                   <q-card class="q-px-sm q-pt-xs cb-text-grey-5 cb-font-14">
                     <q-card-section  @click="get_item_screen(i)" class="q-pa-none">
-                      <q-img :src="i.image" @click="" height="200px"></q-img>
+                      <div style="width:100%;height:180px;border:none" class="column justify-center items-center">
+                        <img :src="i.image" @click="" style="height:160px;width:100%;border:none;">
+                      </div>
+                      <!-- <q-img :src="i.image" @click="" height="200px"></q-img> -->
                     </q-card-section>
                     <q-card-section class="row items-center q-pa-none flex">
                       <span style="width:80%;overflow:hidden;white-space: nowrap;">{{ i.brands }}</span>
@@ -109,12 +114,6 @@
             </q-card-section>
           </q-card>
 
-          <div class="cb-bg-orange-8 fixed-bottom row items-center q-px-md q-py-sm text-white text-weight-bolder cb-font-16" v-if="cartlength != 0">
-            <span>{{ cartlength }} Items | <q-icon name="currency_rupee"></q-icon>{{ cart_price }}.0</span>
-            <q-space></q-space>
-            <q-btn label="view cart" icon-right="shopping_cart" flat @click="cart_page_redirection"></q-btn>
-          </div>
-
           <q-dialog v-model="cart_key_dailog">
             <q-card class="cb-round-borders-20" style="max-width: 300px;">
               <q-card-section class="text-center text-grey-9">
@@ -143,6 +142,11 @@
 
         </q-page>
       </q-page-container>
+      <div class="cb-bg-orange-8 fixed-bottom row items-center q-px-md q-py-sm text-white text-weight-bolder cb-font-16" v-if="cartlength != 0">
+            <span>{{ cartlength }} Items | <q-icon name="currency_rupee"></q-icon>{{ cart_price }}.0</span>
+            <q-space></q-space>
+            <q-btn label="view cart" icon-right="shopping_cart" flat @click="cart_page_redirection"></q-btn>
+          </div>
     </q-layout>
   </template>
   <script>
@@ -188,6 +192,7 @@
     },
     mounted() {
       this.getToken();
+      this.mypath();
       this.mycart_count_and_length();
       if(this.$route.query.sku){
         this.details_individualitem();
@@ -263,7 +268,7 @@
         ps.$api.post("/api/get-product-details",{
             xid: ps.xid,
             sku: ps.$route.query.sku,
-            items: data_sku,
+            items: "[]"
           },config).then(function (response) {
             loader.style.display="none";
             // console.log(response.data,"response.data");
@@ -552,7 +557,34 @@
         }else{
           ps.mycart_length_restriction = true;
         }
+      },
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
       }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
     },
   };
   </script>

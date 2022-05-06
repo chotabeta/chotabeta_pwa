@@ -1,5 +1,5 @@
 <template>
-	<q-page v-if="xid != 2">
+	<q-page v-if="xid != 2" class="animate__animated animate__slideInRight">
 
 		<div id="loader2" class="pre-loader" style="display:none"></div>
 
@@ -74,7 +74,7 @@
 			</q-card>
 		</q-dialog>
 	</q-page>
-	<q-page v-if="xid == 2" class="flex flex-center bg_style text-white">
+	<q-page v-if="xid == 2" class="flex flex-center bg_style text-white animate__animated animate__slideInRight">
 		<div class="text-center full-width q-px-xl">
 			<img src="https://chotabeta.com/images/images/white-logo.svg" style="width:70%">
 			<br>

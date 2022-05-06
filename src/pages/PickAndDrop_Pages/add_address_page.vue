@@ -3,12 +3,12 @@
 
     <q-header>
       <q-toolbar class="cb-bg-white-2 cb-text-blue-8">
-        <!-- <q-btn flat dense round icon="arrow_back" /> -->
+        <q-btn flat dense round icon="arrow_back" @click="Screen_Back_Redirection()" />
         <span class="cb-font-16 text-weight-bolder q-px-sm">Search For Your Location</span>
       </q-toolbar>
     </q-header>
 
-    <q-page-container>
+    <q-page-container class="animate__animated animate__slideInRight">
       <q-page class="bg-white">
         <div id="loader2" class="pre-loader" style="display:none"></div>
         <div class="q-pa-xs">
@@ -110,7 +110,7 @@ export default {
       ],
       custom_type: ref(null),
       building_floor: ref(null),
-      landmark: ref(null),
+      landmark: ref(''),
       phone: ref(null),
       address_data: ref(null),
       access_token:ref(null),
@@ -119,6 +119,7 @@ export default {
   },
   mounted() {
     this.getToken();
+    this.mypath();
     this.getuserdetails();
     if (this.$route.query.searchaddress && this.$route.query.searched_latlong) {
     }
@@ -251,6 +252,33 @@ export default {
       })
       loader.style.display="none";
     },
+    mypath(){
+      var ps=  this;
+      var myallpaths = [];
+      var i = 0;
+      if(localStorage.getItem('mypath')){
+        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      }
+      myallpaths.forEach(( path,index ) => {
+        if(ps.$route.fullPath == path){
+          if(i == 0){ i = index; }
+        }
+      });
+      if(i == 0){
+        myallpaths.push(ps.$route.fullPath);
+      }else{
+        for(var j=1;j<= myallpaths.length;++j){
+          if(j<=i){ }else{ myallpaths.splice(j,1); }
+        }
+      }
+      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+    },
+    Screen_Back_Redirection(){
+      var ps = this;
+      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var previous = myallpaths.length;
+      ps.$router.push(myallpaths[previous-2]);
+    }
   },
 };
 </script>

@@ -3,7 +3,7 @@
 		<q-header  >
 			<q-toolbar class="cb-bg-white-2 cb-text-blue-8">
 				<q-btn flat dense round icon="menu" aria-label="Menu" @click="leftDrawerOpen = !leftDrawerOpen"/>
-				<q-btn icon="place" size="md" class="q-pa-none" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
+				<q-btn icon="place" class="q-pa-none cb-font-12" borderless flat :label="$store.state.showaddress" @click="$router.push('dashboard_location')"></q-btn>
 				<q-space></q-space>
 				<q-btn round dense icon="notifications" flat @click="$router.push('Notification')"> <q-badge  color="red" rounded floating style="margin-top:8px;margin-right: 8px;"></q-badge>
   			</q-btn>
@@ -22,9 +22,9 @@
 					</q-avatar>
 				</div>
 				<div class="col-8 row items-center">
-					<span class="text-bold text-h6 cb-text-orange-14"> {{ name }}</span>
+					<span class="text-bold cb-font-16 cb-text-orange-14"> {{ name }}</span>
 					<q-space></q-space>
-					<q-btn icon="chevron_right" class="text-grey-7" flat></q-btn><br>
+					<q-btn icon="chevron_right" class="text-grey-7" size="md" flat></q-btn><br>
 					<span class="q-pa-sm cb-bg-orange-8 text-white rounded-borders" style="font-size:12px">{{ Address }}</span>
 				</div>
 			</div>
@@ -64,6 +64,10 @@
      			 <q-item clickable v-ripple @click="$router.push('WeCareHelp')">
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="headset"></q-icon></q-item-section>
         			<q-item-section>We Care | Help</q-item-section>
+     			 </q-item>
+     			 <q-item clickable v-ripple @click="website_selection()">
+        			<q-item-section avatar><q-icon class="cb-text-orange-8" name="language"></q-icon></q-item-section>
+        			<q-item-section class="text-weight-bolder">WebSite</q-item-section>
      			 </q-item>
 	        </q-list>
 	       <!--  <span class="row justify-center items-end  q-mt-xl">
@@ -177,6 +181,11 @@ export default ({
         console.log(error);
       })
     },
+    website_selection(){
+    	var ps = this;
+    	window.location=  'https://www.chotabeta.com/pwa';
+    },
+
   }
 })
 </script>

@@ -54,7 +54,7 @@
 			  <q-card-section class="q-pa-none">
 					<div class="row items-center">
 						<q-avatar size="35px" square>
-					  	<img src="heading1_img">
+					  	<img :src="heading1_img">
 					  </q-avatar>
 						<span class="text-brown cb-font-16 text-weight-bolder q-px-sm">{{ heading1 }}</span>
 					</div>
@@ -670,8 +670,8 @@ export default {
   	},
   	MyFoodCart_function(){
   		var ps=this;
-  		if(localStorage.getItem('MyFoodCart')){
-  			ps.MyFoodCart = JSON.parse(localStorage.getItem('MyFoodCart'));
+  		if(sessionStorage.getItem('MyFoodCart')){
+  			ps.MyFoodCart = JSON.parse(sessionStorage.getItem('MyFoodCart'));
   			ps.NoOfItemsInCart = ps.MyFoodCart.length;
   		}
   	},
@@ -707,12 +707,12 @@ export default {
   	},
   	screen_redirection(id){
   		var ps = this;
-  		// localStorage.setItem('food_client_id',id);
+  		// sessionStorage.setItem('food_client_id',id);
   		ps.$router.push('food-restarent?rest_id='+id);
   	},
   	screen_redirection_all(id){
   		var ps = this;
-  		// localStorage.setItem('food_category_id',id);
+  		// sessionStorage.setItem('food_category_id',id);
   		ps.$router.push('all-restarents?cat_id='+id);
   	},
   	dynamic(code){
@@ -735,8 +735,8 @@ export default {
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -750,11 +750,11 @@ export default {
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

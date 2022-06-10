@@ -103,13 +103,33 @@ export default ({
   	},	
     get_custom_items_data(){
       var ps = this;
-      if(localStorage.getItem('custom_item')){
-        ps.custom_item =JSON.parse(localStorage.getItem('custom_item'));
+      if(sessionStorage.getItem('custom_item')){
+        ps.custom_item =JSON.parse(sessionStorage.getItem('custom_item'));
       }
     },
     add_custom_itam(){
       var ps = this;
+      if(!ps.name){
+        ps.$q.notify({ message: 'Name is required', color:'red', icon:'close'});
+        return;
+      }
+      if(!ps.quantity ){
+        ps.$q.notify({ message: 'Quantity is required', color:'red', icon:'close'});
+        return;
+      }
+      if(ps.quantity >=6){
+        ps.$q.notify({ message: 'Please Select quantity is Less than 5', color:'red', icon:'close'});
+        return;
+      }
+      
       var item ={
+                  id:0,
+                  qty:ps.quantity,
+                  info:ps.discription,
+                  cost:0,
+                  name:ps.name,
+                  weight:ps.weight,
+                  weight_desc:ps.weight_type,
                   brands: "",
                   category_id: "",
                   description: ps.discription,
@@ -161,7 +181,7 @@ export default ({
     },
     save_custom_items(){
       var ps = this;
-      localStorage.setItem('custom_item',JSON.stringify(ps.custom_item));
+      sessionStorage.setItem('custom_item',JSON.stringify(ps.custom_item));
       ps.$router.push('/PickFromStore_layouts_s2');
     },
   	pickfromstore_redirection(item){
@@ -173,8 +193,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -188,11 +208,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

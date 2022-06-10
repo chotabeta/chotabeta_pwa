@@ -15,7 +15,7 @@
 		    <q-space></q-space>
 			<q-toggle color="green" label="Veg" v-model="select_veg" @click="check_pure_veg()" dense></q-toggle>	
 		  </q-toolbar>
-		  <q-tabs v-model="selected_cuisin"  active-class="selected_class" indicator-color="transparent" class="unselected_class" @click="check_cuisins(selected_cuisin)">
+		 <!--  <q-tabs v-model="selected_cuisin"  active-class="selected_class" indicator-color="transparent" class="unselected_class" @click="check_cuisins(selected_cuisin)">
 		  	<q-tab ></q-tab>
 		  	<q-tab ></q-tab>
 		  	<q-tab v-for="(cui,index) in cuisins" :name="cui.category" class="q-pa-sm" :id="'t'+index" @click="check_cuisins(cui.category,'t'+index)">
@@ -25,7 +25,7 @@
 		  	</q-tab>	
 	  		<q-tab ></q-tab>
 	  		<q-tab ></q-tab>
-	  	</q-tabs>
+	  	</q-tabs> -->
 		</q-card>
 	</q-header>
 	<q-page-container class="animate__animated animate__slideInRight">
@@ -92,10 +92,10 @@ export default {
   	this.getToken();
   	this.mypath();
   	// uncomment this  functions when you move to live
-  	this.get_all_restarent();
+  	// this.get_all_restarent();
 
   	// comment this functions when you move to live
-  	// this.loaddata();
+  	this.loaddata();
   },
   methods: {
   	loaddata(){
@@ -216,7 +216,7 @@ export default {
 	    loader.style.display="block";
 	    let formData = new FormData;
 	    formData.append("lat_lng", ps.$store.state.latlongs);
-	    // formData.append("cat_id", localStorage.getItem('food_category_id'));
+	    // formData.append("cat_id", sessionStorage.getItem('food_category_id'));
 	    formData.append("cat_id", ps.$route.query.cat_id);
       ps.$api.post('/api/get-categorywise-restaurants',formData,config).then(function (response) {
       	loader.style.display="none";
@@ -278,15 +278,15 @@ export default {
   	},
   	screen_redirection(id){
   		var ps = this;
-  		// localStorage.setItem('food_client_id',id);
+  		// sessionStorage.setItem('food_client_id',id);
   		ps.$router.push('food-restarent?rest_id='+id);
   	},
   	mypath(){
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -300,11 +300,11 @@ export default {
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

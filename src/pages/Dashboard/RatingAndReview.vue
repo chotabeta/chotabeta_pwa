@@ -89,8 +89,8 @@ export default {
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -104,11 +104,11 @@ export default {
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

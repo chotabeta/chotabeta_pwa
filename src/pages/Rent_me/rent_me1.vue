@@ -149,7 +149,7 @@ export default ({
                                           user_id: ps.$store.state.xid,
                                           territory_id:response.data.zone_id,
                                         }
-              localStorage.setItem('rentment_address',JSON.stringify(ps.picked_address_array));
+              sessionStorage.setItem('rentment_address',JSON.stringify(ps.picked_address_array));
               ps.picked_address  = ps.picked_address_array.name;
             }
             else{
@@ -162,7 +162,7 @@ export default ({
       }else if(ps.$route.query.address == 'rp'){
           var loader = document.getElementById('loader2');
           loader.style.display="block";
-        var picked_address_array =  JSON.parse(localStorage.getItem('rentment_address'));
+        var picked_address_array =  JSON.parse(sessionStorage.getItem('rentment_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
@@ -180,7 +180,7 @@ export default ({
                                             territory_id:   response.data.zone_id,
                                         }
               ps.picked_address        =  ps.picked_address_array.name;
-              localStorage.setItem('rentment_address',JSON.stringify(ps.picked_address_array));
+              sessionStorage.setItem('rentment_address',JSON.stringify(ps.picked_address_array));
               }
               else{
                 ps.territory_checkup_dialog =  true;
@@ -193,7 +193,7 @@ export default ({
     },
     onsubmit(){
       var ps = this;
-      localStorage.setItem('rent_me_instructions',ps.instructions);
+      sessionStorage.setItem('rent_me_instructions',ps.instructions);
       if(!ps.picked_address){
         ps.$q.notify({ message: "Please Select Pickup Address", type: "negative",});
         return false;
@@ -209,8 +209,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -224,11 +224,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

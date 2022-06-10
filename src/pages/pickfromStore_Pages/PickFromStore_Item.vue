@@ -83,7 +83,7 @@
                     </q-card-section>
                     <q-card-section class="row items-center q-pa-none flex">
                       <span style="width:80%;overflow:hidden;white-space: nowrap;">{{ i.brands }}</span>
-                      <q-btn icon="error_outline" flat size="sm" @click="get_item_screen(i)" style="width:20%"></q-btn>
+                      <q-icon name="error_outline" flat size="xs" @click="get_item_screen(i)" style="width:20%"></q-icon>
                     </q-card-section>
                     <q-card-section class="q-pt-sm q-pa-none text-weight-bolder" style="height: 50px;overflow: hidden;">
                       {{ i.name }}
@@ -211,26 +211,26 @@
       },
       mycart_count_and_length(){
         var ps = this;
-        // console.log(localStorage.getItem('mycart'),"localStorage");
+        // console.log(sessionStorage.getItem('mycart'),"sessionStorage");
         ps.cart_price =0;
         ps.cartlength =0;
-        if(localStorage.getItem('mycart')){
-          ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+        if(sessionStorage.getItem('mycart')){
+          ps.mycart_items = JSON.parse(sessionStorage.getItem('mycart'));
           ps.cartlength =  ps.mycart_items.length;
           ps.mycart_items.forEach( cart =>{
             ps.cart_price = ps.cart_price+(cart.no_of_quantity * parseInt(cart.selected_price));
           });
         }
-        else{ localStorage.setItem('mycart','');  }
-        if(localStorage.getItem('custom_item')){
-          ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+        else{ sessionStorage.setItem('mycart','');  }
+        if(sessionStorage.getItem('custom_item')){
+          ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item')); 
           ps.cartlength = ps.cartlength + ps.custom_items.length;
         }
       },
 
       cart_key_function(){
         var ps= this;
-        ps.category = JSON.parse(localStorage.getItem('category'));
+        ps.category = JSON.parse(sessionStorage.getItem('category'));
         let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}};
         let formData = new FormData();
         formData.append('category_id', ps.category.id);
@@ -254,8 +254,8 @@
         var loader = document.getElementById('loader2');
           loader.style.display="block";
         let config = { headers: { Authorization: `Bearer ${ps.access_token}` } };
-        if(localStorage.getItem('mycart')){
-          ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+        if(sessionStorage.getItem('mycart')){
+          ps.mycart_items = JSON.parse(sessionStorage.getItem('mycart'));
           ps.mycart_items.forEach(cart =>{
           var data ={ 
                       "sku":cart.sku,
@@ -336,7 +336,7 @@
             });
           }
         });
-        localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+        sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
         ps.mycart_count_and_length();
       },
 
@@ -366,10 +366,10 @@
       AddToCartFunction(item,variation){
         var ps = this;
         if(ps.mycart_items.length == 0){
-          localStorage.setItem('cart_key',ps.cart_key_data.cart_key);
+          sessionStorage.setItem('cart_key',ps.cart_key_data.cart_key);
         }
         var excisting =  0;
-        if( ps.cart_key_data.cart_key == localStorage.getItem('cart_key')){
+        if( ps.cart_key_data.cart_key == sessionStorage.getItem('cart_key')){
           ps.mycart_items.forEach( cart =>{
             if(item.sku == cart.sku){
                 excisting =1;
@@ -385,7 +385,7 @@
                   ps.mycart_items.push(item);
                 }
               });
-              localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+              sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
               ps.cart_checkup_similar_products();
             }
           }
@@ -420,7 +420,7 @@
             // }
           // });
           // console.log(ps.mycart_items,"mycart_items");
-          localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+          sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
           ps.cart_checkup_similar_products();
         }
       },
@@ -445,7 +445,7 @@
             // }
           // });
           // console.log(ps.mycart_items,"mycart_items");
-          localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+          sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
           ps.cart_checkup_similar_products();
         }
       },
@@ -475,9 +475,9 @@
         // console.log(item,"item",variation,"variation");
         var ps =  this;
         if(ps.mycart_items.length == 0){
-          localStorage.setItem('cart_key',ps.cart_key_data.cart_key);
+          sessionStorage.setItem('cart_key',ps.cart_key_data.cart_key);
         }
-        if( ps.cart_key_data.cart_key == localStorage.getItem('cart_key')){
+        if( ps.cart_key_data.cart_key == sessionStorage.getItem('cart_key')){
           item.variations.forEach( ele =>{
             if( ele.description == variation){
                 item.no_of_quantity = 1;
@@ -487,7 +487,7 @@
               }
           });
           // console.log(ps.mycart_items,"mycart_items");
-          localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+          sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
           ps.cart_checkup_product();
           ps.cart_checkup_similar_products();
         }else{
@@ -518,7 +518,7 @@
           }
         });
         // console.log(ps.mycart_items,"mycart_items");
-        localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+        sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
         ps.cart_checkup_product();
         ps.cart_checkup_similar_products();
       },
@@ -538,13 +538,13 @@
             }
           }
         });
-        localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+        sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
         ps.cart_checkup_product();
         ps.cart_checkup_similar_products();
       },
       clear_cart_function(){
         var ps = this;
-        localStorage.removeItem('mycart');
+        sessionStorage.removeItem('mycart');
         ps.mycart_items = [];
         ps.cart_key_dailog =  false;
         ps.mycart_count_and_length();
@@ -562,8 +562,8 @@
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -577,11 +577,11 @@
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

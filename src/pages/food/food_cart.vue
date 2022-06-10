@@ -25,28 +25,31 @@
 			</q-page>
 			<q-page v-if="NoOfItemsInCart != 0" class="bg-orange-1 q-px-sm">
 				<div class="row">
-					<div class=" col-12 swipe-container" v-for="item in items_data">
+					<div class=" col-12 swipe-container" v-for="(item,index) in items_data">
 						<div class="row bg-white q-pa-sm cb-round-borders-20 swipe-element" @touchstart="swite_to_delete(i)" id="swipe_container">
 							<div class="col-2 column justify-center items-center">
-								<q-avatar square class="cb-round-borders-10" size="70px">
+								<q-avatar square class="cb-round-borders-10 full-width" >
 									<img :src="item.image" class="fit">
 								</q-avatar>
 							</div>
-							<div class="col-7 q-pl-md cb-font-12">
+							<div class="col-7 q-pa-xs q-pl-md  cb-font-12">
 								<span class="text-bold">{{ item.name }}</span><br>
-								<span class="">{{ item.info }}</span>
+								<span v-if="item.textsize == 0">{{ item.info_less }}<span class="text-blue" @click="more_text_fun(index)"> More...</span></span>
+								<span v-if="item.textsize == 1">{{ item.info }} <span class="text-blue" @click="less_text_fun(index)"> Less...</span></span>
 							</div>
-							<div class="col-3 text-center">
+							<div class="col-3 text-right">
 								<span class="text-h6 text-bold"><q-icon name="currency_rupee" ></q-icon>{{ item.selling_price }}</span>
 								<br>
-								<span style="border:1px solid orange" class="cb-round-borders-10 text-orange q-py-xs">
-									<q-btn flat icon="remove" dense @click="food_cart_item_remove(item)"></q-btn>
+								<div style="border:1px solid orange" class=" flex flex-center cb-round-borders-10 text-orange q-pa-none">
+									<q-icon flat name="remove" size="xs" dense @click="food_cart_item_remove(item)"></q-icon>
+									<q-space></q-space>
 									<span class="q-px-xs text-bold cb-font-16">{{ item.qty }}</span>
-									<q-btn flat icon="add" dense @click="food_add_to_cart_more(item)"></q-btn>
-								</span>
+									<q-space></q-space>
+									<q-icon flat name="add" size="xs" dense @click="food_add_to_cart_more(item)" ></q-icon>
+								</div>
 							</div>
 						</div>
-						<q-btn label="delete" id="swipe_delete" class="text-white action bg-red-6 q-ml-sm"></q-btn>
+						<!-- <q-btn label="delete" id="swipe_delete" class="text-white action bg-red-6 q-ml-sm" @click="food_cart_item_remove(item)"></q-btn> -->
 					</div>
 				</div>
 				<div class="row absolute-bottom q-ma-sm">
@@ -168,7 +171,7 @@ export default {
     }
   },
   mounted() {
-  	localStorage.removeItem('schedule_time');
+  	sessionStorage.removeItem('schedule_time');
   	this.getToken();
   	this.mypath();
   	// comment this functions when you move to live
@@ -180,6 +183,22 @@ export default {
   	
   },
   methods: {
+  	more_text_fun(index){
+  			var ps = this;
+  			ps.items_data.forEach((item,i)=>{
+  					if(i == index){
+  						item.textsize = 1;
+  					}else{
+  						item.textsize = 0;
+  					}
+  			});
+  	},
+		less_text_fun(index){
+  		var ps = this;
+  		ps.items_data.forEach((item,i)=>{
+					item.textsize = 0;
+  			});
+  	},
   	loaddata(){
   		var ps = this;
   		ps.schedule_status= 1;
@@ -288,6 +307,11 @@ export default {
 	            "status": 1
 	        }
 	    ];
+
+	    ps.items_data.forEach((item,index)=>{
+	    	item.info_less = (item.info).substring(0,65);
+	    	item.textsize = 0;
+	    });
   		ps.NoOfItemsInCart = ps.items_data.length;
 	    ps.total_mrp= 360;
 	    ps.no_of_disabled_items= 0;
@@ -311,10 +335,10 @@ export default {
   	},
   	Mycartitems_function(){
   		var ps = this;
-  		if(!localStorage.getItem('MyFoodCart')){
+  		if(!sessionStorage.getItem('MyFoodCart')){
   			return false;
   		}
-  		ps.MyFoodCart = JSON.parse(localStorage.getItem('MyFoodCart'));
+  		ps.MyFoodCart = JSON.parse(sessionStorage.getItem('MyFoodCart'));
   		ps.NoOfItemsInCart = ps.MyFoodCart.length;
   		let formData = new FormData;
 	    var data = [];
@@ -333,7 +357,7 @@ export default {
 	    loader.style.display="block";
 	    ps.$api.post('/api/update-food-cart',formData,config).then(function (response) {
 		    loader.style.display="none";
-		    console.log(response,"response");
+		    // console.log(response,"response");
 		    if(response.data.status_code == 400){
 		    	ps.empty_cart_title= response.data.empty_cart_title ;
    	 			ps.empty_cart_message= response.data.empty_cart_message;
@@ -351,6 +375,12 @@ export default {
 			    ps.empty_cart_image= response.data.empty_cart_image ;			    
 			    ps.qty_restriction= response.data.qty_restriction ;			    
 			    ps.qty_restriction_message= response.data.qty_restriction_message ;
+
+			    ps.items_data.forEach((item,index)=>{
+	    			item.info_less = (item.info).substring(0,65);
+	    			item.textsize = 0;
+	    		});
+	    		
 			    ps.get_time_function();	
 
 			  }
@@ -423,11 +453,11 @@ export default {
   			if(time_hr ==  ps.end_time){
   				if(ps.delivery_times[0].end.slice(3,5) >= ps.time_min){ 
   					ps.schedule_the_order = 1;	
-  					localStorage.setItem('schedule_time',ps.scheduleTime)
+  					sessionStorage.setItem('schedule_time',ps.scheduleTime)
   				}else{	ps.schedule_the_order = 0;	}
   			}else{
   				ps.schedule_the_order = 1;
-  				localStorage.setItem('schedule_time',ps.scheduleTime)
+  				sessionStorage.setItem('schedule_time',ps.scheduleTime)
   				}
   		}else{	ps.schedule_the_order = 0;	}
   	},
@@ -452,7 +482,7 @@ export default {
   				}
   			}
   		});
-  		localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+  		sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   		ps.Mycartitems_function();
   	},
   	food_cart_item_remove(item){
@@ -465,7 +495,7 @@ export default {
 	  			}else{
   					item.qty = item.qty -1;
   					cart.no_of_qty = cart.no_of_qty -1;
-  					localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+  					sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   					ps.Mycartitems_function();
    				}
   			}
@@ -481,15 +511,15 @@ export default {
   		ps.MyFoodCart.splice(ps.splice_index,1);
   		ps.splice_index = null;
   		ps.clear_cart_item_dialog =  false;
-  		localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+  		sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   		ps.Mycartitems_function();
   	},
   	mypath(){
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -503,11 +533,11 @@ export default {
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

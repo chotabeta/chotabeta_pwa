@@ -134,7 +134,7 @@ export default ({
     ps.mypath();
     ps.pickanddrop_sliders();
     ps.pickupaddress_select();   
-    localStorage.removeItem('coupon1');
+    sessionStorage.removeItem('coupon1');
   },
   methods:{
   	getToken(){
@@ -180,7 +180,7 @@ export default ({
                                           user_id: ps.$store.state.xid,
                                           territory_id:response.data.zone_id,
                                         }
-              localStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
+              sessionStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
               ps.picked_address  = ps.picked_address_array.name; 
               }else{
                 ps.territory_checkup_dialog =  true;
@@ -192,7 +192,7 @@ export default ({
       }else if(ps.$route.query.address == 1){
         var loader = document.getElementById('loader2');
         loader.style.display="block";
-        var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
+        var picked_address_array =  JSON.parse(sessionStorage.getItem('pickup_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
@@ -211,7 +211,7 @@ export default ({
                                             territory_id:   response.data.zone_id,
                                         }
               ps.picked_address        =  ps.picked_address_array.name;
-              localStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
+              sessionStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
               }
               else{
                 ps.territory_checkup_dialog =  true;
@@ -235,7 +235,7 @@ export default ({
                                           user_id: ps.$store.state.xid,
                                           territory_id:response.data.zone_id,
                                         }
-              localStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
+              sessionStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
               ps.picked_address  = ps.picked_address_array.name; 
               }
               else{
@@ -247,7 +247,7 @@ export default ({
         });
         var loader = document.getElementById('loader2');
           loader.style.display="block";
-        var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
+        var delivery_address_array     =  JSON.parse(sessionStorage.getItem('delivery_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status == 0){
@@ -264,7 +264,7 @@ export default ({
                                             user_id:        delivery_address_array.user_id,
                                             territory_id:   response.data.zone_id,
                                         }
-                localStorage.setItem('delivery_address',JSON.stringify(ps.delivery_address_array));
+                sessionStorage.setItem('delivery_address',JSON.stringify(ps.delivery_address_array));
                 ps.delivery_address      =  ps.delivery_address_array.name; 
                 }
               else{
@@ -279,7 +279,7 @@ export default ({
       }else if(ps.$route.query.address == 12){
           var loader = document.getElementById('loader2');
           loader.style.display="block";
-        var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
+        var picked_address_array =  JSON.parse(sessionStorage.getItem('pickup_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
             if(response.data.full_screen_error_status == 0){
@@ -297,7 +297,7 @@ export default ({
                                             user_id:        picked_address_array.user_id,
                                             territory_id:   response.data.zone_id,
                                         }
-                localStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
+                sessionStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
                 ps.picked_address        =  ps.picked_address_array.name;
                 }
               else{
@@ -309,7 +309,7 @@ export default ({
             });
         var loader = document.getElementById('loader2');
           loader.style.display="block";
-        var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
+        var delivery_address_array     =  JSON.parse(sessionStorage.getItem('delivery_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
           if(response.data.full_screen_error_status ==0){
@@ -328,7 +328,7 @@ export default ({
                                             territory_id:   response.data.zone_id,
                                         }
                 ps.delivery_address      =  ps.delivery_address_array.name;  
-                localStorage.setItem('delivery_address',JSON.stringify(ps.delivery_address_array));
+                sessionStorage.setItem('delivery_address',JSON.stringify(ps.delivery_address_array));
               }
               else{
                 ps.territory_checkup_dialog =  true;
@@ -352,7 +352,7 @@ export default ({
         ps.$q.notify({ message: "Both Pick and Drop Location Are same...", type: "negative",icon:"close"}); 
         return false;
       }
-      if(ps.instructions){ localStorage.setItem('instructions',ps.instructions); }
+      if(ps.instructions){ sessionStorage.setItem('instructions',ps.instructions); }
       const d = new Date();
       let formData = new FormData();
       formData.append("to_location", ps.picked_address_array.location);
@@ -371,7 +371,7 @@ export default ({
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       ps.$api.post('/api/fare-pickdrop',formData,config).then(function (response) {
         loader.style.display="none";
-        ps.category = JSON.parse(localStorage.getItem('category'));
+        ps.category = JSON.parse(sessionStorage.getItem('category'));
         if( ps.category.main_service_id == 3){
          if(response.data.distance_in_km <= (ps.territory_data.vicinity_range/1000)){ ps.$router.push('/DriveMeMap'); }
          else{  ps.territory_checkup_dialog = true; }
@@ -392,8 +392,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -407,11 +407,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

@@ -56,9 +56,9 @@ export default {
       rating_text1:ref(null),
       cancle_order_button:ref(null),
       distance:ref(null),
-	  est:ref(null),
-	  rating_text2:ref(null),
-	  order:ref(null),
+	    est:ref(null),
+	    rating_text2:ref(null),
+	    order:ref(null),
     }
 
   },
@@ -142,13 +142,13 @@ export default {
         console.log('response');
         loader.style.display="none";
         ps.cancle_order_button = response.data.cancle_order_button;
-		ps.cancellation_reason_predefined_texts = response.data.cancellation_reason_predefined_texts;
-		ps.distance = response.data.distance;
-		ps.est = response.data.est;
-		ps.rating_text1 = response.data.rating_text1;
-		ps.rating_text2 = response.data.rating_text2;
-		ps.order = response.data.order;
-		var picklats = ps.order.from_lat_lng;
+    		ps.cancellation_reason_predefined_texts = response.data.cancellation_reason_predefined_texts;
+    		ps.distance = response.data.distance;
+    		ps.est = response.data.est;
+    		ps.rating_text1 = response.data.rating_text1;
+    		ps.rating_text2 = response.data.rating_text2;
+    		ps.order = response.data.order;
+    		var picklats = ps.order.from_lat_lng;
         var droplats = ps.order.to_lat_lng;
         var pickimg = 'https://chotabeta.app/img/pickpoint.png';
         var dropimg = 'https://chotabeta.app/img/droppoint1.png';
@@ -160,7 +160,7 @@ export default {
       })
     },
     initMap(picklat,droplat,pickimg,dropimg,start_title,end_title){
-      // console.log(picklat,"picklat",droplat,"droplat",pickimg,"pickimg",dropimg,"dropimg",start_title,"start_title",end_title,"end_title")
+      console.log(picklat,"picklat",droplat,"droplat",pickimg,"pickimg",dropimg,"dropimg",start_title,"start_title",end_title,"end_title")
       var ps = this;
       var directionsDisplay;
       var start = picklat;

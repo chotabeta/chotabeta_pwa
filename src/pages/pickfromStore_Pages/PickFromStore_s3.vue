@@ -196,7 +196,8 @@
 						{{ cartlength }} Items| <q-icon name="currency_rupee"></q-icon>{{ cart_price }}
 					</div>
 					<div class="col cb-bg-orange-8 text-center q-py-sm">
-						<q-btn label="checkout" flat icon-right="chevron_right" @click="check_cart_items_count()"></q-btn>
+						<q-btn label="checkout" flat icon-right="chevron_right" @click="check_cart_items_count()" v-if="mycart_items.length != 0"></q-btn>
+						<q-btn label="checkout" flat icon-right="chevron_right" disable v-else></q-btn>
 					</div>
 				</div>
 	</q-layout>
@@ -231,7 +232,7 @@ export default ({
   	this.getToken();
   	this.mypath();
   	this.mycart_count_and_length_update();
-  	localStorage.removeItem('coupon_pick');
+  	sessionStorage.removeItem('coupon_pick');
   	this.mycart_count_and_length();	
   },
   methods:{
@@ -248,8 +249,8 @@ export default ({
   		var ps = this;
   		ps.cart_price =0;
   		ps.cartlength =0;
-  		if(localStorage.getItem('mycart')){
-  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  		if(sessionStorage.getItem('mycart')){
+  			ps.mycart_items = JSON.parse(sessionStorage.getItem('mycart'));
   			ps.cartlength =  ps.mycart_items.length;
   			// console.log(ps.mycart_api_dat,"ps.mycart_api_dat");
   			ps.mycart_items.forEach(item=>{
@@ -257,18 +258,18 @@ export default ({
 	  			});
 	  		
   		}
-  		else{ localStorage.setItem('mycart','');	}
-  		if(localStorage.getItem('custom_item')){
-  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  		else{ sessionStorage.setItem('mycart','');	}
+  		if(sessionStorage.getItem('custom_item')){
+  			ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item')); 
   			ps.cartlength = ps.cartlength + ps.custom_items.length;
   		}
   	},
   	mycart_count_and_length_update(){
   		var ps = this;
-  		if(localStorage.getItem('mycart')){
+  		if(sessionStorage.getItem('mycart')){
   			var data_sku = [];
-  			if(localStorage.getItem('mycart')){
-	  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  			if(sessionStorage.getItem('mycart')){
+	  			ps.mycart_items = JSON.parse(sessionStorage.getItem('mycart'));
 	  			ps.mycart_items.forEach(cart =>{
 	  				var data ={ 
 	  										"sku":cart.sku,
@@ -278,8 +279,8 @@ export default ({
 	  				data_sku.push(data);
 	  			});
 	  		}
-	  		if(localStorage.getItem('custom_item')){
-	  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+	  		if(sessionStorage.getItem('custom_item')){
+	  			ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item')); 
 	  			ps.custom_items.forEach(cart =>{
 	  				var data ={ 
 	  										"sku":cart.sku,
@@ -325,7 +326,7 @@ export default ({
   				ps.$q.notify({ message: ps.response_data.qty_restriction_msg,color:'light-blue-10', icon:'close'});
   			}
   		});
-  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+  		sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
   		ps.mycart_count_and_length();
   	},
   	RemoveFromCartfunction(item){
@@ -342,7 +343,7 @@ export default ({
   				}
   			}
   		})
-  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+  		sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
   		ps.mycart_count_and_length();
   	},
 
@@ -351,15 +352,16 @@ export default ({
   		ps.mycart_items.splice(ps.splice_index,1);
   		ps.splice_index = null;
   		ps.clear_cart_item_dialog =  false;
-  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+  		sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
   		ps.mycart_count_and_length_update();
   	},
 
   	clear_cart_function(){
   		var ps = this;
-  		localStorage.removeItem('mycart');
+  		sessionStorage.removeItem('mycart');
   		ps.mycart_items = [];
 		  ps.cartlength = 0;
+		  ps.cart_price = 0;
   		ps.clear_confirm_dialog =  false;
   		ps.mycart_count_and_length_update();
   	},
@@ -397,7 +399,7 @@ export default ({
 	  				}
 					}
 			});
-			localStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
+			sessionStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
 		},
 		RemoveFrom_custom_Cartfunction(item,index){
 			var ps = this;
@@ -412,20 +414,20 @@ export default ({
 	  				}
 					}
 			});
-			localStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
+			sessionStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
 		},
 		clear_custom_item_function(){
 				var ps = this;
 				ps.custom_items.splice(ps.custom_item_index ,1);
-				localStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
+				sessionStorage.setItem('custom_item',JSON.stringify(ps.custom_items));
 				ps.clear_custom_item_dialog = false;
 		},
 		mypath(){
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -439,11 +441,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

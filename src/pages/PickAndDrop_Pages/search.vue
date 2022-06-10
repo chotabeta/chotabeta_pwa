@@ -214,45 +214,45 @@ export default ({
           ps.update_user_details(address.address_components[length-1].long_name);
 
           if(ps.$route.query.address =="1"){          
-            localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
-            // console.log(localStorage.getItem('pickup_address'));
+            sessionStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
+            // console.log(sessionStorage.getItem('pickup_address'));
             ps.$router.push('/PickAndDrop_s1?address=1');
           }
           else if(ps.$route.query.address =="2"){
-            localStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
-            // console.log(localStorage.getItem('pickup_address'));
-            if(localStorage.getItem('pickup_address') == null || localStorage.getItem('pickup_address') == ''){
+            sessionStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
+            // console.log(sessionStorage.getItem('pickup_address'));
+            if(sessionStorage.getItem('pickup_address') == null || sessionStorage.getItem('pickup_address') == ''){
               ps.$router.push('/PickAndDrop_s1?address=2');
             }else{
               ps.$router.push('/PickAndDrop_s1?address=12');
             }
           }
           else if(ps.$route.query.address =="c1"){
-            localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/PickAndDrop_Checkout');
           }else if(ps.$route.query.address =="c2"){
-            localStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/PickAndDrop_Checkout');
           }else if(ps.$route.query.address =="r1"){
-            localStorage.setItem('rentment_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('rentment_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/rent_me3');
           }else if(ps.$route.query.address =="rp"){
-            localStorage.setItem('rentment_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('rentment_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/rent_me1?address=rp');
           }else if(ps.$route.query.address =="p1" && ps.$route.query.fev == undefined){
-            localStorage.setItem('pick_from_store_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('pick_from_store_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/PickFromStore_Checkout?adding=1');
           }else if(ps.$route.query.address =="p1" && ps.$route.query.fev == 'p1'){
-            localStorage.setItem('pick_from_store_fev_store',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('pick_from_store_fev_store',JSON.stringify(ps.selected_location));
             ps.$router.push('/PickFromStore_Checkout');
           }else if(ps.$route.query.address =="d1"){
-            localStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('pickup_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/DriveMe_Summary');
           }else if(ps.$route.query.address =="d2"){
-            localStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('delivery_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/DriveMe_Summary');
           }else if(ps.$route.query.address =="f1"){
-            localStorage.setItem('food_delivery_address',JSON.stringify(ps.selected_location));
+            sessionStorage.setItem('food_delivery_address',JSON.stringify(ps.selected_location));
             ps.$router.push('/food-checkout?adding=1&plan='+ps.$route.query.plan+'&subscription='+ps.$route.query.subscription);
           }
         }
@@ -281,8 +281,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -296,11 +296,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

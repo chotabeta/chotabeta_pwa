@@ -51,10 +51,10 @@
           </q-card-section>
         </q-card>
 
-        <div class="cb-shadow-1 q-px-lg q-my-md flex row items-center cb-round-borders-10">
+        <!-- <div class="cb-shadow-1 q-px-lg q-my-md flex row items-center cb-round-borders-10">
           <span class="cb-text-blue-6 text-bold">Subscription</span><q-space></q-space>
           <q-toggle color="orange" v-model="toggle" @click="Subscription_function"></q-toggle>
-        </div>
+        </div> -->
 
         <div class="row items-center justify-center q-pb-sm">
           <q-img src="https://chotabeta.app/dev/testenv/public/imgs/google-maps-48.png" width="30px" height="25px"/>
@@ -330,7 +330,7 @@ export default ({
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       var loader = document.getElementById('loader2');
       loader.style.display="block";
-        var picked_address_array =  JSON.parse(localStorage.getItem('pickup_address'));
+        var picked_address_array =  JSON.parse(sessionStorage.getItem('pickup_address'));
         ps.$api.get('/api/check-territory2?lat_lng='+picked_address_array.location+'&pincode='+picked_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
           loader.style.display="none";
             if(response.data.full_screen_error_status == 0){
@@ -348,7 +348,7 @@ export default ({
                                             user_id:        picked_address_array.user_id,
                                             territory_id:   response.data.zone_id,
                                         }
-                localStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
+                sessionStorage.setItem('pickup_address',JSON.stringify(ps.picked_address_array));
                 ps.location_address_drop();
                 }
               else{
@@ -364,7 +364,7 @@ export default ({
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
       var loader = document.getElementById('loader2');
         loader.style.display="block";
-      var delivery_address_array     =  JSON.parse(localStorage.getItem('delivery_address'));
+      var delivery_address_array     =  JSON.parse(sessionStorage.getItem('delivery_address'));
       ps.$api.get('/api/check-territory2?lat_lng='+delivery_address_array.location+'&pincode='+delivery_address_array.postal_code+'&xid='+ps.xid,config).then(function (response) {
         loader.style.display="none";
         if(response.data.full_screen_error_status ==0){
@@ -381,7 +381,7 @@ export default ({
                                           user_id:        delivery_address_array.user_id,
                                           territory_id:   response.data.zone_id,
                                         }
-                localStorage.setItem('delivery_address',JSON.stringify(ps.delivery_address_array));
+                sessionStorage.setItem('delivery_address',JSON.stringify(ps.delivery_address_array));
                 ps.location_address_2();
               }
               else{
@@ -395,11 +395,11 @@ export default ({
     location_address_2(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      ps.pickuplocation_array =JSON.parse(localStorage.getItem('pickup_address'));
-      ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
-      ps.category = JSON.parse(localStorage.getItem('category'));
-      ps.service = JSON.parse(localStorage.getItem('service'));
-      ps.coupon_code = localStorage.getItem('coupon1');
+      ps.pickuplocation_array =JSON.parse(sessionStorage.getItem('pickup_address'));
+      ps.delivery_address_array = JSON.parse(sessionStorage.getItem('delivery_address'));
+      ps.category = JSON.parse(sessionStorage.getItem('category'));
+      ps.service = JSON.parse(sessionStorage.getItem('service'));
+      ps.coupon_code = sessionStorage.getItem('coupon1');
       if(ps.$store.state.userdetails){
         var user_data = JSON.parse(ps.$store.state.userdetails);
         ps.user_data = user_data.deatils;
@@ -462,7 +462,7 @@ export default ({
       var ps = this;
       ps.discount = null;
       ps.coupon_code = null;
-      localStorage.removeItem('coupon1');
+      sessionStorage.removeItem('coupon1');
       ps.coupon_dailog_remove = true;
       ps.location_address();
     },
@@ -523,7 +523,7 @@ export default ({
       formData.append("schedule_timestamp", (new Date()));
       formData.append("weight", null);
       formData.append("item_name", ps.category.name);
-      formData.append("instruction", localStorage.getItem('instructions'));
+      formData.append("instruction", sessionStorage.getItem('instructions'));
       formData.append("week_end", null);      
       formData.append("pick_flat", ps.pickuplocation_array.flat_no);
       formData.append("from_lat_lng", ps.pickuplocation_array.location );
@@ -548,12 +548,12 @@ export default ({
           if(response.data.status_code == 204){
             ps.$q.notify({ message: response.data.message, }); 
           } else if(response.data.status_code == 200){
-            localStorage.removeItem('pickup_address');
-            localStorage.removeItem('delivery_address');
-            localStorage.removeItem('category');
-            localStorage.removeItem('service');
-            localStorage.removeItem('instructions');
-            localStorage.removeItem('coupon1');
+            sessionStorage.removeItem('pickup_address');
+            sessionStorage.removeItem('delivery_address');
+            sessionStorage.removeItem('category');
+            sessionStorage.removeItem('service');
+            sessionStorage.removeItem('instructions');
+            sessionStorage.removeItem('coupon1');
             ps.discount = null;
             ps.coupon_code = null;
             ps.order = response.data;
@@ -578,8 +578,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.path == path){
@@ -593,11 +593,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

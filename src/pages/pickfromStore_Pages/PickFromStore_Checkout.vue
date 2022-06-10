@@ -320,7 +320,7 @@ export default ({
       coupon_dailog_error:ref(false),
       coupon_dailog_applied:ref(false),
       coupon_dailog_remove:ref(false),
-      coupon_code:ref(''),
+      coupon_code:ref(null),
       discount:ref(''),
       transaction_id:ref(null),
       payment_methods:ref([]),
@@ -335,6 +335,7 @@ export default ({
       store:ref(''),
       favstore_location:ref(""),
       payment_decline_method:ref(false),
+      cart_items:ref([]),
     }
   },
   mounted () {
@@ -353,6 +354,12 @@ export default ({
       if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
       else{ps.xid = ps.$store.state.xid_cb;}
       if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); } 	
+      if(sessionStorage.getItem('mycart')){
+        ps.cart_items = JSON.parse(sessionStorage.getItem('mycart'));
+      }
+      if( ps.cart_items.length == 0){
+        ps.$router.push('/home/dashboard'); 
+      }
   	},
     get_payment_images(){
       var ps = this;
@@ -391,21 +398,21 @@ export default ({
   		var ps = this;
   		ps.cart_price =0;
   		ps.cartlength =0;
-  		if(localStorage.getItem('mycart')){
-  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  		if(sessionStorage.getItem('mycart')){
+  			ps.mycart_items = JSON.parse(sessionStorage.getItem('mycart'));
   			ps.cartlength =  ps.mycart_items.length;
   		}
-  		else{ localStorage.setItem('mycart','');	}
-      if(localStorage.getItem('custom_item')){
-        ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  		else{ sessionStorage.setItem('mycart','');	}
+      if(sessionStorage.getItem('custom_item')){
+        ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item')); 
         ps.cartlength = ps.cartlength + ps.custom_items.length;
       }
     },
   	deliveryaddress(){
   		var ps = this;
   		if(ps.$route.query.adding == '1'){
-        console.log(JSON.parse(localStorage.getItem('pick_from_store_address')));
-        ps.pick_from_store_address = JSON.parse(localStorage.getItem('pick_from_store_address'));
+        console.log(JSON.parse(sessionStorage.getItem('pick_from_store_address')));
+        ps.pick_from_store_address = JSON.parse(sessionStorage.getItem('pick_from_store_address'));
         ps.delivery_address = ps.pick_from_store_address.name;
         ps.delivery_pincode = ps.pick_from_store_address.postal_code;
         ps.delivery_latlngs = ps.pick_from_store_address.location;
@@ -432,7 +439,7 @@ export default ({
   	},
     check_feverate_store(){
       var ps = this;
-      if(localStorage.getItem('pick_from_store_fev_store')){
+      if(sessionStorage.getItem('pick_from_store_fev_store')){
         ps.adding_fev_store_dialog = true;
       }else{
         ps.continue_pickstore_function();
@@ -440,7 +447,7 @@ export default ({
     },
     adding_fev_store_function(){
       var ps = this;
-      ps.feverate_store = JSON.parse(localStorage.getItem('pick_from_store_fev_store'));
+      ps.feverate_store = JSON.parse(sessionStorage.getItem('pick_from_store_fev_store'));
       ps.favstore_address = ps.feverate_store.name;
       // ps.store = ps.feverate_store.nick_name;
       ps.favstore_location =  ps.feverate_store.location;
@@ -450,27 +457,27 @@ export default ({
   	continue_pickstore_function(){
   		var ps = this;
 			ps.items = [];
-			ps.category = JSON.parse(localStorage.getItem('category'));
-			ps.service = JSON.parse(localStorage.getItem('service'));
+			ps.category = JSON.parse(sessionStorage.getItem('category'));
+			ps.service = JSON.parse(sessionStorage.getItem('service'));
 			// console.log(ps.service,"service");
 			// console.log(ps.category,'category')
-      if(localStorage.getItem('userdetails')){
-			  var userdetails = JSON.parse(localStorage.getItem('userdetails'));
+      if(sessionStorage.getItem('userdetails')){
+			  var userdetails = JSON.parse(sessionStorage.getItem('userdetails'));
 			  ps.userdetails = userdetails.deatils;
       }
-      ps.cart_items = JSON.parse(localStorage.getItem('mycart'));
+      ps.cart_items = JSON.parse(sessionStorage.getItem('mycart'));
 			ps.cart_items.forEach(cart=>{
 				ps.items.push({id:cart.selected_id,qty:cart.no_of_quantity});
 			});
       var cus_items = [];
-      if(localStorage.getItem('custom_item')){
-        ps.custom_items = JSON.parse(localStorage.getItem('custom_item'));
+      if(sessionStorage.getItem('custom_item')){
+        ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item'));
           ps.custom_items.forEach(cart=>{
           cus_items.push({cart});
         });
       }
-      if(localStorage.getItem('coupon_pick')){
-			  ps.coupon_code = localStorage.getItem('coupon_pick');
+      if(sessionStorage.getItem('coupon_pick')){
+			  ps.coupon_code = sessionStorage.getItem('coupon_pick');
       }
   		let formData = new FormData();
   		formData.append('service_page', ps.$route.fullPath);
@@ -498,7 +505,7 @@ export default ({
         loader.style.display="none";
   			// console.log(response.data,"ref");
   			ps.continue_pickstore_data = response.data;
-  			if(localStorage.getItem('coupon_pick')){
+  			if(sessionStorage.getItem('coupon_pick')){
   				if(response.data.coupon == "Rs. 0"){
               ps.coupon_dailog_error = true;
             }else{
@@ -522,7 +529,7 @@ export default ({
       var ps = this;
       ps.discount = '';
       ps.coupon_code = null;
-      localStorage.removeItem('coupon_pick');
+      sessionStorage.removeItem('coupon_pick');
       ps.coupon_dailog_remove = true;
       ps.continue_pickstore_function();
     },
@@ -548,24 +555,24 @@ export default ({
   	pay_pickstore_function_payment_selection(){
   		var ps = this;
       ps.items = [];
-      ps.category = JSON.parse(localStorage.getItem('category'));
-      ps.service = JSON.parse(localStorage.getItem('service'));
+      ps.category = JSON.parse(sessionStorage.getItem('category'));
+      ps.service = JSON.parse(sessionStorage.getItem('service'));
       // console.log(ps.service,"service");
       // console.log(ps.category,'category')
-      if(localStorage.getItem('userdetails')){
-        var userdetails = JSON.parse(localStorage.getItem('userdetails'));
+      if(sessionStorage.getItem('userdetails')){
+        var userdetails = JSON.parse(sessionStorage.getItem('userdetails'));
         ps.userdetails = userdetails.deatils;
       }
-      ps.cart_items = JSON.parse(localStorage.getItem('mycart'));
+      ps.cart_items = JSON.parse(sessionStorage.getItem('mycart'));
       ps.cart_items.forEach(cart=>{
         ps.items.push({id:cart.selected_id,qty:cart.no_of_quantity});
       });
-      if(localStorage.getItem('coupon_pick')){
-        ps.coupon_code = localStorage.getItem('coupon_pick');
+      if(sessionStorage.getItem('coupon_pick')){
+        ps.coupon_code = sessionStorage.getItem('coupon_pick');
       }
       var cus_items = [];
-      if(localStorage.getItem('custom_item')){
-        ps.custom_items = JSON.parse(localStorage.getItem('custom_item'));
+      if(sessionStorage.getItem('custom_item')){
+        ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item'));
           ps.custom_items.forEach(cart=>{
           cus_items.push({cart});
         });
@@ -604,7 +611,7 @@ export default ({
 										delivery: ps.delivery_address,
 										payment_mode: payment,
 										drop_phone: ps.userdetails.mobile,
-										coupon: localStorage.getItem('coupon_pick'),
+										coupon: sessionStorage.getItem('coupon_pick'),
 										payment_status: payment_status,
 										schedule_timestamp: new Date(),
 										pick_phone: ps.userdetails.mobile,
@@ -627,13 +634,13 @@ export default ({
   			// console.log(response.data,"ref");
         loader.style.display="none";
   			if(response.data.status_code == 200){
-  				localStorage.removeItem('mycart');
-  				localStorage.removeItem('category');
-  				localStorage.removeItem('service');
-  				localStorage.removeItem('sub_category');
-  				localStorage.removeItem('coupon_pick');
-          localStorage.removeItem('pick_from_store_fev_store');
-          localStorage.removeItem('custom_item')
+  				sessionStorage.removeItem('mycart');
+  				sessionStorage.removeItem('category');
+  				sessionStorage.removeItem('service');
+  				sessionStorage.removeItem('sub_category');
+  				sessionStorage.removeItem('coupon_pick');
+          sessionStorage.removeItem('pick_from_store_fev_store');
+          sessionStorage.removeItem('custom_item')
   				ps.continue_to_stoping_dialog =  true;
   			}
 			}).catch(function (error) {
@@ -648,7 +655,7 @@ export default ({
     deletefevourite_store_function(){
       var ps = this;
       ps.delete_fev_store_dialog = false;
-      localStorage.removeItem('pick_from_store_fev_store');
+      sessionStorage.removeItem('pick_from_store_fev_store');
       ps.feverate_store = null;
       ps.continue_pickstore_function();
     },
@@ -661,8 +668,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.path == path){
@@ -676,11 +683,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

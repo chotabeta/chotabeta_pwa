@@ -65,10 +65,10 @@
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="headset"></q-icon></q-item-section>
         			<q-item-section>We Care | Help</q-item-section>
      			 </q-item>
-     			 <q-item clickable v-ripple @click="website_selection()">
+     			 <!-- <q-item clickable v-ripple @click="website_selection()">
         			<q-item-section avatar><q-icon class="cb-text-orange-8" name="language"></q-icon></q-item-section>
-        			<q-item-section class="text-weight-bolder">WebSite</q-item-section>
-     			 </q-item>
+        			<q-item-section class="text-weight-bolder cb-text-orange-8">Go To WebSite</q-item-section>
+     			 </q-item> -->
 	        </q-list>
 	       <!--  <span class="row justify-center items-end  q-mt-xl">
 	        	<q-btn label="sign Out" icon="logout" class="cb-text-orange-8" flat @click="logout"></q-btn>
@@ -99,8 +99,11 @@
   //   }
 import axios from 'boot/axios'
 import {ref } from 'vue'
+import { useQuasar } from 'quasar'
 export default ({
   setup(){
+  	// const $q = useQuasar()
+  	// $q.dark.set(true)
     return {
       leftDrawerOpen :ref(false),
       latlongs:ref(null),
@@ -133,14 +136,14 @@ export default ({
   		if(ps.access_token == null){
   			ps.$router.push('/');
   		} 
-  		if(localStorage.getItem('mycart')){ 
-  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  		if(sessionStorage.getItem('mycart')){ 
+  			ps.mycart_items = JSON.parse(sessionStorage.getItem('mycart'));
   			ps.cartlength = ps.mycart_items.length;
   		}else{
-  			localStorage.setItem('mycart','');
+  			sessionStorage.setItem('mycart','');
   		}
-  		if(localStorage.getItem('custom_item')){
-  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  		if(sessionStorage.getItem('custom_item')){
+  			ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item')); 
   			ps.cartlength = ps.cartlength + ps.custom_items.length;
   		}
   	},

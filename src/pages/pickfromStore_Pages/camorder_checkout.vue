@@ -106,13 +106,13 @@ export default {
     cam_order_placement(){
       var ps = this;
       let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-      var cam_uid =  localStorage.getItem('cam_uid');
-      ps.get_cam_image = (localStorage.getItem('cam-image'));
+      var cam_uid =  sessionStorage.getItem('cam_uid');
+      ps.get_cam_image = (sessionStorage.getItem('cam-image'));
       if(ps.paymentmethod == "Cash On Delivery"){ ps.pmt_method = "COD"; }
       else if(ps.paymentmethod == "Pay Online on Delivery"){  ps.pmt_method = "POD"; }
       else{ ps.pmt_method = "POD"; }
       // console.log(JSON.stringify(ps.get_cam_image),'imgggggggg');
-      ps.get_lat_lngs = localStorage.getItem('latlongs');
+      ps.get_lat_lngs = sessionStorage.getItem('latlongs');
       let formData = new FormData();
       formData.append('transaction_id', ps.transaction_id);
       formData.append('payment_mode', ps.pmt_method);
@@ -163,8 +163,8 @@ export default {
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -178,11 +178,11 @@ export default {
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

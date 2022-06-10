@@ -260,7 +260,7 @@ export default ({
       if(ps.$store.state.xid){ps.xid = ps.$store.state.xid;}
       else{ps.xid = ps.$store.state.xid_cb;}
       if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); }
-      ps.coupon_code = localStorage.getItem('coupon_rent_me');
+      ps.coupon_code = sessionStorage.getItem('coupon_rent_me');
     },
     get_payment_images(){
       var ps = this;
@@ -311,17 +311,17 @@ export default ({
       var ps = this;
       ps.discount = null;
       ps.coupon_code = null;
-      localStorage.removeItem('coupon_rent_me');
+      sessionStorage.removeItem('coupon_rent_me');
       ps.coupon_dailog_remove = true;
       // ps.location_address();
       ps.rent_me_summery_data();
     },
     rent_me_summery_data(){
       var ps = this;
-      ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
+      ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('rentment_address'));
           //  alert(ps.delivery_address_array.location);
-      ps.category = JSON.parse(localStorage.getItem('category'));
-      ps.service = JSON.parse(localStorage.getItem('service'));
+      ps.category = JSON.parse(sessionStorage.getItem('category'));
+      ps.service = JSON.parse(sessionStorage.getItem('service'));
       if(ps.$store.state.userdetails){
           var user_data = JSON.parse(ps.$store.state.userdetails);
           console.log(user_data)
@@ -374,12 +374,12 @@ export default ({
       if(inc_dec == 1){
           if(ps.rm_usage_hrs > 1){
           ps.rm_usage_hrs = ps.rm_usage_hrs - 1;
-          ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
-          // ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-          //      ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
+          ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('rentment_address'));
+          // ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('pickup_address'));
+          //      ps.delivery_address_array = JSON.parse(sessionStorage.getItem('delivery_address'));
               //  alert(ps.delivery_address_array.location);
-          ps.category = JSON.parse(localStorage.getItem('category'));
-          ps.service = JSON.parse(localStorage.getItem('service'));
+          ps.category = JSON.parse(sessionStorage.getItem('category'));
+          ps.service = JSON.parse(sessionStorage.getItem('service'));
           var user_data = JSON.parse(ps.$store.state.userdetails);
           console.log(user_data)
           ps.user_data = user_data.deatils;
@@ -422,11 +422,11 @@ export default ({
       }else if(inc_dec == 2){
         if(ps.rm_usage_hrs < 8){
         ps.rm_usage_hrs = ps.rm_usage_hrs + 1;
-           ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
-        // ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-        // ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
-          ps.category = JSON.parse(localStorage.getItem('category'));
-          ps.service = JSON.parse(localStorage.getItem('service'));
+           ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('rentment_address'));
+        // ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('pickup_address'));
+        // ps.delivery_address_array = JSON.parse(sessionStorage.getItem('delivery_address'));
+          ps.category = JSON.parse(sessionStorage.getItem('category'));
+          ps.service = JSON.parse(sessionStorage.getItem('service'));
           var user_data = JSON.parse(ps.$store.state.userdetails);
           console.log(user_data)
           ps.user_data = user_data.deatils;
@@ -506,9 +506,9 @@ export default ({
       var user_data = JSON.parse(ps.$store.state.userdetails);
       ps.user_data = user_data.deatils;
      
-      ps.pickuplocation_array = JSON.parse(localStorage.getItem('rentment_address'));
-      ps.task_details = (localStorage.getItem('tasks'));
-      ps.service = JSON.parse(localStorage.getItem('service'));
+      ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('rentment_address'));
+      ps.task_details = (sessionStorage.getItem('tasks'));
+      ps.service = JSON.parse(sessionStorage.getItem('service'));
 
       let formData = new FormData();
 
@@ -553,11 +553,11 @@ export default ({
         loader.style.display="none";
           if(response.data.status_code == 200){
             ps.order_success_dailog = true;
-            localStorage.removeItem('service');
-            localStorage.removeItem('category');
-            localStorage.removeItem('coupon_rent_me');
-            localStorage.removeItem('tasks_temp');
-            localStorage.removeItem('tasks');
+            sessionStorage.removeItem('service');
+            sessionStorage.removeItem('category');
+            sessionStorage.removeItem('coupon_rent_me');
+            sessionStorage.removeItem('tasks_temp');
+            sessionStorage.removeItem('tasks');
           }
         }).catch(function (error) {
           console.log(error);
@@ -572,8 +572,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.path == path){
@@ -587,11 +587,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

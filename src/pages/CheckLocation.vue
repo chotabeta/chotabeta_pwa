@@ -40,6 +40,8 @@ export default ({
   },
   mounted () {
   	this.getToken();
+  	// if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(this.showPosition, this.showError); }
+  	// else { ps.$q.notify({ message:"Geolocation is not supported by this browser.", type: 'Warning',progress: true, }); }	
   	this.getLocation();
   },
   methods:{
@@ -54,12 +56,25 @@ export default ({
   		if(ps.access_token == null){	ps.$router.push('/');	}  
   	},
   	getLocation() {
-  		var ss =  this;
+  		var ps =  this;
   		if (navigator.geolocation) { navigator.geolocation.getCurrentPosition(this.showPosition, this.showError); }
-  		else { ps.$q.notify({ message:"Geolocation is not supported by this browser.", type: 'Warning',progress: true, }); }	
+  		else { var position={ 
+													accuracy: 1997.5239785525969,
+													altitude: null,
+													altitudeAccuracy: null,
+													heading: null,
+													latitude: 17.4576555,
+													longitude: 78.395543,
+													speed: null,
+										};
+			this.showPosition(position);	
+
+			ps.$q.notify({ message:"Geolocation is not supported by this browser.", type: 'Warning',progress: true, });
+  		 }	
 		},
 		showPosition(position) {
 			var ps = this;
+			console.log(position,"position");
 			ps.$store.dispatch('latlongs_data',{'position': position.coords }).then(res => {
 				// console.log(ps.$store.state.latlongs,"latlongs");
 				// console.log(position.coords,'position');
@@ -72,6 +87,17 @@ export default ({
 		},
 		showError(error) {
 		  var ps = this;
+		  var position={coords:{ 
+													accuracy: 1997.5239785525969,
+													altitude: null,
+													altitudeAccuracy: null,
+													heading: null,
+													latitude: 17.4576555,
+													longitude: 78.395543,
+													speed: null,
+												}
+										};
+			this.showPosition(position);	
 		  switch(error.code) {
 		    case error.PERMISSION_DENIED:
 		    	ps.$q.notify({ message:"User denied the request for Geolocation.", type: 'Warning',progress: true, });

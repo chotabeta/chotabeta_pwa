@@ -103,7 +103,7 @@ export default ({
     ps.mypath();
     ps.pickanddrop_sliders();
     ps.gettasks();
-    localStorage.removeItem('coupon_rent_me');
+    sessionStorage.removeItem('coupon_rent_me');
   },
   methods:{
   	getToken(){
@@ -119,8 +119,8 @@ export default ({
     },
     gettasks(){
       var ps = this;
-      if (!(localStorage.getItem("tasks_temp") == null )) {
-        ps.added_task_aray = JSON.parse(localStorage.getItem('tasks_temp'));
+      if (!(sessionStorage.getItem("tasks_temp") == null )) {
+        ps.added_task_aray = JSON.parse(sessionStorage.getItem('tasks_temp'));
       }
     },
     addtask(){
@@ -166,8 +166,8 @@ export default ({
           obj1.push(obj);
         });
         // console.log(obj1);
-        localStorage.setItem('tasks',JSON.stringify(obj1));
-        localStorage.setItem('tasks_temp',JSON.stringify(ps.added_task_aray));
+        sessionStorage.setItem('tasks',JSON.stringify(obj1));
+        sessionStorage.setItem('tasks_temp',JSON.stringify(ps.added_task_aray));
         ps.$router.push('rent_me3');
       }
     },
@@ -175,8 +175,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -190,11 +190,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

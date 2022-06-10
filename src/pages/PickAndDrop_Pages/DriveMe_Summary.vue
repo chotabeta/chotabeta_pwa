@@ -290,20 +290,20 @@ export default ({
     var ps = this;
     ps.getToken();
     this.mypath();
-    ps.dm_categories = JSON.parse(localStorage.getItem('categories'));
-    ps.vehicle_id = JSON.parse(localStorage.getItem('category'));
-    ps.trip_type = (localStorage.getItem('dm_trip_type'));
-    ps.vehicle_type = (localStorage.getItem('dm_veh_type'));
-    if(!localStorage.getItem('usage_hrs')){  //new
+    ps.dm_categories = JSON.parse(sessionStorage.getItem('categories'));
+    ps.vehicle_id = JSON.parse(sessionStorage.getItem('category'));
+    ps.trip_type = (sessionStorage.getItem('dm_trip_type'));
+    ps.vehicle_type = (sessionStorage.getItem('dm_veh_type'));
+    if(!sessionStorage.getItem('usage_hrs')){  //new
       ps.usage_hrs = 1;
     }else{
-      ps.usage_hrs = parseInt(localStorage.getItem('usage_hrs'));
+      ps.usage_hrs = parseInt(sessionStorage.getItem('usage_hrs'));
     }
     ps.get_payment_images();
     ps.pickdate_selection();
     ps.change_vehicle_r_onload(ps.vehicle_id);
-    var pickup_address = JSON.parse(localStorage.getItem('pickup_address'));
-    var drop_address = JSON.parse(localStorage.getItem('delivery_address'));
+    var pickup_address = JSON.parse(sessionStorage.getItem('pickup_address'));
+    var drop_address = JSON.parse(sessionStorage.getItem('delivery_address'));
     if(pickup_address.location == drop_address.location){
       ps.territory_checkup_dialog =true;
     }
@@ -353,7 +353,7 @@ export default ({
       var ps = this;
       ps.discount = null;
       ps.coupon_code = null;
-      localStorage.removeItem('coupon1');
+      sessionStorage.removeItem('coupon1');
       ps.coupon_dailog_remove = true;
       // ps.location_address();
       ps.change_vehicle_r_onload(ps.vehicle_id);
@@ -364,13 +364,13 @@ export default ({
     },
     pickdate_selection(){
       var ps = this;
-      if(!localStorage.getItem('pick_date') || !localStorage.getItem('pick_time')){
+      if(!sessionStorage.getItem('pick_date') || !sessionStorage.getItem('pick_time')){
         var d = new Date();
         ps.pick_date = d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate());
         ps.pick_time = d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds();
       }else{
-        ps.pick_date = localStorage.getItem('pick_date');
-        ps.pick_time = localStorage.getItem('pick_time');
+        ps.pick_date = sessionStorage.getItem('pick_date');
+        ps.pick_time = sessionStorage.getItem('pick_time');
       }     
     },
     screenredirection(){
@@ -403,13 +403,13 @@ export default ({
       if(ps.vehicle_type == 0 || ps.vehicle_type == '0'){ var car_type = "Automatic"; }
       else if (ps.vehicle_type == 1 || ps.vehicle_type == '1'){ var car_type = "Manual"; }
 
-      if(!localStorage.getItem('pick_date') || !localStorage.getItem('pick_time')){
+      if(!sessionStorage.getItem('pick_date') || !sessionStorage.getItem('pick_time')){
         var d = new Date();
         ps.pick_date = d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate());
         ps.pick_time = d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds();
       }else{
-        ps.pick_date = localStorage.getItem('pick_date');
-        ps.pick_time = localStorage.getItem('pick_time');
+        ps.pick_date = sessionStorage.getItem('pick_date');
+        ps.pick_time = sessionStorage.getItem('pick_time');
       }
 
       if(ps.$route.query.response == "pass"){
@@ -425,7 +425,7 @@ export default ({
       formData.append("trip_type", ps.trip_type);
       formData.append("drop_name", ps.user_data.name);
       formData.append("category_id", ps.vehicle_id.id);
-      formData.append("user_instructions", localStorage.getItem('instructions'));
+      formData.append("user_instructions", sessionStorage.getItem('instructions'));
       formData.append("pick_territory_id", ps.pickuplocation_array.territory_id );
       formData.append("drop_phone", ps.user_data.mobile);
       formData.append("to_location", ps.delivery_address_array.name);
@@ -461,12 +461,12 @@ export default ({
         if(response.data.status_code == 204){
           ps.$q.notify({ message: response.data.message, }); 
         } else if(response.data.status_code == 200){
-          localStorage.removeItem('pickup_address');
-          localStorage.removeItem('delivery_address');
-          localStorage.removeItem('category');
-          localStorage.removeItem('service');
-          localStorage.removeItem('instructions');
-          localStorage.removeItem('coupon1');
+          sessionStorage.removeItem('pickup_address');
+          sessionStorage.removeItem('delivery_address');
+          sessionStorage.removeItem('category');
+          sessionStorage.removeItem('service');
+          sessionStorage.removeItem('instructions');
+          sessionStorage.removeItem('coupon1');
           ps.discount = null;
           ps.coupon_code = null;
           ps.order = response.data;
@@ -482,24 +482,24 @@ export default ({
     },
     change_vehicle_r_onload(vehicle,call_from){
       var ps = this;
-       ps.coupon_code = localStorage.getItem('coupon1');
-      if(!localStorage.getItem('pick_date') || !localStorage.getItem('pick_time')){
+       ps.coupon_code = sessionStorage.getItem('coupon1');
+      if(!sessionStorage.getItem('pick_date') || !sessionStorage.getItem('pick_time')){
         var d = new Date();
         ps.pick_date = d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate());
         ps.pick_time = d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds();
       }else{
-        ps.pick_date = localStorage.getItem('pick_date');
-        ps.pick_time = localStorage.getItem('pick_time');
+        ps.pick_date = sessionStorage.getItem('pick_date');
+        ps.pick_time = sessionStorage.getItem('pick_time');
       }
       if(call_from == 1){
         if(ps.vehicle_id.id != vehicle.id){
           ps.vehicle_id = vehicle;
-          localStorage.setItem('category',JSON.stringify(vehicle)); //new
+          sessionStorage.setItem('category',JSON.stringify(vehicle)); //new
           let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-          ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-          ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));      
-          ps.category = JSON.parse(localStorage.getItem('category'));
-          ps.service = JSON.parse(localStorage.getItem('service'));
+          ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('pickup_address'));
+          ps.delivery_address_array = JSON.parse(sessionStorage.getItem('delivery_address'));      
+          ps.category = JSON.parse(sessionStorage.getItem('category'));
+          ps.service = JSON.parse(sessionStorage.getItem('service'));
           if(ps.$store.state.userdetails){
             var user_data = JSON.parse(ps.$store.state.userdetails);
             ps.user_data = user_data.deatils;
@@ -512,9 +512,9 @@ export default ({
           if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
           else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
           else if(ps.payment == 'Pay Now Online'){var payment = 'PO';}
-          var pickup_address = JSON.parse(localStorage.getItem('pickup_address'));
-          var drop_address = JSON.parse(localStorage.getItem('delivery_address'));
-          var instructions = localStorage.getItem('instructions');
+          var pickup_address = JSON.parse(sessionStorage.getItem('pickup_address'));
+          var drop_address = JSON.parse(sessionStorage.getItem('delivery_address'));
+          var instructions = sessionStorage.getItem('instructions');
           var vehicle_type = ps.$route.query.vehicle_type;
           var trip_type = ps.$route.query.trip_type;
           const d = new Date();
@@ -548,7 +548,7 @@ export default ({
                   ps.coupon_dailog_error = true;
                   ps.discount = null;
                   ps.coupon_code = null;
-                  localStorage.removeItem('coupon1');   //new
+                  sessionStorage.removeItem('coupon1');   //new
                 }else{
                   ps.discount = response.data.coupon;
                   ps.coupon_dailog_applied = true;
@@ -568,15 +568,15 @@ export default ({
         }
       }else{
         let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
-        ps.pickuplocation_array = JSON.parse(localStorage.getItem('pickup_address'));
-        ps.delivery_address_array = JSON.parse(localStorage.getItem('delivery_address'));
-        ps.category = JSON.parse(localStorage.getItem('category'));
-        ps.service = JSON.parse(localStorage.getItem('service'));
+        ps.pickuplocation_array = JSON.parse(sessionStorage.getItem('pickup_address'));
+        ps.delivery_address_array = JSON.parse(sessionStorage.getItem('delivery_address'));
+        ps.category = JSON.parse(sessionStorage.getItem('category'));
+        ps.service = JSON.parse(sessionStorage.getItem('service'));
         if(ps.$store.state.userdetails){
           var user_data = JSON.parse(ps.$store.state.userdetails);
           ps.user_data = user_data.deatils;
         }
-        ps.coupon_code = localStorage.getItem('coupon1');
+        ps.coupon_code = sessionStorage.getItem('coupon1');
         if(!ps.payment){
           ps.$q.notify({ message: "Please Select Payment Method", type: "negative",}); 
           return false;    
@@ -584,9 +584,9 @@ export default ({
         if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
         else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
         else if(ps.payment == 'Pay Now Online'){var payment = 'PO';}
-        var pickup_address = JSON.parse(localStorage.getItem('pickup_address'));
-        var drop_address = JSON.parse(localStorage.getItem('delivery_address'));
-        var instructions = localStorage.getItem('instructions');
+        var pickup_address = JSON.parse(sessionStorage.getItem('pickup_address'));
+        var drop_address = JSON.parse(sessionStorage.getItem('delivery_address'));
+        var instructions = sessionStorage.getItem('instructions');
         var vehicle_type = ps.$route.query.vehicle_type;
         var trip_type = ps.$route.query.trip_type;  
         const d = new Date();
@@ -620,7 +620,7 @@ export default ({
                 ps.coupon_dailog_error = true;
                 ps.discount = null;         //new
                 ps.coupon_code = null;   //new
-                localStorage.removeItem('coupon1');   //new
+                sessionStorage.removeItem('coupon1');   //new
               }else{
                 ps.discount = response.data.coupon;
                 ps.coupon_dailog_applied = true;
@@ -641,18 +641,18 @@ export default ({
 
     hr_incr(inc_dec){
       var ps = this;
-      if(!localStorage.getItem('pick_date') || !localStorage.getItem('pick_time')){
+      if(!sessionStorage.getItem('pick_date') || !sessionStorage.getItem('pick_time')){
         var d = new Date();
         ps.pick_date = d.getFullYear()+'-'+ps.addZero(d.getDay())+'-'+ps.addZero(d.getUTCDate());
         ps.pick_time = d.getUTCHours()+":"+d.getUTCMinutes()+':'+d.getUTCSeconds();
       }else{
-        ps.pick_date = localStorage.getItem('pick_date');
-        ps.pick_time = localStorage.getItem('pick_time');
+        ps.pick_date = sessionStorage.getItem('pick_date');
+        ps.pick_time = sessionStorage.getItem('pick_time');
       }
       if(inc_dec == 1){
         if(ps.usage_hrs > 1){
           ps.usage_hrs = ps.usage_hrs - 1;
-          localStorage.setItem('usage_hrs',ps.usage_hrs);
+          sessionStorage.setItem('usage_hrs',ps.usage_hrs);
           var ps = this;
           if(!ps.payment){
             ps.$q.notify({ message: "Please Select Payment Method", type: "negative",}); 
@@ -661,9 +661,9 @@ export default ({
           if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
           else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
           else if(ps.payment == 'Pay Now Online'){var payment = 'PO';}
-          var pickup_address = JSON.parse(localStorage.getItem('pickup_address'));
-          var drop_address = JSON.parse(localStorage.getItem('delivery_address'));
-          var instructions = localStorage.getItem('instructions');
+          var pickup_address = JSON.parse(sessionStorage.getItem('pickup_address'));
+          var drop_address = JSON.parse(sessionStorage.getItem('delivery_address'));
+          var instructions = sessionStorage.getItem('instructions');
           const d = new Date();
           let formData = new FormData();
           formData.append("trip_type", ps.trip_type);
@@ -716,7 +716,7 @@ export default ({
       }else if(inc_dec == 2){
         if(ps.usage_hrs < 24){
           ps.usage_hrs = ps.usage_hrs + 1;
-          localStorage.setItem('usage_hrs',ps.usage_hrs);
+          sessionStorage.setItem('usage_hrs',ps.usage_hrs);
           var ps = this;
           if(!ps.payment){
             ps.$q.notify({ message: "Please Select Payment Method", type: "negative",}); 
@@ -725,9 +725,9 @@ export default ({
           if(ps.payment == 'Cash On Delivery'){var payment = 'COD';}
           else if(ps.payment == 'Pay Online on Delivery'){var payment = 'POD';}
           else if(ps.payment == 'Pay Now Online'){var payment = 'PO';}
-          var pickup_address = JSON.parse(localStorage.getItem('pickup_address'));
-          var drop_address = JSON.parse(localStorage.getItem('delivery_address'));
-          var instructions = localStorage.getItem('instructions');
+          var pickup_address = JSON.parse(sessionStorage.getItem('pickup_address'));
+          var drop_address = JSON.parse(sessionStorage.getItem('delivery_address'));
+          var instructions = sessionStorage.getItem('instructions');
           // var vehicle_type = ps.$route.query.vehicle_type;
           // var trip_type = ps.$route.query.trip_type;
           const d = new Date();
@@ -784,8 +784,8 @@ export default ({
     store_date_time(){
       var ps = this;
       ps.calander_dailog_picktime = false;
-      localStorage.setItem('pick_date',ps.pick_date);
-      localStorage.setItem('pick_time',ps.pick_time);
+      sessionStorage.setItem('pick_date',ps.pick_date);
+      sessionStorage.setItem('pick_time',ps.pick_time);
       ps.date_change = '';
     },
     refresh_page_without_response(){
@@ -797,8 +797,8 @@ export default ({
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.path == path){
@@ -812,11 +812,11 @@ export default ({
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

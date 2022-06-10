@@ -16,9 +16,10 @@
 <q-page-container  class="animate__animated animate__slideInRight">
 	<q-page class="q-px-sm">
 		<div id="loader2" class="pre-loader" style="display:none"></div>
-		<div class="full-width q-py-sm">
+		<div class="full-width q-py-sm" v-if="top_offers">
       <q-carousel animated infinite swipeable v-model="carousels" style="height:164px" class="cb-shadow-2 q-mt-sm cb-round-borders-10 q-mb-xs" autoplay>
-        <q-carousel-slide :name="index" :img-src="offer.image" v-for="(offer,index ) in top_offers"/>
+        <q-carousel-slide :name="index" :img-src="offer.image" v-for="(offer,index ) in top_offers">
+        </q-carousel-slide>
       </q-carousel>
       <div class="row justify-center">
       	<q-icon name="fiber_manual_record" :class="(index == carousels)? 'text-blue-10':'text-grey-6'" v-for="(offer,index ) in top_offers" @click='carosel_set(index)'></q-icon>
@@ -175,7 +176,7 @@
 						</div>
 						<div class="row" >
 							<div class="col-4 text-center q-pa-xs" v-for="tr in trending_searches">
-									<q-card dense class="bg-orange-1 q-py-xs no-shadow text-orange-8 full-width border" @click = "user_search_input_s2 = tr.name,search_products_s2()" style="border:1px solid #ffe0b2">
+									<q-card dense class="bg-orange-1 q-py-xs no-shadow text-orange-8 full-width border" @click = "user_search_input_s1 = tr.name,search_products_s1()" style="border:1px solid #ffe0b2">
 										{{tr.name}}
 									</q-card>
 								</div>
@@ -256,7 +257,7 @@ export default ({
   	this.getToken();
   	this.mypath();
   	this.mycart_count_and_length();
-  	if(localStorage.getItem('category')){
+  	if(sessionStorage.getItem('category')){
   		this.category_details();
   		this.cart_key_function();
   	}
@@ -273,19 +274,19 @@ export default ({
 
   	mycart_count_and_length(){
   		var ps = this;
-  		// console.log(localStorage.getItem('mycart'),"localStorage");
+  		// console.log(sessionStorage.getItem('mycart'),"sessionStorage");
   		ps.cart_price =0;
   		ps.cartlength =0;
-  		if(localStorage.getItem('mycart')){
-  			ps.mycart_items = JSON.parse(localStorage.getItem('mycart'));
+  		if(sessionStorage.getItem('mycart')){
+  			ps.mycart_items = JSON.parse(sessionStorage.getItem('mycart'));
   			ps.cartlength =  ps.mycart_items.length;
   			ps.mycart_items.forEach( cart =>{
   				ps.cart_price = ps.cart_price+(parseInt(cart.no_of_quantity)*parseInt(cart.selected_price));
   			});
   		}
-  		else{ localStorage.setItem('mycart','');	}
-  		if(localStorage.getItem('custom_item')){
-  			ps.custom_items = JSON.parse(localStorage.getItem('custom_item')); 
+  		else{ sessionStorage.setItem('mycart','');	}
+  		if(sessionStorage.getItem('custom_item')){
+  			ps.custom_items = JSON.parse(sessionStorage.getItem('custom_item')); 
   			ps.cartlength = ps.cartlength + ps.custom_items.length;
   		}
   	},
@@ -310,7 +311,7 @@ export default ({
 
   	category_details(){
   		var ps = this;
-  		ps.category = JSON.parse(localStorage.getItem('category'));
+  		ps.category = JSON.parse(sessionStorage.getItem('category'));
   		let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}}
   		var items = [];
   		ps.mycart_items.forEach(cart =>{
@@ -388,7 +389,7 @@ export default ({
 	  			});
   			}
   		});
-  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+  		sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
   		ps.mycart_count_and_length();
 	  },
 
@@ -436,10 +437,10 @@ export default ({
   	AddToCartFunction(item,variation){
   		var ps = this;
   		if(ps.mycart_items.length == 0){
-  			localStorage.setItem('cart_key',ps.cart_key_data.cart_key);
+  			sessionStorage.setItem('cart_key',ps.cart_key_data.cart_key);
   		}
 
-  		if( ps.cart_key_data.cart_key == localStorage.getItem('cart_key')){
+  		if( ps.cart_key_data.cart_key == sessionStorage.getItem('cart_key')){
   			if(variation != null || variation != undefined || variation != ""){
 	  			item.variations.forEach(ele =>{
 		  			if(variation == ele.description){
@@ -449,7 +450,7 @@ export default ({
 		  				ps.mycart_items.push(item);
 		  			}
 		  		});
-		  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+		  		sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
 		  		ps.cart_checkup_top_seller_2();
 	  		}
   		}else{
@@ -468,7 +469,7 @@ export default ({
 	  			}
 	  		}
 	  	});
-	  	localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+	  	sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
 	  	ps.cart_checkup_top_seller_2();
   	},
 
@@ -486,7 +487,7 @@ export default ({
 	  			}
 	  		}
 	  	});
-	  	localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+	  	sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
 	  	ps.cart_checkup_top_seller_2();
   	},
 
@@ -505,9 +506,9 @@ export default ({
   		var ps = this;
   		// console.log(combo,"combo");
   		if(ps.mycart_items.length == 0){
-  			localStorage.setItem('cart_key',ps.cart_key_data.cart_key);
+  			sessionStorage.setItem('cart_key',ps.cart_key_data.cart_key);
   		}
-  		if( ps.cart_key_data.cart_key == localStorage.getItem('cart_key')){
+  		if( ps.cart_key_data.cart_key == sessionStorage.getItem('cart_key')){
   			combo.no_of_quantity = 1;
   			combo.selected_id = combo.variations[0].id;
   			combo.selected_price = combo.variations[0].selling_price;
@@ -515,7 +516,7 @@ export default ({
   		}else{
   			ps.cart_key_dailog = true;
   		}
-  		localStorage.setItem('mycart',JSON.stringify(ps.mycart_items))
+  		sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items))
   		ps.cart_checkup_combo_offers();
   	},
 		AddMoreToCartFunction_combo(combo){
@@ -534,7 +535,7 @@ export default ({
 			if(existing == null){
 				ps.AddToCartFunction_combo(combo);
 			}
-			localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+			sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
 			ps.cart_checkup_combo_offers();
 		},
   	RemoveFromCartfunction_combo(combo){
@@ -551,17 +552,17 @@ export default ({
 					}
 				}
 			});
-			localStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
+			sessionStorage.setItem('mycart',JSON.stringify(ps.mycart_items));
 			ps.cart_checkup_combo_offers();
   	},
   	pickfromstore_redirection(item){
   		var ps = this;
-  		localStorage.setItem('sub_category',JSON.stringify(item));
+  		sessionStorage.setItem('sub_category',JSON.stringify(item));
   		ps.$router.push('/PickFromStore_layouts_s2');
   	},
   	clear_cart_function(){
   		var ps = this;
-  		localStorage.removeItem('mycart');
+  		sessionStorage.removeItem('mycart');
   		ps.mycart_items = [];
   		ps.cart_key_dailog =  false;
   		ps.mycart_count_and_length();
@@ -616,7 +617,7 @@ export default ({
 			var ps = this;
 	  	if(ps.$store.state.latlongs){
 		  	if(ps.user_search_input_s1.length > 1){
-				  var category = JSON.parse(localStorage.getItem('category'));
+				  var category = JSON.parse(sessionStorage.getItem('category'));
 					let formData = new FormData();
 			     	formData.append('item_name', ps.user_search_input_s1);
 			     	formData.append('page_no', 1);
@@ -654,8 +655,8 @@ export default ({
 			var ps=  this;
 			var myallpaths = [];
 			var i = 0;
-			if(localStorage.getItem('mypath')){
-				myallpaths = JSON.parse(localStorage.getItem('mypath'));
+			if(sessionStorage.getItem('mypath')){
+				myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
 			}
 			myallpaths.forEach(( path,index ) => {
 				if(ps.$route.fullPath == path){
@@ -669,11 +670,11 @@ export default ({
 					if(j<=i){ }else{ myallpaths.splice(j,1); }
 				}
 			}
-			localStorage.setItem('mypath',JSON.stringify(myallpaths));
+			sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
 		},
 		Screen_Back_Redirection(){
 			var ps = this;
-			var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+			var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
 			var previous = myallpaths.length;
 			ps.$router.push(myallpaths[previous-2]);
 		}

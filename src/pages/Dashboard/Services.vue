@@ -68,7 +68,7 @@ export default ({
 				if(response.data.status_code ==200){
 			 		// console.log(response.data);
 			 		ps.categories = response.data.all_categories;
- 					localStorage.setItem('categories',JSON.stringify(ps.categories));
+ 					sessionStorage.setItem('categories',JSON.stringify(ps.categories));
 				}else{
 			 		ps.$q.notify({ message:response.data.message, type: 'negative',progress: true, });
 				}
@@ -80,7 +80,7 @@ export default ({
 
   	services_page_redirection(item){
   		var ps = this;
-  		localStorage.setItem('category',JSON.stringify(item));
+  		sessionStorage.setItem('category',JSON.stringify(item));
   		if(item.main_service_id == 2){
   			if( item.screen_redirection == 2 ){
   				ps.$router.push('/PickFromStore_layouts_s1');
@@ -95,7 +95,7 @@ export default ({
   				ps.$router.push('/PickAndDrop_s1');
   			}
   		}else if(item.main_service_id == 3){
-				// localStorage.setItem('dm_vehicle_data', JSON.stringify(item));
+				// sessionStorage.setItem('dm_vehicle_data', JSON.stringify(item));
 			  ps.$router.push('/PickAndDrop_s1?s_id=3');
 		  }
   	},

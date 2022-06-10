@@ -1,10 +1,31 @@
 <template>
+	<!-- <q-btn id="website_icon" @click="website_selection()" icon="language" dense color="orange-10" round>
+			<q-tooltip anchor="top start" self="top right" class="cb-font-12"> Go To Website</q-tooltip>
+		</q-btn> -->
 	<q-page padding class="animate__animated animate__slideInRight">
+		<q-btn class="text-weight-bold  full-width text-center q-py-xs bg-orange-2 q-mb-sm text-orange-8" @click="website_selection()">
+		Go To website
+		<!-- <q-space></q-space> -->
+		<q-icon name="public" size="sm" class="q-px-sm text-orange-8"></q-icon>
+		</q-btn>
 		<div id="loader2" class="pre-loader" style="display:none"></div>
 		<q-input outlined :placeholder="search_box_text" dense @click="my_function()">
 			<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
 		</q-input>
+		<!-- <div class="row">
+			<div class="col-10">
+				<q-input outlined :placeholder="search_box_text" dense @click="my_function()">
+					<template v-slot:append> <q-icon name="mic" class="cb-text-orange-8" /></template>
+				</q-input>
+			</div>
+			<div class="col-2 text-right">
+				<q-btn class="full-height shadow-1" @click="website_selection()"  icon="language" color="orange-10">
+					<q-tooltip anchor="top start" self="top right" class="cb-font-12"> Go To Website</q-tooltip>
+				</q-btn>
+			</div>
+		</div> -->
 
+		
 	<!-- sliders -->
     <div class="full-width">
       <q-carousel animated autoplay infinite swipeable v-model="carousels" style="height:164px;overflow:hidden" class=" q-mt-sm cb-round-borders-10 q-mb-xs" >
@@ -17,10 +38,21 @@
       <q-icon name="fiber_manual_record" :class="(index == carousels)? 'text-blue-10':'text-grey-6'" v-for="(slide,index ) in sliders" @click='carosel_set(index)'></q-icon>
     </div>
 
+    <!-- website icon -->
+    <!-- <q-btn class="text-weight-bold  full-width q-my-xs" color="orange-8" @click="website_selection()">
+		Go To website
+		<q-space></q-space>
+		<q-icon name="language" size="sm"></q-icon>
+		</q-btn> -->
+		<!-- <q-btn class="text-weight-bold  full-width text-center q-py-xs bg-orange-2 q-my-xs text-orange-8" @click="website_selection()">
+		Go To website
+		<q-icon name="public" size="sm" class="q-px-sm text-orange-8"></q-icon>
+		</q-btn> -->
+
   <!-- services -->
     <div class="row">
     	<div class="col-6 q-pa-sm no-shadow" v-if="service0" >
-    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-blue-4 q-pt-sm no-shadow" id="service0" @click="services_menu(service0,0)" v-if="service0.screen_redirection == 0">
+    		<q-btn class="fit  cb-round-borders-10 cb-bg-gradient-blue-4 q-pt-sm no-shadow" id="service0" @click="services_menu(service0,0)" v-if="service0.screen_redirection == 0">			
     			<div class="full-width full-height column justify-end items-center">
 	    			<img :src="service0.service_image" style="width:100px;height:80px">
 	  				<span class="cb-text-blue-8 text-weight-bold cb-font-11 ">{{ service0.name }}</span>
@@ -182,7 +214,7 @@
 					</div>
 					<div class="row" >
 						<div class="col-4 text-center q-pa-xs" v-for="tr in trending_searches">
-									<q-card dense class="bg-orange-1 q-py-xs no-shadow text-orange-8 full-width border" @click = "user_search_input_s2 = tr.name,search_products_s2()" style="border:1px solid #ffe0b2">
+									<q-card dense class="bg-orange-1 q-py-xs no-shadow text-orange-8 full-width border" @click = "user_search_input = tr.name,search_products()" style="border:1px solid #ffe0b2">
 										{{tr.name}}
 									</q-card>
 								</div>
@@ -204,13 +236,15 @@
 		  </q-card-section>
       </q-card>
     </q-dialog>
-
 	</q-page>
 </template>
 <script>
 import {ref } from 'vue'
 import axios from 'boot/axios'
+import { scroll } from 'quasar'
+const { getScrollTarget, setVerticalScrollPosition } = scroll
 export default ({
+
   setup(){
     return {
       access_token:ref(null),
@@ -300,9 +334,18 @@ export default ({
   	services_menu(data,card){
   		var ps = this;
   		ps.service_details  = data;
-  		localStorage.setItem('service',JSON.stringify(data));
+  		sessionStorage.setItem('service',JSON.stringify(data));
   		// console.log(data);
-      if(card == 0){
+
+  		const ele = document.getElementById('service0'); // You need to get your element here
+      
+      const target = getScrollTarget(ele);
+      const offset = ele.offsetTop - 10;
+      const duration = 400;
+      setVerticalScrollPosition(target, offset, duration)
+
+
+  	  if(card == 0){
   			document.getElementById('service0').classList.add('cb-bg-gradient-blue-4');
 
   			document.getElementById('service1').classList.remove('cb-bg-gradient-blue-4');
@@ -353,7 +396,7 @@ export default ({
   		var ps = this;
   		console.log(item);
   		// return false;
-  		localStorage.setItem('category',JSON.stringify(item));
+  		sessionStorage.setItem('category',JSON.stringify(item));
   		if(item.main_service_id == 2){
   			if( item.screen_redirection == 2 ){
   				ps.$router.push('/PickFromStore_layouts_s1');
@@ -376,10 +419,10 @@ export default ({
   	},
   	PAD_others_sunction(){
   		var ps = this;
-  		var selectedcategory = JSON.parse(localStorage.getItem('category'));
+  		var selectedcategory = JSON.parse(sessionStorage.getItem('category'));
   		selectedcategory.name = ps.PAD_others_category;
-  		localStorage.setItem('category',JSON.stringify(selectedcategory));
-  		// console.log(localStorage.getItem('category'),"new category");
+  		sessionStorage.setItem('category',JSON.stringify(selectedcategory));
+  		// console.log(sessionStorage.getItem('category'),"new category");
   		ps.$router.push('/PickAndDrop_s1');
   	},
   	GetCallBackRequestFunction(){
@@ -411,8 +454,8 @@ export default ({
   		// console.log(item,'item');
   		// if(item.redirection_enabled == 0){
   		// 	var ps = this;
-  		// 	var category = JSON.parse(localStorage.getItem('category'));
-  		// 	var service = JSON.parse(localStorage.getItem('service'));
+  		// 	var category = JSON.parse(sessionStorage.getItem('category'));
+  		// 	var service = JSON.parse(sessionStorage.getItem('service'));
   		// 	// console.log(category);
   		// 	// console.log(service);
 				// category.id = item.category_id;
@@ -422,7 +465,7 @@ export default ({
 				// category.service_id = item.service_id;
 				// category.vehicle_type = item.vicinity;
 				// service.mode = item.service_mode;
-				// localStorage.setItem('service',service);
+				// sessionStorage.setItem('service',service);
 				// ps.services_page_redirection(category);
   		// }
   	},
@@ -430,7 +473,7 @@ export default ({
 			var ps = this;
   		if(ps.$store.state.latlongs){
 	  		if(ps.user_search_input.length > 1){
-				  var pincode = localStorage.getItem('pincode');
+				  var pincode = sessionStorage.getItem('pincode');
 				  var loader = document.getElementById('loader2');
 		      	loader.style.display="block";
 		  		let formData = new FormData();
@@ -496,11 +539,15 @@ export default ({
 		},
 		mypath(){
 			var ps=  this;
-			localStorage.setItem('mypath','');
+			sessionStorage.setItem('mypath','');
 			var myallpaths = [];
 			myallpaths.push(ps.$route.fullPath);
-			localStorage.setItem('mypath',JSON.stringify(myallpaths));
-		}
+			sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
+		},
+		 website_selection(){
+    	var ps = this;
+    	window.location=  'https://www.chotabeta.com';
+    },
   }
 })
 </script>
@@ -508,4 +555,10 @@ export default ({
 .coupon-wrap{ flex-wrap: nowrap;overflow: scroll;overflow-y: hidden; }
 ::-webkit-scrollbar { width: 0;background: transparent; }
 ::-webkit-scrollbar-thumb {background: transparent;}
+#website_icon{
+	position: fixed;
+	top: 30%;
+	right: 2px;
+	z-index: 9999;
+}
 </style>

@@ -41,7 +41,7 @@
 		</q-card>
 	</q-header>
 	<q-page-container class="animate__animated animate__slideInRight">
-	  <q-page class="bg-orange-1 q-px-md q-pb-xl">
+	  <q-page class="bg-orange-1 q-px-md q-pb-xl" style="overflow-y: scrool;">
 	  		<div id="loader2" class="pre-loader" style="display:none"></div>
 				<div class="row q-py-sm" v-for="(me,index) in Menu" v-if="type== 'menu' && Menu != null" >
 					<div class="col-12">
@@ -54,9 +54,10 @@
 						<span :id="'i'+index+'j'+sub_index+'l'">
 							<div class="col-12 q-py-xs" >
 								<div class="row">
-								<div class="col-3 q-pa-xs" style="overflow: hidden;">
-									<q-avatar square class="cb-round-borders-10 full-height full-width shadow-2">
-										<img :src="item.image" class="fit">
+								<div class="col-3 q-pa-xs column justify-center" style="overflow: hidden;">
+									<q-avatar square class="cb-round-borders-10 shadow-2" size="90px">
+										<img :src="item.image" class="fit" v-if="item.image">
+										<img :src="item.cuisine_image" class="fit" v-else>
 									</q-avatar>
 								</div>
 								<div class="col-9 full-height bg-white cb-round-borders-10 q-pa-xs">
@@ -96,7 +97,8 @@
 								</div>
 								<div class="col-2 text-right">
 									<q-avatar square size="50px" class="cb-round-borders-10">
-										<q-img :src="item.image" class="fit"></q-img>
+										<img :src="item.image" class="fit" v-if="item.image">
+										<img :src="item.cuisine_image" class="fit" v-else>
 									</q-avatar>
 								</div>
 								<div class="col-10 row items-center">
@@ -133,9 +135,10 @@
 						<span :id="'i'+index+'j'+sub_index+'l'">
 							<div class="col-12 q-py-xs" >
 								<div class="row">
-								<div class="col-3 q-pa-xs" style="overflow: hidden;">
-									<q-avatar square class="cb-round-borders-10 full-height full-width shadow-2">
-										<img :src="item.image" class="fit">
+								<div class="col-3 q-pa-xs column justify-center" style="overflow: hidden;">
+									<q-avatar square class="cb-round-borders-10 shadow-2" size="90px">
+										<img :src="item.image" class="fit" v-if="item.image">
+										<img :src="item.cuisine_image" class="fit" v-else>
 									</q-avatar>
 								</div>
 								<div class="col-9 full-height bg-white cb-round-borders-10 q-pa-xs">
@@ -168,7 +171,8 @@
 								</div>
 								<div class="col-2 text-right">
 									<q-avatar square size="50px" class="cb-round-borders-10">
-										<q-img :src="item.image" class="fit"></q-img>
+										<img :src="item.image" class="fit" v-if="item.image">
+										<img :src="item.cuisine_image" class="fit" v-if="item.cuisine_image">
 									</q-avatar>
 								</div>
 								<div class="col-10 row items-center">
@@ -187,17 +191,6 @@
 					</div>
 				</div>
 
-				<div class="bg-green-8 text-white row cb-round-borders-20 items-center q-px-md q-py-xs fixed-bottom q-ma-sm" v-if="NoOfItemsInCart != 0">
-						<div class="col-6 cb-font-16 text-center">
-							{{ NoOfItemsInCart }} items | 
-							<q-icon name="currency_rupee"></q-icon>{{ MyCartItemsCost }}
-						</div>
-						<div class="col-6 text-center">
-							<q-btn label="view cart" icon-right="shopping_cart" flat @click="$router.push('food-cart')"></q-btn>
-						</div>
-				</div>
-
-
 				<q-dialog v-model="cart_key_message_dialog">
 					<q-card class="cb-round-borders-20 q-py-md">
 						<q-card-section class="text-center">
@@ -210,6 +203,16 @@
 				</q-dialog>
       </q-page>
 	</q-page-container>
+	<div class="bg-green-8 text-white row cb-round-borders-20 items-center q-px-md q-py-xs fixed-bottom q-ma-sm" v-if="NoOfItemsInCart != 0">
+		<div class="col-6 cb-font-16 text-center">
+			{{ NoOfItemsInCart }} items | 
+			<q-icon name="currency_rupee"></q-icon>{{ MyCartItemsCost }}
+		</div>
+		<div class="col-6 text-center">
+			<q-btn label="view cart" icon-right="shopping_cart" flat @click="$router.push('food-cart')"></q-btn>
+		</div>
+	</div>
+
   </q-layout>
 </template>
 <script>
@@ -1099,8 +1102,8 @@ export default {
   	MyFoodCart_function(){
   		var ps=this;
   		ps.MyCartItemsCost= 0;
-  		if(localStorage.getItem('MyFoodCart')){
-  			ps.MyFoodCart = JSON.parse(localStorage.getItem('MyFoodCart'));
+  		if(sessionStorage.getItem('MyFoodCart')){
+  			ps.MyFoodCart = JSON.parse(sessionStorage.getItem('MyFoodCart'));
 	  		ps.NoOfItemsInCart = ps.MyFoodCart.length;
 	  		ps.MyFoodCart.forEach(cart=>{
 	  			ps.MyCartItemsCost = ps.MyCartItemsCost + (cart.selling_price* cart.no_of_qty);
@@ -1118,7 +1121,7 @@ export default {
   		let config = { headers: { "Authorization": `Bearer ${ps.access_token}`,}};
   		var loader = document.getElementById('loader2');
 	    loader.style.display="block";
-	    // var rest_id = localStorage.getItem('food_client_id');
+	    // var rest_id = sessionStorage.getItem('food_client_id');
 	    var rest_id = ps.$route.query.rest_id;
   		ps.$api.get('/api/food-cart-key?rest_id='+rest_id+'&subscription=3',config).then(function (response) {
   			loader.style.display="none";
@@ -1126,7 +1129,7 @@ export default {
     		ps.empty_cart_title=response.data.empty_cart_title;
     		ps.empty_cart_message=response.data.empty_cart_message;
   			if(ps.MyFoodCart.length == 0 ){
-  				localStorage.setItem('food_cart_key',response.data.cart_key);
+  				sessionStorage.setItem('food_cart_key',response.data.cart_key);
   			}
   		}).catch(function (error) {
       	console.log(error);
@@ -1207,7 +1210,7 @@ export default {
   	food_add_to_cart(item){
   		var ps = this;
   		var excisting  = 0;
-  		if(localStorage.getItem('food_cart_key') == ps.cart_key){
+  		if(sessionStorage.getItem('food_cart_key') == ps.cart_key){
   			ps.MyFoodCart.forEach(cart=>{
 	  			if(cart.sku == item.sku){
 	  				excisting = cart.no_of_qty;
@@ -1216,7 +1219,7 @@ export default {
 	  		if(excisting == 0){
 	  			item.no_of_qty = 1;
 	  			ps.MyFoodCart.push(item);
-	  			localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+	  			sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
 	  		}
 	  		ps.check_mycart_menu();
   		}else{
@@ -1235,7 +1238,7 @@ export default {
   				}
   			}
   		});
-  		localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+  		sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   		ps.check_mycart_menu();
   	},
   	food_cart_item_remove(item){
@@ -1250,21 +1253,21 @@ export default {
    				}
   			}
   		});
-  		localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+  		sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   		ps.check_mycart_menu();
   	},
   	clearcart_function(){
   		var ps = this;
-  		localStorage.setItem('MyFoodCart','[]');
-  		localStorage.setItem('food_cart_key',ps.cart_key);
+  		sessionStorage.setItem('MyFoodCart','[]');
+  		sessionStorage.setItem('food_cart_key',ps.cart_key);
   		ps.cart_key_message_dialog = false;
   	},
   	mypath(){
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.fullPath == path){
@@ -1278,11 +1281,11 @@ export default {
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

@@ -3,16 +3,16 @@
 		<q-page-container>
 			<q-page class="flex flex-center q-mt-xl q-py-xl" id="sign_in_page" style="display:block">
 				<div id="loader2" class="pre-loader" style="display:none"></div>
-				<div class="column items-center">
+				<div class="column items-center" >
 					<q-avatar size="100px" class="shadow-5">
 						<q-img src="~assets/images/logo.png" width="100px" class="shadow-5 "  ></q-img>
 					</q-avatar>
-					<div class="  text-center q-pa-xl" id="phone_number_div" >
+					<div class="  text-center q-pa-xl" id="phone_number_div" style="display:block">
 						
 							<span class="text-weight-bolder text-indigo-6 q-mt-xl text-h5">Sign in</span>
 							<div class="q-mt-sm ">
 								<q-form @submit="Onsubmit" class="column items-center">
-									<q-input v-model="mobile_number" outlined rounded dense type="number"  lazy-rules :rules="[ val => val &&  val.length == 10 || 'Please Enter Mobile Number']"> 
+									<q-input v-model="mobile_number" outlined rounded dense type="number" class="cb-font-16" lazy-rules :rules="[ val => val &&  val.length == 10 || 'Please Enter Mobile Number']"> 
 										<template v-slot:prepend>
 			          						<span class="text-subtitle2">+91</span>
 			        					</template>
@@ -32,16 +32,21 @@
 									<q-icon name="edit" size="16px" class="q-pl-sm"></q-icon>
 								</q-btn>
 							</span><br>
-							<span class="text-h6 q-my-md">Enter Your OTP Here</span><br><br>
+							<span class="text-h6 q-my-md">Enter Your OTP Here</span><br>
 							<q-form @submit="SigninWithOtp" class="text-center">
 								<div class="flex flex-center q-pa-sm">
-									<q-input v-model="OTP1" @keyup="OTPchangefield1($event)" type="number" ref="otp1"  dense outlined required class="bg-grey-1 text-h6 q-ml-sm" style="max-width:35px"></q-input>
+									<!-- <q-input v-model="OTP_Full" type="number" class="text-center" dense style="font-size: 20px;" outlined  lazy-rules :rules="[ val => val &&  val.length == 6 || 'Please Enter Valid OTP']"></q-input> -->
+
+									 <input type="number" v-model="OTP_Full" maxlength="5" @input="OTPchangefield" class="text-center" style="font-size: 20px;border:2px solid orange;border-radius: 50px;">
+
+
+									<!-- <q-input v-model="OTP1" @keyup="OTPchangefield1($event)" type="number" ref="otp1"  dense outlined required class="bg-grey-1 text-h6 q-ml-sm" style="max-width:35px"></q-input>
 									<q-input v-model="OTP2" @keyup="OTPchangefield2($event)" type="number" ref="otp2"  dense outlined required class="bg-grey-1 text-h6 q-ml-sm" style="max-width:35px"></q-input>
 									<q-input v-model="OTP3" @keyup="OTPchangefield3($event)" type="number" ref="otp3"  dense outlined required class="bg-grey-1 text-h6 q-ml-sm" style="max-width:35px"></q-input>
 									<q-input v-model="OTP4" @keyup="OTPchangefield4($event)" type="number" ref="otp4"  dense outlined required class="bg-grey-1 text-h6 q-ml-sm" style="max-width:35px"></q-input>
 									<q-input v-model="OTP5" @keyup="OTPchangefield5($event)" type="number" ref="otp5"  dense outlined required class="bg-grey-1 text-h6 q-ml-sm" style="max-width:35px"></q-input>
 									<q-input v-model="OTP6" @keyup="OTPchangefield6($event)" type="number" ref="otp6"  dense outlined required class="bg-grey-1 text-h6 q-ml-sm" style="max-width:35px;"></q-input>
-									<q-input  type="number" ref="otp7"  dense outlined  class="bg-grey-1 text-h6 q-ml-sm hidden"></q-input>
+									<q-input  type="number" ref="otp7"  dense outlined  class="bg-grey-1 text-h6 q-ml-sm hidden"></q-input> -->
 								</div>
 								<span class="text-h6 text-cyan"><q-icon name="alarm" class="q-pa-sm"></q-icon>{{ Timer }}</span><br>
 								<span>Don't Receive a code? <q-btn class="text-orange-8" label="Resend" @click="Onsubmit" flat></q-btn></span><br>
@@ -97,6 +102,7 @@ export default {
       location:ref(null),
       referral:ref(null),
       name:ref(null),
+      OTP_Full:ref(null),
     }
   },
   mounted () {
@@ -163,18 +169,23 @@ export default {
 	   		if(count != 0 ){ count = count - 1 ; }
 	   	},1000);
   	},
-  	OTPchangefield1(event){ if(this.OTP1.length == 1){ this.$refs.otp2.focus(); }  },
-  	OTPchangefield2(event){ if(event.keyCode == 8){ this.$refs.otp1.focus(); }  if(this.OTP2.length == 1){ this.$refs.otp3.focus(); } },
-  	OTPchangefield3(event){ if(event.keyCode == 8){ this.$refs.otp2.focus(); }  if(this.OTP3.length == 1){ this.$refs.otp4.focus(); }  },
-  	OTPchangefield4(event){ if(event.keyCode == 8){ this.$refs.otp3.focus(); }  if(this.OTP4.length == 1){ this.$refs.otp5.focus(); }  },
-  	OTPchangefield5(event){ if(event.keyCode == 8){ this.$refs.otp4.focus(); }  if(this.OTP5.length == 1){ this.$refs.otp6.focus(); }  },
-  	OTPchangefield6(event){ if(event.keyCode == 8){ this.$refs.otp5.focus(); }  if(this.OTP6.length == 1){ this.$refs.otp7.focus(); } },
+  	OTPchangefield(event){
+      if (event.target.value.length >　event.target.getAttribute("maxlength")) {
+        event.target.blur()
+      }
+  	},
+  	// OTPchangefield1(event){ if(this.OTP1.length == 1){ this.$refs.otp2.focus(); }  },
+  	// OTPchangefield2(event){ if(event.keyCode == 8){ this.$refs.otp1.focus(); }  if(this.OTP2.length == 1){ this.$refs.otp3.focus(); } },
+  	// OTPchangefield3(event){ if(event.keyCode == 8){ this.$refs.otp2.focus(); }  if(this.OTP3.length == 1){ this.$refs.otp4.focus(); }  },
+  	// OTPchangefield4(event){ if(event.keyCode == 8){ this.$refs.otp3.focus(); }  if(this.OTP4.length == 1){ this.$refs.otp5.focus(); }  },
+  	// OTPchangefield5(event){ if(event.keyCode == 8){ this.$refs.otp4.focus(); }  if(this.OTP5.length == 1){ this.$refs.otp6.focus(); }  },
+  	// OTPchangefield6(event){ if(event.keyCode == 8){ this.$refs.otp5.focus(); }  if(this.OTP6.length == 1){ this.$refs.otp7.focus(); } },
   	SigninWithOtp(){
   		var ps =  this;	
-  		var OTP = ps.OTP1+ps.OTP2+ps.OTP3+ps.OTP4+ps.OTP5+ps.OTP6;
+  		// var OTP = ps.OTP1+ps.OTP2+ps.OTP3+ps.OTP4+ps.OTP5+ps.OTP6;
   		var loader = document.getElementById('loader2');
 	      	loader.style.display="block";
-  		ps.$store.dispatch('login',{'mobile':ps.mobile_number, 'password':OTP }).then(res => {
+  		ps.$store.dispatch('login',{'mobile':ps.mobile_number, 'password':String(ps.OTP_Full) }).then(res => {
   		 	if(res.status_code == 200){
 	  		 	// ps.$q.notify({ message:res.message, type: 'positive' ,progress: true,});
 	  		 	// ps.$router.push('CheckLocation');

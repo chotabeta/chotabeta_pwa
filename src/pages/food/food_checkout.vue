@@ -309,8 +309,8 @@ export default {
   	deliveryaddress(){
   		var ps = this;
   		if(ps.$route.query.adding == '1'){
-        // console.log(JSON.parse(localStorage.getItem('pick_from_store_address')));
-       	ps.food_delivery_address = JSON.parse(localStorage.getItem('food_delivery_address'));
+        // console.log(JSON.parse(sessionStorage.getItem('pick_from_store_address')));
+       	ps.food_delivery_address = JSON.parse(sessionStorage.getItem('food_delivery_address'));
         ps.delivery_address = ps.food_delivery_address.name;
         ps.delivery_pincode = ps.food_delivery_address.postal_code;
         ps.delivery_latlngs = ps.food_delivery_address.location;
@@ -343,21 +343,21 @@ export default {
       var ps = this;
       ps.discount = null;
       ps.coupon_code = null;
-      localStorage.removeItem('food_coupon');
+      sessionStorage.removeItem('food_coupon');
       ps.coupon_dailog_remove = true;
       ps.continue_food_one_function();
     },
   	continue_food_one_function(){
   	  var ps = this;
-  	  if(localStorage.getItem('food_coupon')){
-  	  	ps.coupon_code = localStorage.getItem('food_coupon');
+  	  if(sessionStorage.getItem('food_coupon')){
+  	  	ps.coupon_code = sessionStorage.getItem('food_coupon');
   	  }
 
   	  if( ps.$route.query.subscription == 0 ){
-  	  	alert('hai');
+  	  	// alert('hai');
   	  	ps.plan = ps.$route.query.plan;
-  	  	ps.schedule_time = localStorage.getItem('schedule_time');
-  	  	ps.MyFoodCart = JSON.parse(localStorage.getItem('MyFoodCart'));
+  	  	ps.schedule_time = sessionStorage.getItem('schedule_time');
+  	  	ps.MyFoodCart = JSON.parse(sessionStorage.getItem('MyFoodCart'));
 	  	  ps.data = [];
 		  	ps.MyFoodCart.forEach(cart=>{
 		  		ps.food_client_id = cart.client_id;
@@ -366,7 +366,7 @@ export default {
 		    });
   	  }
   	  else if(ps.$route.query.subscription == 1){
-  	  	 var subscription_data = JSON.parse(localStorage.getItem('subscription_data'));
+  	  	 var subscription_data = JSON.parse(sessionStorage.getItem('subscription_data'));
   	  	 ps.plan = subscription_data.plan;
   	  	 ps.week_end = subscription_data.weekend;
   	  	 ps.pick_date = subscription_data.pick_date;
@@ -399,10 +399,10 @@ export default {
       	if(response.data.status_code == 200){
       		ps.checkout_buton_status = 0;
       		ps.continue_data = response.data;
-      		if(localStorage.getItem('food_coupon')){
+      		if(sessionStorage.getItem('food_coupon')){
 	  				if(response.data.coupon_discount == 0){
 	              ps.coupon_dailog_error = true;
-	              localStorage.removeItem('food_coupon');
+	              sessionStorage.removeItem('food_coupon');
 	              ps.coupon_code = null;
 	            }else{
 	              ps.discount = response.data.coupon_discount;
@@ -476,10 +476,10 @@ export default {
         loader.style.display="none";
       	console.log(response,'territory');
       	if( response.data.status_code == 200 ){
-      		localStorage.removeItem('food_coupon');
-      		localStorage.removeItem('schedule_time');
-      		localStorage.removeItem('MyFoodCart');
-      		localStorage.removeItem('subscription_data');
+      		sessionStorage.removeItem('food_coupon');
+      		sessionStorage.removeItem('schedule_time');
+      		sessionStorage.removeItem('MyFoodCart');
+      		sessionStorage.removeItem('subscription_data');
       		ps.continue_to_stoping_dialog =  true;
       	}
       }).catch(function (error) {
@@ -504,8 +504,8 @@ export default {
       var ps=  this;
       var myallpaths = [];
       var i = 0;
-      if(localStorage.getItem('mypath')){
-        myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      if(sessionStorage.getItem('mypath')){
+        myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       }
       myallpaths.forEach(( path,index ) => {
         if(ps.$route.path == path){
@@ -519,11 +519,11 @@ export default {
           if(j<=i){ }else{ myallpaths.splice(j,1); }
         }
       }
-      localStorage.setItem('mypath',JSON.stringify(myallpaths));
+      sessionStorage.setItem('mypath',JSON.stringify(myallpaths));
     },
     Screen_Back_Redirection(){
       var ps = this;
-      var myallpaths = JSON.parse(localStorage.getItem('mypath'));
+      var myallpaths = JSON.parse(sessionStorage.getItem('mypath'));
       var previous = myallpaths.length;
       ps.$router.push(myallpaths[previous-2]);
     }

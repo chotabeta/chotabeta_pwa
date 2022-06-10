@@ -100,7 +100,7 @@
             <q-separator />
 
             <div class="flex q-px-lg q-py-sm">
-              <q-btn label="Track Order" flat class="text-weight-bolder cb-font-14 cb-text-blue-8" @click="trackorderdata(i.uid)"></q-btn>
+              <!-- <q-btn label="Track Order" flat class="text-weight-bolder cb-font-14 cb-text-blue-8" @click="trackorderdata(i.uid)"></q-btn> -->
               <q-space></q-space>
               <q-btn class="text-weight-bolder cb-font-14 cb-text-orange-8" dense flat v-if="i.amount != 0 && i.payment_status != 'paid'" @click="order_payment_function(i.uid)">Pay Now</q-btn>
               <span class="text-weight-bolder cb-font-14 cb-text-green-8" v-if="i.payment_status == 'paid' && i.amount != 0" >{{ i.payment_status }}</span>

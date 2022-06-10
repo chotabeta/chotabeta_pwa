@@ -150,7 +150,7 @@ export default {
     }
   },
   mounted() {
-  	localStorage.removeItem('schedule_time');
+  	sessionStorage.removeItem('schedule_time');
   	this.getToken();
 
   	// comment this functions when you move to live
@@ -293,10 +293,10 @@ export default {
   	},
   	Mycartitems_function(){
   		var ps = this;
-  		if(!localStorage.getItem('MyFoodCart')){
+  		if(!sessionStorage.getItem('MyFoodCart')){
   			return false;
   		}
-  		ps.MyFoodCart = JSON.parse(localStorage.getItem('MyFoodCart'));
+  		ps.MyFoodCart = JSON.parse(sessionStorage.getItem('MyFoodCart'));
   		ps.NoOfItemsInCart = ps.MyFoodCart.length;
   		let formData = new FormData;
 	    var data = [];
@@ -390,11 +390,11 @@ export default {
   			if(time_hr ==  ps.end_time){
   				if(ps.delivery_times[0].end.slice(3,5) >= ps.time_min){ 
   					ps.schedule_the_order = 1;	
-  					localStorage.setItem('schedule_time',ps.scheduleTime)
+  					sessionStorage.setItem('schedule_time',ps.scheduleTime)
   				}else{	ps.schedule_the_order = 0;	}
   			}else{
   				ps.schedule_the_order = 1;
-  				localStorage.setItem('schedule_time',ps.scheduleTime)
+  				sessionStorage.setItem('schedule_time',ps.scheduleTime)
   				}
   		}else{	ps.schedule_the_order = 0;	}
   	},
@@ -419,7 +419,7 @@ export default {
   				}
   			}
   		});
-  		localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+  		sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   		ps.Mycartitems_function();
   	},
   	food_cart_item_remove(item){
@@ -434,7 +434,7 @@ export default {
    				}
   			}
   		});
-  		localStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
+  		sessionStorage.setItem('MyFoodCart',JSON.stringify(ps.MyFoodCart));
   		ps.Mycartitems_function();
   	},
   	checkout_function(type){

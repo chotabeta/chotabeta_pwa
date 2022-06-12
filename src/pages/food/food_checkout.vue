@@ -358,6 +358,7 @@ export default {
   	  	ps.plan = ps.$route.query.plan;
   	  	ps.schedule_time = sessionStorage.getItem('schedule_time');
   	  	ps.MyFoodCart = JSON.parse(sessionStorage.getItem('MyFoodCart'));
+  	  	if(ps.MyFoodCart.length == 0){ ps.$router.push('/home/dashboard');	}
 	  	  ps.data = [];
 		  	ps.MyFoodCart.forEach(cart=>{
 		  		ps.food_client_id = cart.client_id;
@@ -371,6 +372,7 @@ export default {
   	  	 ps.week_end = subscription_data.weekend;
   	  	 ps.pick_date = subscription_data.pick_date;
   	  	 ps.data.push(subscription_data.item);
+  	  	 if(ps.data.length == 0){ ps.$router.push('/home/dashboard');	}
   	  	 ps.schedule_time = subscription_data.schedule_time;
   	  	 ps.food_client_id = subscription_data.client_id;
   	  }

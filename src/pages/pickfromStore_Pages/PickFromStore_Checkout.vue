@@ -356,6 +356,8 @@ export default ({
       if(ps.access_token == null ||  !ps.access_token){ ps.$router.push('/'); } 	
       if(sessionStorage.getItem('mycart')){
         ps.cart_items = JSON.parse(sessionStorage.getItem('mycart'));
+      }else{
+        ps.$router.push('/home/dashboard'); 
       }
       if( ps.cart_items.length == 0){
         ps.$router.push('/home/dashboard'); 

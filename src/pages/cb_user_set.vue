@@ -28,12 +28,18 @@ export default {
       // live
       sessionStorage.setItem('token_cb',"eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsImp0aSI6IjZlZWE3OWM3MGIzYjM0ZmRkMWE2MzdlMTEwOTMwOGNjNzg4ZTJlMWI0ZGY0NDhmNGM3YWIyMjJjNzQyM2ExZWEwZDAxNTU5MGI0MzY1NTU3In0.eyJhdWQiOiIzIiwianRpIjoiNmVlYTc5YzcwYjNiMzRmZGQxYTYzN2UxMTA5MzA4Y2M3ODhlMmUxYjRkZjQ0OGY0YzdhYjIyMmM3NDIzYTFlYTBkMDE1NTkwYjQzNjU1NTciLCJpYXQiOjE2NDkyNDc4OTAsIm5iZiI6MTY0OTI0Nzg5MCwiZXhwIjoxNjgwNzgzODkwLCJzdWIiOiIyIiwic2NvcGVzIjpbXX0.Bqh4V7R6jIbKrPYLCmFaOzzTnfryJ0Xisl-FllfIa8b2PJhkQQl60MGdCp241EE2uTQS3UYo_gIZDCHHjQ2WqOEwY0-f5SNWhoDQ2qY78bz0U7f0KuoAXBAwahXuCFYZYJ-8hgPLpjlzc4eBFtAcb_LhIlOYWtqIC8tLOAK9oar_GuLcQDNlREg8dW46uS5wiaX4PfSVzszFfD7lNdkGVm-sjxdNV9nyRNrQZ7wMFNU5q1R3hG40jeQvBFsI3hAMK-euWJuLFVzW0R2hwAMGzD9ncx4G5SOHORt1eXJdNHIzjEyNhhSa7POudMnSJDB1sKqPVV6XvqAP3ryeBtyn69MuPl5LDGgJCJd_4LJYL43attrquVR-F9dkhEGOczhAYJf712HsXdQ61CbMwLecGm-yid2DeKEG6OqCW6Mc8u8otmeyxb_u0HP4b-qbinV_vfBTdW_McVROr6MJGrm2mS-fUVrPjFX8ZUW1cwpSKwpg7z3E6ysfbBNN5CHZ8X21f5_sGXpIci1WqFZFIpjusSyoXE2PZgTUGOrWD_W8dJUkT0hHuZwftdUrgSPVSWM0STKJTIw7yWVRj1Bh4GXVc4PSC2eem4_5jtIV12k2V04mJZS35Kg7yZF2ksQEKQWJXVlDdgVIoyZ7YgwiHlXRXySB4b9b_uzdxZneMjxsFVo");
   		sessionStorage.setItem('xid_cb',"2");
-  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token; }
-  		else{	ps.access_token = ps.$store.state.token_cb;	}
-  		if(ps.access_token != null || ps.access_token){	
-  			ps.$router.push('CheckLocation');
-  		}
+  		if(ps.$store.state.token){ ps.access_token = ps.$store.state.token;  }
+  		else{	ps.access_token = ps.$store.state.token_cb; 	}
+  		ps.redirect_checklocation();
   	},
+    redirect_checklocation(){
+      var ps = this;
+      if(ps.access_token != null || ps.access_token){ 
+        ps.$router.push('CheckLocation');
+      }else{
+       location.reload();
+      }
+    }
   }
 }
 </script>

@@ -119,14 +119,14 @@
   <!-- categories -->
     <div class="row" v-if="service_details">
     	<div class="col-12 text-center text-weight-bold cb-text-blue-8 q-py-md cb-font-14">{{ service_details.description }}</div>
-			<div class="col-3 text-center cb-text-grey-4 q-mb-md" v-for="item in service_details.all_categories" :key="item">
-				<q-avatar size="65px" class="shadow-1" @click="services_page_redirection(item)">
-					<q-avatar size="35px" square>
+			<div class="col-3 text-center text-grey-8 " v-for="item in service_details.all_categories" :key="item">
+				<q-avatar size="65px" class="shadow-1 bg-grey-2" @click="services_page_redirection(item)">
+					<q-avatar size="30px" square>
 						<img :src="item.category_image_for_mobile" class="fit">
 						<!-- <img src="https://chotabeta.app/dev/testenv/public/uploads/assets/fruits_vegges.png" class="fit"> -->
 					</q-avatar>
-				</q-avatar><br>
-				<span class="cb-font-12">{{ item.name }}</span>
+				</q-avatar>
+				<p class="cb-font-12 text-bold q-py-xs">{{ item.name }}</p>
 			</div>
 
 			<div class="col-12 justify-center row q-mb-md">

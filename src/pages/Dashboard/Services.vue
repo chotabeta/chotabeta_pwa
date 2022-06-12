@@ -14,14 +14,14 @@
 			</q-card-section>
 			<q-card-section  style="height: 70vh;overflow: scroll;" >
 				<div class="row" v-if="categories.length != 0" >
-					<div class="col-4 column justify-center items-center cb-text-grey-4" v-for="item in categories" :key="item" style="height:95px">
-							<q-avatar size="65px" class="shadow-1 cb-text-grey-4" @click="services_page_redirection(item)">
-								<q-avatar size="35px" square>
-									<img :src="item.category_image_for_mobile" >
-									<img src="https://chotabeta.app/dev/testenv/public/uploads/assets/fruits_vegges.png" class="fit">
+					<div class="col-4 text-center text-grey-9" v-for="item in categories" :key="item" style="height:100px">
+							<q-avatar size="65px" class="shadow-1 cb-text-grey-4 bg-grey-3 shadow-0" @click="services_page_redirection(item)">
+								<q-avatar size="30px" class="" square>
+									<img :src="item.category_image_for_mobile">
+									<!-- <img src="https://chotabeta.app/dev/testenv/public/uploads/assets/fruits_vegges.png" class="fit"> -->
 								</q-avatar>
 							</q-avatar>
-						<div class="cb-font-12 q-py-xs"	>{{ item.name }}</div>
+						<p class="cb-font-12  q-py-xs text-bold">{{ item.name }}</p>
 					</div>
 				</div> 
 			</q-card-section>

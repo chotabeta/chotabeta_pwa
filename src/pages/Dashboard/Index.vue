@@ -546,7 +546,7 @@ export default ({
 		},
 		 website_selection(){
     	var ps = this;
-    	window.location=  'https://www.chotabeta.com';
+    	window.location=  'https://www.chotabeta.com/home.html';
     },
   }
 })

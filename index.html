@@ -1,2 +1,61 @@
-<!DOCTYPE html><html><head><title>ChotaBeta User App</title><meta charset=utf-8><meta name=description content="A Quasar Framework app"><meta name=format-detection content="telephone=no"><meta name=msapplication-tap-highlight content=no><meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width"><link rel=icon type=image/png sizes=128x128 href=icons/logo.png><link rel=icon type=image/png sizes=96x96 href=icons/logo.png><link rel=icon type=image/png sizes=32x32 href=icons/logo.png><link rel=icon type=image/png sizes=16x16 href=icons/logo.png><link rel=icon type=image/png href=logo.png><link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css><script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIf99xCnNaPPpDmXQI-PIIJpRmw1kD98&callback=initAutocomplete&libraries=places" async></script><script>let isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
-        if (!isMobile){ window.location="https://chotabeta.com"; }</script><script defer src=js/vendor.6ef350ec.js></script><script defer src=js/app.38598ad7.js></script><link href=css/vendor.a449e119.css rel=stylesheet><link href=css/app.d4e01238.css rel=stylesheet></head><body><div class="full-width full-height text-center flex flex-center q-pa-lg q-py-xl cb-font-16" id=page_refresh_1><div><img src=https://chotabeta.com/images/images/white-logo.svg width=20%><p class=text-white>The page you are viewing is not compatible to desktop/laptop.</p><p class=text-white>To access the page, please Click Hare Once</p><button onclick=location.reload() class="q-pa-sm q-px-md cb-round-borders-10 text-bold" style=border:none>Click Here</button></div></div><div id=q-app class=page_refresh></div></body></html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ChotaBeta User App</title>
+  <meta charset=utf-8>
+  <meta name=description content="A Quasar Framework app">
+  <meta name=format-detection content="telephone=no">
+  <meta name=msapplication-tap-highlight content=no>
+  <meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
+  <link rel=icon type=image/png sizes=128x128 href=icons/logo.png>
+  <link rel=icon type=image/png sizes=96x96 href=icons/logo.png>
+  <link rel=icon type=image/png sizes=32x32 href=icons/logo.png>
+  <link rel=icon type=image/png sizes=16x16 href=icons/logo.png>
+  <link rel=icon type=image/png href=logo.png>
+  <link rel=stylesheet href=https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBNIf99xCnNaPPpDmXQI-PIIJpRmw1kD98&callback=initAutocomplete&libraries=places" async></script>
+  <script src=https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js referrerpolicy=no-referrer></script>
+  <script>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+      document.onkeypress = function (event) {
+        event = (event || window.event);
+        if (event.keyCode == 123) { return false; }
+      }
+      document.onmousedown = function (event) {
+        event = (event || window.event);
+        if (event.keyCode == 123) { return false; }
+      }
+      document.onkeydown = function (event) {
+        event = (event || window.event);
+        if (event.keyCode == 123) { return false;}
+      }
+
+      jQuery(document).ready(function($){
+        $(document).keydown(function(event) {
+          var pressedKey = String.fromCharCode(event.keyCode).toLowerCase();
+          if (event.ctrlKey && (pressedKey == "c" || pressedKey == "u")) {  return false; }
+          if ((event.ctrlKey && event.shiftKey) && pressedKey == "i") { return false; }
+        });
+      });
+    </script>
+    <script>
+      let isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
+        if (!isMobile){ window.location="https://chotabeta.com/home.html"; }
+    </script>
+    <script defer src=js/vendor.6ef350ec.js></script>
+    <script defer src=js/app.605878bc.js></script>
+    <link href=css/vendor.a449e119.css rel=stylesheet>
+    <link href=css/app.d4e01238.css rel=stylesheet>
+  </head>
+  <body>
+    <div class="full-width full-height text-center flex flex-center q-pa-lg q-py-xl cb-font-16" id=page_refresh_1>
+      <div>
+        <img src=https://chotabeta.com/images/images/white-logo.svg width=20%>
+        <p class=text-white>The page you are viewing is not compatible to desktop/laptop.</p>
+        <p class=text-white>To access the page, please Click Hare Once</p>
+        <button onclick=location.reload() class="q-pa-sm q-px-md cb-round-borders-10 text-bold" style=border:none>Click Here</button>
+      </div>
+    </div>
+    <div id=q-app class=page_refresh></div>
+  </body>
+</html>
